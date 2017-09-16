@@ -1,4 +1,6 @@
 #include "gtest/gtest.h"
+#include "mockmemory.h"
+#include "cpu.h"
 
 // The fixture for testing class Cpu.
 class CpuTest : public ::testing::Test {
@@ -22,6 +24,8 @@ protected:
     // before the destructor).
     virtual void TearDown();
 
-    // The mock bar library shaed by all tests
-    //MockBar m_bar;
+    // MockMemory m_mockmem;
+    Cpu cpu;
+    CpuContext context;
+    MockMemory memory;
 };

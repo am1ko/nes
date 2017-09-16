@@ -1,3 +1,6 @@
+#ifndef CPU_H
+#define CPU_H
+
 #include <cstdint>
 
 class IMemory;
@@ -15,5 +18,7 @@ class Cpu
 {
 public:
     Cpu();
-    void tick(CpuContext& context);
+    void tick(CpuContext& context, IMemory& memory);
 };
+
+#endif

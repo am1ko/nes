@@ -1,7 +1,7 @@
-#include "cpu.h"
 #include "testcpu.h"
 
 //using ::testing::Return;
+using ::testing::Exactly;
 
 CpuTest::CpuTest() {
     // Have qux return true by default
@@ -12,18 +12,18 @@ CpuTest::CpuTest() {
 
 CpuTest::~CpuTest() {};
 
-void CpuTest::SetUp() {};
+void CpuTest::SetUp() {
+    context.PC = 0x8000U;
+};
 
 void CpuTest::TearDown() {};
 
-TEST_F(CpuTest, ByDefaultBazTrueIsTrue) {
-    Cpu cpu;
-    CpuContext context;
-    context.PC = 0x8000U;
-
-    cpu.tick(context);
-
+TEST_F(CpuTest, TickIncrementsProgramCounter) {
+    cpu.tick(context, memory);
     EXPECT_EQ(context.PC, 0x8001U);
 }
 
-
+TEST_F(CpuTest, TickFetchesFromPc) {
+    EXPECT_CALL(memory, read(0x8000U)).Times(Exactly(1));
+    cpu.tick(context, memory);
+}
