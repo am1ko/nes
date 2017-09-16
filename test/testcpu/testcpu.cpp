@@ -2,6 +2,7 @@
 
 using ::testing::Return;
 using ::testing::Exactly;
+using ::testing::_;
 
 CpuTest::CpuTest() {
     // Have qux return true by default
@@ -28,11 +29,38 @@ TEST_F(CpuTest, ReadResetVectorToPc) {
     EXPECT_EQ(cpu.context.PC, 0xABBAU);
 }
 
-TEST_F(CpuTest, TickIncrementsProgramCounter) {
-    cpu.context.PC = 0x8000U;
-    EXPECT_CALL(memory, read(0x8000U));
+TEST_F(CpuTest, AdcImmediate) {
+    {
+        cpu.context.PC = 0x0600U;
+        EXPECT_CALL(memory, read(cpu.context.PC)).WillOnce(Return(0x69));
+        EXPECT_CALL(memory, read(cpu.context.PC + 1)).WillOnce(Return(0x05));
+        cpu.context.A = 0x80U;
+
+        cpu.tick(memory);
+
+        EXPECT_EQ(cpu.context.A, 0x85U);
+        EXPECT_EQ(cpu.context.PC, 0x0602U);
+    }
+
+    {
+        EXPECT_CALL(memory, read(cpu.context.PC)).WillOnce(Return(0x69));
+        EXPECT_CALL(memory, read(cpu.context.PC + 1)).WillOnce(Return(0x10));
+
+        cpu.tick(memory);
+
+        EXPECT_EQ(cpu.context.A, 0x95U);
+        EXPECT_EQ(cpu.context.PC, 0x0604U);
+    }
+}
+
+TEST_F(CpuTest, AdcImmediateCarryFlagSet) {
+    cpu.context.PC = 0x0600U;
+    EXPECT_CALL(memory, read(cpu.context.PC)).WillOnce(Return(0x69));
+    EXPECT_CALL(memory, read(cpu.context.PC + 1)).WillOnce(Return(0x01));
+    cpu.context.A = 0xFFU;
 
     cpu.tick(memory);
 
-    EXPECT_EQ(cpu.context.PC, 0x8001U);
+    EXPECT_EQ(cpu.context.A, 0x00U);
+    EXPECT_EQ(cpu.context.P & 0x01U, 0x01U);
 }
