@@ -1,6 +1,7 @@
 #ifndef CPU_H
 #define CPU_H
 
+#include <cstdbool>
 #include <cstdint>
 
 class IMemory;
@@ -17,8 +18,10 @@ struct CpuContext {
 class Cpu
 {
 public:
+    CpuContext context;
     Cpu();
-    void tick(CpuContext& context, IMemory& memory);
+    void reset(IMemory& memory);
+    void tick(IMemory& memory);
 };
 
 #endif

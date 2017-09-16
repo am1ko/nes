@@ -3,10 +3,14 @@
 
 Cpu::Cpu(){};
 
-void Cpu::tick(CpuContext& context, IMemory& memory)
-{
-    // TODO(amiko): fetch
-    memory.read(context.PC);
+void Cpu::reset(IMemory& memory) {
+    // Read the Reset interrupt vector to PC
+    context.PC = memory.read(0xFFFDU) | (memory.read(0xFFFCU) << 8);
+}
+
+void Cpu::tick(IMemory& memory) {
+    // Fetch
+     memory.read(context.PC);
     // TODO(amiko): decode
     // TODO(amiko): execute
 

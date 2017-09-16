@@ -1,6 +1,6 @@
 #include "testcpu.h"
 
-//using ::testing::Return;
+using ::testing::Return;
 using ::testing::Exactly;
 
 CpuTest::CpuTest() {
@@ -13,17 +13,26 @@ CpuTest::CpuTest() {
 CpuTest::~CpuTest() {};
 
 void CpuTest::SetUp() {
-    context.PC = 0x8000U;
+    cpu.reset(memory);
 };
 
 void CpuTest::TearDown() {};
 
-TEST_F(CpuTest, TickIncrementsProgramCounter) {
-    cpu.tick(context, memory);
-    EXPECT_EQ(context.PC, 0x8001U);
+
+TEST_F(CpuTest, ReadResetVectorToPc) {
+    EXPECT_CALL(memory, read(0xFFFCU)).WillOnce(Return(0xAB));
+    EXPECT_CALL(memory, read(0xFFFDU)).WillOnce(Return(0xBA));
+
+    cpu.reset(memory);
+
+    EXPECT_EQ(cpu.context.PC, 0xABBAU);
 }
 
-TEST_F(CpuTest, TickFetchesFromPc) {
-    EXPECT_CALL(memory, read(0x8000U)).Times(Exactly(1));
-    cpu.tick(context, memory);
+TEST_F(CpuTest, TickIncrementsProgramCounter) {
+    cpu.context.PC = 0x8000U;
+    EXPECT_CALL(memory, read(0x8000U));
+
+    cpu.tick(memory);
+
+    EXPECT_EQ(cpu.context.PC, 0x8001U);
 }
