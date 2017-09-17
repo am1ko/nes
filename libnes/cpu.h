@@ -17,11 +17,15 @@ struct CpuContext {
 
 class Cpu
 {
+    IMemory & memory;
+    uint16_t get_cc01_param_addr(uint8_t addr_mode);
+    uint16_t adc(uint8_t instr);
+    void update_flags(uint16_t result);;
 public:
     CpuContext context;
-    Cpu();
-    void reset(IMemory& memory);
-    void tick(IMemory& memory);
+    Cpu(IMemory& memory);
+    void reset();
+    void tick();
 };
 
 #endif
