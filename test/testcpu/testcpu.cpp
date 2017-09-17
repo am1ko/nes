@@ -69,18 +69,6 @@ TEST_F(CpuTest, AdcImmediateNoCarryFlagSet) {
     EXPECT_EQ(cpu.context.P & 0x01U, 0x00U);
 }
 
-TEST_F(CpuTest, AdcImmediateWithCarry) {
-    EXPECT_CALL(memory, read(cpu.context.PC)).WillOnce(Return(0x69U));
-    EXPECT_CALL(memory, read(cpu.context.PC + 1)).WillOnce(Return(0x01U));
-    cpu.context.A = 0x02U;
-    cpu.context.P = 0x01U;
-
-    cpu.tick();
-
-    EXPECT_EQ(cpu.context.A, 0x04U);            // carry added to result
-    EXPECT_EQ(cpu.context.P & 0x01U, 0x00U);    // carry cleared
-}
-
 TEST_F(CpuTest, AdcImmediateCarryFlagSet) {
     EXPECT_CALL(memory, read(cpu.context.PC)).WillOnce(Return(0x69U));
     EXPECT_CALL(memory, read(cpu.context.PC + 1)).WillOnce(Return(0x01U));
@@ -90,6 +78,30 @@ TEST_F(CpuTest, AdcImmediateCarryFlagSet) {
 
     EXPECT_EQ(cpu.context.A, 0x00U);
     EXPECT_EQ(cpu.context.P & 0x01U, 0x01U);
+}
+
+TEST_F(CpuTest, AdcImmediateCarryFlagMaintained) {
+    EXPECT_CALL(memory, read(cpu.context.PC)).WillOnce(Return(0x69U));
+    EXPECT_CALL(memory, read(cpu.context.PC + 1)).WillOnce(Return(0x01U));
+    cpu.context.A = 0xFEU;
+    cpu.context.P = 0x01U;
+
+    cpu.tick();
+
+    EXPECT_EQ(cpu.context.A, 0x00U);
+    EXPECT_EQ(cpu.context.P & 0x01U, 0x01U);
+}
+
+TEST_F(CpuTest, AdcImmediateCarryFlagCleared) {
+    EXPECT_CALL(memory, read(cpu.context.PC)).WillOnce(Return(0x69U));
+    EXPECT_CALL(memory, read(cpu.context.PC + 1)).WillOnce(Return(0x01U));
+    cpu.context.A = 0x02U;
+    cpu.context.P = 0x01U;
+
+    cpu.tick();
+
+    EXPECT_EQ(cpu.context.A, 0x04U);            // carry added to result
+    EXPECT_EQ(cpu.context.P & 0x01U, 0x00U);    // carry cleared
 }
 
 TEST_F(CpuTest, AdcImmediateZeroFlagSet) {

@@ -76,14 +76,12 @@ uint16_t Cpu::adc(uint8_t addr_mode) {
 }
 
 void Cpu::update_flags(uint16_t result) {
-    if (context.P & STATUS_FLAG_C) {
-        // carry used, clear it
-         context.P &= ~(STATUS_FLAG_C);
-    }
-
     if (result > 0xFFU) {
-        result %= 256U;
         context.P |= STATUS_FLAG_C;
+        result %= 256U;
+    }
+    else {
+         context.P &= ~(STATUS_FLAG_C);
     }
 
     if (result == 0U) {
