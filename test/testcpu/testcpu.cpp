@@ -9,12 +9,17 @@ CpuTest::CpuTest() {
     //ON_CALL(m_bar,qux()).WillByDefault(Return(true));
     // Have norf return false by default
     //ON_CALL(m_bar,norf()).WillByDefault(Return(false));
+    ON_CALL(memory, read(_)).WillByDefault(Return(0U));
 }
 
 CpuTest::~CpuTest() {};
 
 void CpuTest::SetUp() {
+    // Suppress "uninteresting mock function call" warnings with these expectations
+    EXPECT_CALL(memory, read(0xFFFCU)).WillOnce(Return(0xABU));
+    EXPECT_CALL(memory, read(0xFFFDU)).WillOnce(Return(0xBAU));
     cpu.reset(memory);
+    cpu.context.PC = 0x0600U;
 };
 
 void CpuTest::TearDown() {};
@@ -31,7 +36,6 @@ TEST_F(CpuTest, ReadResetVectorToPc) {
 
 TEST_F(CpuTest, AdcImmediate) {
     {
-        cpu.context.PC = 0x0600U;
         EXPECT_CALL(memory, read(cpu.context.PC)).WillOnce(Return(0x69U));
         EXPECT_CALL(memory, read(cpu.context.PC + 1)).WillOnce(Return(0x05U));
         cpu.context.A = 0x80U;
@@ -54,7 +58,6 @@ TEST_F(CpuTest, AdcImmediate) {
 }
 
 TEST_F(CpuTest, AdcImmediateNoCarryFlagSet) {
-    cpu.context.PC = 0x0600U;
     EXPECT_CALL(memory, read(cpu.context.PC)).WillOnce(Return(0x69U));
     EXPECT_CALL(memory, read(cpu.context.PC + 1)).WillOnce(Return(0x01U));
     cpu.context.A = 0x00U;
@@ -66,7 +69,6 @@ TEST_F(CpuTest, AdcImmediateNoCarryFlagSet) {
 }
 
 TEST_F(CpuTest, AdcImmediateCarryFlagSet) {
-    cpu.context.PC = 0x0600U;
     EXPECT_CALL(memory, read(cpu.context.PC)).WillOnce(Return(0x69U));
     EXPECT_CALL(memory, read(cpu.context.PC + 1)).WillOnce(Return(0x01U));
     cpu.context.A = 0xFFU;
@@ -78,8 +80,7 @@ TEST_F(CpuTest, AdcImmediateCarryFlagSet) {
 }
 
 TEST_F(CpuTest, AdcZeroPage) {
-    cpu.context.PC = 0x0600U;
-    EXPECT_CALL(memory, read(cpu.context.PC)).WillOnce(Return(0x61U));
+    EXPECT_CALL(memory, read(cpu.context.PC)).WillOnce(Return(0x65U));
     EXPECT_CALL(memory, read(cpu.context.PC + 1)).WillOnce(Return(0x0AU));
     EXPECT_CALL(memory, read(0x000AU)).WillOnce(Return(0x02U));
     cpu.context.A = 0x70U;
@@ -87,6 +88,19 @@ TEST_F(CpuTest, AdcZeroPage) {
     cpu.tick(memory);
 
     EXPECT_EQ(cpu.context.A, 0x72U);
+    EXPECT_EQ(cpu.context.PC, 0x0602U);
+}
+
+TEST_F(CpuTest, AdcZeroPageXIndexed) {
+    EXPECT_CALL(memory, read(cpu.context.PC)).WillOnce(Return(0x75U));
+    EXPECT_CALL(memory, read(cpu.context.PC + 1)).WillOnce(Return(0xA0U));
+    EXPECT_CALL(memory, read(0x00A2U)).WillOnce(Return(0x03U));
+    cpu.context.A = 0x70U;
+    cpu.context.X = 0x02U;
+
+    cpu.tick(memory);
+
+    EXPECT_EQ(cpu.context.A, 0x73U);
     EXPECT_EQ(cpu.context.PC, 0x0602U);
 }
 
@@ -102,4 +116,60 @@ TEST_F(CpuTest, AdcAbsolute) {
 
     EXPECT_EQ(cpu.context.A, 0x31U);
     EXPECT_EQ(cpu.context.PC, 0x0703U);
+}
+
+TEST_F(CpuTest, AdcAbsoluteXIndexed) {
+    EXPECT_CALL(memory, read(cpu.context.PC)).WillOnce(Return(0x7DU));
+    EXPECT_CALL(memory, read(cpu.context.PC + 1)).WillOnce(Return(0xBAU));
+    EXPECT_CALL(memory, read(cpu.context.PC + 2)).WillOnce(Return(0xABU));
+    EXPECT_CALL(memory, read(0xABBD/* + 0x03U*/)).WillOnce(Return(0x10U));
+    cpu.context.A = 0x21U;
+    cpu.context.X = 0x03U;
+
+    cpu.tick(memory);
+
+    EXPECT_EQ(cpu.context.A, 0x31U);
+    EXPECT_EQ(cpu.context.PC, 0x0603U);
+}
+
+TEST_F(CpuTest, AdcAbsoluteYIndexed) {
+    EXPECT_CALL(memory, read(cpu.context.PC)).WillOnce(Return(0x79U));
+    EXPECT_CALL(memory, read(cpu.context.PC + 1)).WillOnce(Return(0xBAU));
+    EXPECT_CALL(memory, read(cpu.context.PC + 2)).WillOnce(Return(0xABU));
+    EXPECT_CALL(memory, read(0xABBA + 0x03U)).WillOnce(Return(0x10U));
+    cpu.context.A = 0x21U;
+    cpu.context.Y = 0x03U;
+
+    cpu.tick(memory);
+
+    EXPECT_EQ(cpu.context.A, 0x31U);
+    EXPECT_EQ(cpu.context.PC, 0x0603U);
+}
+
+TEST_F(CpuTest, AdcIndexedIndirect) {
+    EXPECT_CALL(memory, read(cpu.context.PC)).WillOnce(Return(0x61U));
+    EXPECT_CALL(memory, read(cpu.context.PC + 1)).WillOnce(Return(0xF6U)); // F6 == addr of addr base
+    EXPECT_CALL(memory, read(0x00F6U + 0x04U)).WillOnce(Return(0x11U)); // addr = read(F6 + offset)
+    EXPECT_CALL(memory, read(0x11U)).WillOnce(Return(0x20U)); // read actual parameter value
+    cpu.context.A = 0x21U;
+    cpu.context.X = 0x04U;
+
+    cpu.tick(memory);
+
+    EXPECT_EQ(cpu.context.A, 0x41U);
+    EXPECT_EQ(cpu.context.PC, 0x0602U);
+}
+
+TEST_F(CpuTest, AdcIndirectIndexed) {
+    EXPECT_CALL(memory, read(cpu.context.PC)).WillOnce(Return(0x71U));
+    EXPECT_CALL(memory, read(cpu.context.PC + 1)).WillOnce(Return(0xF6U)); // F6 == addr of addr base
+    EXPECT_CALL(memory, read(0x00F6U)).WillOnce(Return(0x11U)); // addr = read(F6 + offset)
+    EXPECT_CALL(memory, read(0x11U + 0x04U)).WillOnce(Return(0x20U)); // read actual parameter value
+    cpu.context.A = 0x21U;
+    cpu.context.Y = 0x04U;
+
+    cpu.tick(memory);
+
+    EXPECT_EQ(cpu.context.A, 0x41U);
+    EXPECT_EQ(cpu.context.PC, 0x0602U);
 }

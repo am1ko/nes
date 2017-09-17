@@ -18,13 +18,31 @@ void Cpu::tick(IMemory& memory) {
     if (instr == 0x69U) {
         param_addr = context.PC;
     }
-    else if (instr == 0x61U) {
+    else if (instr == 0x65U) {
         param_addr = memory.read(context.PC);
     }
-    else if (instr == 0x6DU)
-    {
+    else if (instr == 0x6DU) {
         param_addr = memory.read(context.PC) | (memory.read(context.PC + 1) << 8);
         context.PC++;
+    }
+    else if (instr == 0x75U) {
+        param_addr = memory.read(context.PC) + context.X;
+    }
+    else if (instr == 0x7DU) {
+        param_addr = (memory.read(context.PC) | (memory.read(context.PC + 1) << 8)) + context.X;
+        context.PC++;
+    }
+    else if (instr == 0x79U) {
+        param_addr = (memory.read(context.PC) | (memory.read(context.PC + 1) << 8)) + context.Y;
+        context.PC++;
+    }
+    else if (instr == 0x61U) {
+        uint8_t const addr = memory.read(context.PC);
+        param_addr = memory.read(addr + context.X);
+    }
+    else if (instr == 0x71U) {
+        uint8_t const addr = memory.read(context.PC);
+        param_addr = memory.read(addr) + context.Y;
     }
 
     uint16_t const result = context.A + memory.read(param_addr);
