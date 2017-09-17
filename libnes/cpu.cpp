@@ -9,19 +9,33 @@ void Cpu::reset(IMemory& memory) {
 }
 
 void Cpu::tick(IMemory& memory) {
-    // Fetch
-    memory.read(context.PC);
-    // TODO(amiko): decode
-    // TODO(amiko): execute
-    uint16_t const val = memory.read(context.PC + 1);
-    context.A += val;
+    // fetch instruction
+    uint8_t const instr = memory.read(context.PC);
+    context.PC++;
 
-    if (val > 0xFFU)
+    uint16_t param_addr = 0U;
+
+    if (instr == 0x69U) {
+        param_addr = context.PC;
+    }
+    else if (instr == 0x61U) {
+        param_addr = memory.read(context.PC);
+    }
+    else if (instr == 0x6DU)
     {
-        context.A = 0U;
-        context.P |= 1;
+        param_addr = memory.read(context.PC) | (memory.read(context.PC + 1) << 8);
+        context.PC++;
     }
 
+    uint16_t const result = context.A + memory.read(param_addr);
+    context.PC++;
 
-    context.PC += 2U;
+    if (result > 0xFFU) {
+        context.A = 0U;
+        context.P |= 1U;
+    }
+    else {
+        context.A = result;
+        context.P &= ~(1U);
+    }
 }
