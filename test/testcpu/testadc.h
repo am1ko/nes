@@ -3,15 +3,15 @@
 #include "cpu.h"
 
 // The fixture for testing class Cpu.
-class CpuTest : public ::testing::Test {
+class AdcTest : public ::testing::Test {
 
 protected:
 
     // You can do set-up work for each test here.
-    CpuTest();
+    AdcTest();
 
     // You can do clean-up work that doesn't throw exceptions here.
-    virtual ~CpuTest();
+    virtual ~AdcTest();
 
     // If the constructor and destructor are not enough for setting up
     // and cleaning up each test, you can define the following methods:
@@ -24,7 +24,6 @@ protected:
     // before the destructor).
     virtual void TearDown();
 
-    // MockMemory m_mockmem;
     Cpu cpu;
     CpuContext context;
     MockMemory memory;

@@ -8,5 +8,5 @@ TARGET_LINK_LIBRARIES(testcpu
     libgmock
 )
 
-add_test(NAME testcpu
-         COMMAND testcpu)
+add_test(NAME testadc
+         COMMAND testadc)
