@@ -2,7 +2,8 @@ file(GLOB SRCS *.cpp)
 
 ADD_EXECUTABLE(testcpu ${SRCS})
 
-TARGET_LINK_LIBRARIES(testcpu
+TARGET_LINK_LIBRARIES(
+    testcpu
     libnes
     libgtest
     libgmock
@@ -10,3 +11,5 @@ TARGET_LINK_LIBRARIES(testcpu
 
 add_test(NAME testadc
          COMMAND testadc)
+add_test(NAME testnop
+         COMMAND testnop)
