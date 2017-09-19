@@ -145,12 +145,12 @@ TEST_F(AdcTest, AdcImmediateNegativeFlagCleared) {
     EXPECT_CALL(memory, read(cpu.context.PC)).WillOnce(Return(0x69U));
     EXPECT_CALL(memory, read(cpu.context.PC + 1)).WillOnce(Return(0x06U));
     cpu.context.sregs[A] = 253U;
-    cpu.context.P = 0x02U;
+    cpu.context.P = 0x80U;
 
     cpu.tick();
 
     EXPECT_EQ(cpu.context.sregs[A], 0x03U);
-    EXPECT_EQ(cpu.context.P & 0x02U, 0x00U);
+    EXPECT_EQ(cpu.context.P & 0x80U, 0x00U);
 }
 
 // ---------------------------------------------------------------------------------------------- //

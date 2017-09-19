@@ -13,5 +13,7 @@ add_test(NAME testreset
          COMMAND testreset)
 add_test(NAME testadc
          COMMAND testadc)
+add_test(NAME testand
+         COMMAND testand)
 add_test(NAME testnop
          COMMAND testnop)

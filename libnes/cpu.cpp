@@ -68,6 +68,11 @@ uint16_t Cpu::ADC(uint8_t param) {
 }
 
 // ---------------------------------------------------------------------------------------------- //
+uint16_t Cpu::AND(uint8_t param) {
+    return context.sregs[A] & param;
+}
+
+// ---------------------------------------------------------------------------------------------- //
 uint16_t Cpu::NOP(uint8_t param) {
     return 0U;
 }
@@ -107,7 +112,7 @@ void Cpu::update_flags(uint16_t result, uint8_t mask) {
 
     // --- NEGATIVE --- //
     if (mask & F_N) {
-        if (((context.sregs[A] & 0x80U) == 0U) && ((result & 0x80U) == 0x80U)) {
+        if (result & 0x80U) {
             context.P |= F_N;
         }
         else {

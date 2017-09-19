@@ -47,8 +47,9 @@ class Cpu
     uint16_t addrmode_inx();
     uint16_t addrmode_iny();
     // --- INSTRUCTIONS ------------------------------------------------------------------------- //
-    uint16_t ADC(uint8_t param_addr);
-    uint16_t NOP(uint8_t param_addr);
+    uint16_t ADC(uint8_t param);
+    uint16_t AND(uint8_t param);
+    uint16_t NOP(uint8_t param);
     // --- OTHER -------------------------------------------------------------------------------- //
     void update_flags(uint16_t result, uint8_t mask);;
 public:
