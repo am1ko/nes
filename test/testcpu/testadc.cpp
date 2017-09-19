@@ -29,17 +29,6 @@ void AdcTest::SetUp() {
 // ---------------------------------------------------------------------------------------------- //
 void AdcTest::TearDown() {};
 
-
-// ---------------------------------------------------------------------------------------------- //
-TEST_F(AdcTest, ReadResetVectorToPc) {
-    EXPECT_CALL(memory, read(0xFFFCU)).WillOnce(Return(0xABU));
-    EXPECT_CALL(memory, read(0xFFFDU)).WillOnce(Return(0xBAU));
-
-    cpu.reset();
-
-    EXPECT_EQ(cpu.context.PC, 0xABBAU);
-}
-
 // ---------------------------------------------------------------------------------------------- //
 TEST_F(AdcTest, AdcImmediate) {
     {
