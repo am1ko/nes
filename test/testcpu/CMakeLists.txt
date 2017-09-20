@@ -10,10 +10,12 @@ TARGET_LINK_LIBRARIES(
 )
 
 add_test(NAME testreset
-         COMMAND testreset)
+         COMMAND testcpu)
 add_test(NAME testadc
-         COMMAND testadc)
+         COMMAND testcpu)
 add_test(NAME testand
-         COMMAND testand)
+         COMMAND testcpu)
+add_test(NAME testasl
+         COMMAND testcpu)
 add_test(NAME testnop
-         COMMAND testnop)
+         COMMAND testcpu)

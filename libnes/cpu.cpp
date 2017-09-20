@@ -5,61 +5,71 @@
 #define RESET_VECTOR_MSB_ADDR    (0xFFFCU)
 #define RESET_VECTOR_LSB_ADDR    (0xFFFDU)
 
+#define NUM_SREGS                3
+
 // ---------------------------------------------------------------------------------------------- //
-Cpu::Cpu(IMemory& memory) : memory(memory) {
+Cpu::Cpu(IMemory& memory) : memory(memory), addr(0U) {
 }
 
 // ---------------------------------------------------------------------------------------------- //
-uint16_t Cpu::addrmode_imp() {
-    return context.PC;
+uint8_t Cpu::addrmode_acc() {
+    return context.sregs[A];
 }
 
 // ---------------------------------------------------------------------------------------------- //
-uint16_t Cpu::addrmode_imm() {
-    context.PC++;
-    return context.PC - 1U;
+uint8_t Cpu::addrmode_imp() {
+    return 0UL;
 }
 
 // ---------------------------------------------------------------------------------------------- //
-uint16_t Cpu::addrmode_zpg() {
-    context.PC++;
-    return memory.read(context.PC - 1U);
+uint8_t Cpu::addrmode_imm() {
+    addr = context.PC++;
+    return memory.read(addr);
 }
 
 // ---------------------------------------------------------------------------------------------- //
-uint16_t Cpu::addrmode_abs() {
+uint8_t Cpu::addrmode_zpg() {
+    addr = memory.read(context.PC++);
+    return memory.read(addr);
+}
+
+// ---------------------------------------------------------------------------------------------- //
+uint8_t Cpu::addrmode_abs() {
     context.PC += 2U;
-    return memory.read(context.PC - 2U) | (memory.read(context.PC - 1U) << 8);
+    addr = memory.read(context.PC - 2U) | (memory.read(context.PC - 1U) << 8);
+    return memory.read(addr);
 }
 
 // ---------------------------------------------------------------------------------------------- //
-uint16_t Cpu::addrmode_zpx() {
-    context.PC++;
-    return memory.read(context.PC - 1U) + context.sregs[X];
+uint8_t Cpu::addrmode_zpx() {
+    addr = memory.read(context.PC++) + context.sregs[X];
+    return memory.read(addr);
 }
 
 // ---------------------------------------------------------------------------------------------- //
-uint16_t Cpu::addrmode_abx() {
+uint8_t Cpu::addrmode_abx() {
     context.PC += 2U;
-    return (memory.read(context.PC - 2U) | (memory.read(context.PC - 1) << 8)) + context.sregs[X];
+    addr = (memory.read(context.PC - 2U) | (memory.read(context.PC - 1) << 8)) + context.sregs[X];
+    return memory.read(addr);
 }
 
 // ---------------------------------------------------------------------------------------------- //
-uint16_t Cpu::addrmode_aby() {
+uint8_t Cpu::addrmode_aby() {
     context.PC += 2U;
-    return (memory.read(context.PC - 2U) | (memory.read(context.PC - 1U) << 8)) + context.sregs[Y];
+    addr = (memory.read(context.PC - 2U) | (memory.read(context.PC - 1U) << 8)) + context.sregs[Y];
+    return memory.read(addr);
 }
 
 // ---------------------------------------------------------------------------------------------- //
-uint16_t Cpu::addrmode_inx() {
-    context.PC++;
-    return memory.read(memory.read(context.PC - 1U) + context.sregs[X]);
+uint8_t Cpu::addrmode_inx() {
+    addr = memory.read(memory.read(context.PC++) + context.sregs[X]);
+    return memory.read(addr);
 }
 
 // ---------------------------------------------------------------------------------------------- //
-uint16_t Cpu::addrmode_iny() {
-    context.PC++;
-    return memory.read(memory.read(context.PC - 1U)) + context.sregs[Y];
+uint8_t Cpu::addrmode_iny() {
+    addr = memory.read(memory.read(context.PC++)) + context.sregs[Y];
+    return memory.read(addr);
 }
 
 // ---------------------------------------------------------------------------------------------- //
@@ -70,6 +80,11 @@ uint16_t Cpu::ADC(uint8_t param) const {
 // ---------------------------------------------------------------------------------------------- //
 uint16_t Cpu::AND(uint8_t param) const {
     return context.sregs[A] & param;
+}
+
+// ---------------------------------------------------------------------------------------------- //
+uint16_t Cpu::ASL(uint8_t param) const {
+    return param << 1;
 }
 
 // ---------------------------------------------------------------------------------------------- //
@@ -92,7 +107,7 @@ void Cpu::update_flags(uint16_t result, uint8_t mask) {
 
     // --- ZERO --- //
     if (mask & F_Z) {
-        if (result == 0U) {
+        if ((result) == 0U) {
             context.P |= F_Z;
         }
         else {
@@ -131,14 +146,9 @@ void Cpu::tick() {
     // --- FETCH & DECODE INSTRUCTION ------- //
     struct CpuInstruction const * instr = &instruction_set[memory.read(context.PC++)];
 
-    // --- FETCH PARAMETER ADDRESS --- //
-    uint16_t const param_addr = (*this.*instr->addrmode_handler)();
-
-    // --- FETCH PARAMETER VALUE --- //
-    uint8_t param = 0U;
-    if (param_addr != context.PC) {
-        param = memory.read(param_addr);
-    } // else means no param required
+    // --- FETCH PARAMETER --- //
+    // struct addr_data =  (*this.*instr->addrmode_handler)();
+    uint8_t const param = (*this.*instr->addrmode_handler)();
 
     // --- EXECUTE ----------------- //
     uint16_t const result = (*this.*instr->instr_executor)(param);
@@ -147,8 +157,15 @@ void Cpu::tick() {
     update_flags(result, instr->flags);
 
     // --- STORE RESULT ------------ //
+    // (*this.*instr->result_writer)(addr, result);
+
     if (instr->result_reg != NO_RESULT) {
-        context.sregs[instr->result_reg] = result % 256U;
+        uint8_t const result_trunc = result % 256U;
+        if (instr->result_reg < NUM_SREGS) {
+            context.sregs[instr->result_reg] = result_trunc;
+        }
+        else if (instr->result_reg == MEM) {
+            memory.write(addr, result_trunc);
+        }
     }
 }
-

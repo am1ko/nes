@@ -2,7 +2,8 @@
 #define INSTRUCTION_SET_H
 
 #define NO_FLAGS    (0U)
-#define NO_RESULT   (4U)
+#define MEM         (4U)
+#define NO_RESULT   (5U)
 
 // ---------------------------------------------------------------------------------------------- //
 const struct CpuInstruction Cpu::instruction_set[256] = {
@@ -13,15 +14,15 @@ const struct CpuInstruction Cpu::instruction_set[256] = {
 /* $03 */   {&Cpu::NOP,    &Cpu::addrmode_imm,   2U,       (    NO_FLAGS   ),   NO_RESULT},
 /* $04 */   {&Cpu::NOP,    &Cpu::addrmode_imm,   2U,       (    NO_FLAGS   ),   NO_RESULT},
 /* $05 */   {&Cpu::NOP,    &Cpu::addrmode_imm,   2U,       (    NO_FLAGS   ),   NO_RESULT},
-/* $06 */   {&Cpu::NOP,    &Cpu::addrmode_imm,   2U,       (    NO_FLAGS   ),   NO_RESULT},
+/* $06 */   {&Cpu::ASL,    &Cpu::addrmode_zpg,   2U,       (  F_C|F_Z|F_N  ),   MEM      },
 /* $07 */   {&Cpu::NOP,    &Cpu::addrmode_imm,   2U,       (    NO_FLAGS   ),   NO_RESULT},
 /* $08 */   {&Cpu::NOP,    &Cpu::addrmode_imm,   2U,       (    NO_FLAGS   ),   NO_RESULT},
 /* $09 */   {&Cpu::NOP,    &Cpu::addrmode_imm,   2U,       (    NO_FLAGS   ),   NO_RESULT},
-/* $0A */   {&Cpu::NOP,    &Cpu::addrmode_imm,   2U,       (    NO_FLAGS   ),   NO_RESULT},
+/* $0A */   {&Cpu::ASL,    &Cpu::addrmode_acc,   2U,       (  F_C|F_Z|F_N  ),   A        },
 /* $0B */   {&Cpu::NOP,    &Cpu::addrmode_imm,   2U,       (    NO_FLAGS   ),   NO_RESULT},
 /* $0C */   {&Cpu::NOP,    &Cpu::addrmode_imm,   2U,       (    NO_FLAGS   ),   NO_RESULT},
 /* $0D */   {&Cpu::NOP,    &Cpu::addrmode_imm,   2U,       (    NO_FLAGS   ),   NO_RESULT},
-/* $0E */   {&Cpu::NOP,    &Cpu::addrmode_imm,   2U,       (    NO_FLAGS   ),   NO_RESULT},
+/* $0E */   {&Cpu::ASL,    &Cpu::addrmode_abs,   2U,       (  F_C|F_Z|F_N  ),   MEM      },
 /* $0F */   {&Cpu::NOP,    &Cpu::addrmode_imm,   2U,       (    NO_FLAGS   ),   NO_RESULT},
 /* $10 */   {&Cpu::NOP,    &Cpu::addrmode_imm,   2U,       (    NO_FLAGS   ),   NO_RESULT},
 /* $11 */   {&Cpu::NOP,    &Cpu::addrmode_imm,   2U,       (    NO_FLAGS   ),   NO_RESULT},
@@ -29,7 +30,7 @@ const struct CpuInstruction Cpu::instruction_set[256] = {
 /* $13 */   {&Cpu::NOP,    &Cpu::addrmode_imm,   2U,       (    NO_FLAGS   ),   NO_RESULT},
 /* $14 */   {&Cpu::NOP,    &Cpu::addrmode_imm,   2U,       (    NO_FLAGS   ),   NO_RESULT},
 /* $15 */   {&Cpu::NOP,    &Cpu::addrmode_imm,   2U,       (    NO_FLAGS   ),   NO_RESULT},
-/* $16 */   {&Cpu::NOP,    &Cpu::addrmode_imm,   2U,       (    NO_FLAGS   ),   NO_RESULT},
+/* $16 */   {&Cpu::ASL,    &Cpu::addrmode_zpx,   2U,       (  F_C|F_Z|F_N  ),   MEM      },
 /* $17 */   {&Cpu::NOP,    &Cpu::addrmode_imm,   2U,       (    NO_FLAGS   ),   NO_RESULT},
 /* $18 */   {&Cpu::NOP,    &Cpu::addrmode_imm,   2U,       (    NO_FLAGS   ),   NO_RESULT},
 /* $19 */   {&Cpu::NOP,    &Cpu::addrmode_imm,   2U,       (    NO_FLAGS   ),   NO_RESULT},
@@ -37,7 +38,7 @@ const struct CpuInstruction Cpu::instruction_set[256] = {
 /* $1B */   {&Cpu::NOP,    &Cpu::addrmode_imm,   2U,       (    NO_FLAGS   ),   NO_RESULT},
 /* $1C */   {&Cpu::NOP,    &Cpu::addrmode_imm,   2U,       (    NO_FLAGS   ),   NO_RESULT},
 /* $1D */   {&Cpu::NOP,    &Cpu::addrmode_imm,   2U,       (    NO_FLAGS   ),   NO_RESULT},
-/* $1E */   {&Cpu::NOP,    &Cpu::addrmode_imm,   2U,       (    NO_FLAGS   ),   NO_RESULT},
+/* $1E */   {&Cpu::ASL,    &Cpu::addrmode_abx,   2U,       (  F_C|F_Z|F_N  ),   MEM      },
 /* $1F */   {&Cpu::NOP,    &Cpu::addrmode_imm,   2U,       (    NO_FLAGS   ),   NO_RESULT},
 /* $20 */   {&Cpu::NOP,    &Cpu::addrmode_imm,   2U,       (    NO_FLAGS   ),   NO_RESULT},
 /* $21 */   {&Cpu::AND,    &Cpu::addrmode_inx,   2U,       (    F_Z|F_N    ),   A        },

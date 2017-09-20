@@ -36,19 +36,22 @@ class Cpu
 {
     static const struct CpuInstruction instruction_set[256];
     IMemory & memory;
+    uint16_t addr;
     // --- ADDRESSING MODES --------------------------------------------------------------------- //
-    uint16_t addrmode_imp();
-    uint16_t addrmode_imm();
-    uint16_t addrmode_zpg();
-    uint16_t addrmode_abs();
-    uint16_t addrmode_zpx();
-    uint16_t addrmode_abx();
-    uint16_t addrmode_aby();
-    uint16_t addrmode_inx();
-    uint16_t addrmode_iny();
+    uint8_t addrmode_acc();
+    uint8_t addrmode_imp();
+    uint8_t addrmode_imm();
+    uint8_t addrmode_zpg();
+    uint8_t addrmode_abs();
+    uint8_t addrmode_zpx();
+    uint8_t addrmode_abx();
+    uint8_t addrmode_aby();
+    uint8_t addrmode_inx();
+    uint8_t addrmode_iny();
     // --- INSTRUCTIONS ------------------------------------------------------------------------- //
     uint16_t ADC(uint8_t param) const;
     uint16_t AND(uint8_t param) const;
+    uint16_t ASL(uint8_t param) const;
     uint16_t NOP(uint8_t param) const;
     // --- OTHER -------------------------------------------------------------------------------- //
     void update_flags(uint16_t result, uint8_t mask);;
@@ -59,11 +62,9 @@ public:
     void tick();
 };
 
-// typedef uint16_t (Cpu::*__addrmode_handler)();
-
 struct CpuInstruction {
     uint16_t (Cpu::*instr_executor)(uint8_t) const;
-    uint16_t (Cpu::*addrmode_handler)();
+    uint8_t (Cpu::*addrmode_handler)();
     uint8_t cycles;
     uint8_t flags;
     uint8_t result_reg;
