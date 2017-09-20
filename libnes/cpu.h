@@ -47,9 +47,9 @@ class Cpu
     uint16_t addrmode_inx();
     uint16_t addrmode_iny();
     // --- INSTRUCTIONS ------------------------------------------------------------------------- //
-    uint16_t ADC(uint8_t param);
-    uint16_t AND(uint8_t param);
-    uint16_t NOP(uint8_t param);
+    uint16_t ADC(uint8_t param) const;
+    uint16_t AND(uint8_t param) const;
+    uint16_t NOP(uint8_t param) const;
     // --- OTHER -------------------------------------------------------------------------------- //
     void update_flags(uint16_t result, uint8_t mask);;
 public:
@@ -62,7 +62,7 @@ public:
 // typedef uint16_t (Cpu::*__addrmode_handler)();
 
 struct CpuInstruction {
-    uint16_t (Cpu::*instr_executor)(uint8_t);
+    uint16_t (Cpu::*instr_executor)(uint8_t) const;
     uint16_t (Cpu::*addrmode_handler)();
     uint8_t cycles;
     uint8_t flags;

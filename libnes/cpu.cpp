@@ -63,17 +63,17 @@ uint16_t Cpu::addrmode_iny() {
 }
 
 // ---------------------------------------------------------------------------------------------- //
-uint16_t Cpu::ADC(uint8_t param) {
+uint16_t Cpu::ADC(uint8_t param) const {
     return context.sregs[A] + param + (context.P & F_C);
 }
 
 // ---------------------------------------------------------------------------------------------- //
-uint16_t Cpu::AND(uint8_t param) {
+uint16_t Cpu::AND(uint8_t param) const {
     return context.sregs[A] & param;
 }
 
 // ---------------------------------------------------------------------------------------------- //
-uint16_t Cpu::NOP(uint8_t param) {
+uint16_t Cpu::NOP(uint8_t param) const {
     return 0U;
 }
 
