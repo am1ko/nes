@@ -73,6 +73,21 @@ uint8_t Cpu::addrmode_iny() {
 }
 
 // ---------------------------------------------------------------------------------------------- //
+void Cpu::resultmode_none(uint8_t result) {
+
+}
+
+// ---------------------------------------------------------------------------------------------- //
+void Cpu::resultmode_mem(uint8_t result) {
+    memory.write(addr, result);
+}
+
+// ---------------------------------------------------------------------------------------------- //
+void Cpu::resultmode_reg_a(uint8_t result) {
+    context.sregs[A] = result;
+}
+
+// ---------------------------------------------------------------------------------------------- //
 uint16_t Cpu::ADC(uint8_t param) const {
     return context.sregs[A] + param + (context.P & F_C);
 }
@@ -143,29 +158,18 @@ void Cpu::reset() {
 
 // ---------------------------------------------------------------------------------------------- //
 void Cpu::tick() {
-    // --- FETCH & DECODE INSTRUCTION ------- //
+    // --- FETCH & DECODE INSTRUCTION --- //
     struct CpuInstruction const * instr = &instruction_set[memory.read(context.PC++)];
 
-    // --- FETCH PARAMETER --- //
-    // struct addr_data =  (*this.*instr->addrmode_handler)();
+    // --- FETCH PARAMETER -------------- //
     uint8_t const param = (*this.*instr->addrmode_handler)();
 
-    // --- EXECUTE ----------------- //
+    // --- EXECUTE ---------------------- //
     uint16_t const result = (*this.*instr->instr_executor)(param);
 
-    // --- UPDATE CPU STATE -------- //
+    // --- UPDATE CPU STATE ------------- //
     update_flags(result, instr->flags);
 
-    // --- STORE RESULT ------------ //
-    // (*this.*instr->result_writer)(addr, result);
-
-    if (instr->result_reg != NO_RESULT) {
-        uint8_t const result_trunc = result % 256U;
-        if (instr->result_reg < NUM_SREGS) {
-            context.sregs[instr->result_reg] = result_trunc;
-        }
-        else if (instr->result_reg == MEM) {
-            memory.write(addr, result_trunc);
-        }
-    }
+    // --- STORE RESULT ----------------- //
+    (*this.*instr->result_handler)(result % 256U);
 }

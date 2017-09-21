@@ -37,6 +37,10 @@ class Cpu
     static const struct CpuInstruction instruction_set[256];
     IMemory & memory;
     uint16_t addr;
+    // --- RESULT STORE MODES-------------------------------------------------------------------- //
+    void resultmode_none(uint8_t result);
+    void resultmode_mem(uint8_t result);
+    void resultmode_reg_a(uint8_t result);
     // --- ADDRESSING MODES --------------------------------------------------------------------- //
     uint8_t addrmode_acc();
     uint8_t addrmode_imp();
@@ -67,7 +71,7 @@ struct CpuInstruction {
     uint8_t (Cpu::*addrmode_handler)();
     uint8_t cycles;
     uint8_t flags;
-    uint8_t result_reg;
+    void (Cpu::*result_handler)(uint8_t);
 };
 
 #endif
