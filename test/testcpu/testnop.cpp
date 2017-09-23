@@ -1,4 +1,5 @@
 #include "testnop.h"
+#include "test_helpers.h"
 
 using ::testing::Return;
 using ::testing::Exactly;
@@ -11,27 +12,26 @@ NopTest::NopTest() : cpu(memory) {
 NopTest::~NopTest() {};
 
 void NopTest::SetUp() {
-    // Suppress "uninteresting mock function call" warnings with these expectations
-    EXPECT_CALL(memory, read(0xFFFCU)).WillOnce(Return(0x80U));
-    EXPECT_CALL(memory, read(0xFFFDU)).WillOnce(Return(0x00U));
+    EXPECT_MEM_READ_16(0xFFFCU, 0x8000U);
     cpu.reset();
-    cpu.context.P = 0x00U;
+    SET_REG_P(0x00U);
 };
 
 void NopTest::TearDown() {};
 
 
 TEST_F(NopTest, AdvancePc) {
-    EXPECT_CALL(memory, read(0x8000U)).WillRepeatedly(Return(0xEAU));
-    cpu.context.sregs[A] = 1U;
-    cpu.context.sregs[X] = 2U;
-    cpu.context.sregs[Y] = 3U;
+    // EXPECT_CALL(memory, read(0x8000U)).WillRepeatedly(Return(0xEAU));
+    EXPECT_MEM_READ_8(0x8000U, 0xEAU);
+    SET_REG_A(1U);
+    SET_REG_X(2U);
+    SET_REG_Y(3U);
 
     cpu.tick();
 
-    EXPECT_EQ(cpu.context.PC, 0x8001U);
-    EXPECT_EQ(cpu.context.P, 0U);
-    EXPECT_EQ(cpu.context.sregs[A], 1U);
-    EXPECT_EQ(cpu.context.sregs[X], 2U);
-    EXPECT_EQ(cpu.context.sregs[Y], 3U);
+    EXPECT_EQ(REG_PC, 0x8001U);
+    EXPECT_EQ(REG_P, 0U);
+    EXPECT_EQ(REG_A, 1U);
+    EXPECT_EQ(REG_X, 2U);
+    EXPECT_EQ(REG_Y, 3U);
 }

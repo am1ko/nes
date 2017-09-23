@@ -2,8 +2,8 @@
 #include "cpu.h"
 #include "instruction_set.h"
 
-#define RESET_VECTOR_MSB_ADDR    (0xFFFCU)
-#define RESET_VECTOR_LSB_ADDR    (0xFFFDU)
+#define RESET_VECTOR_MSB_ADDR    (0xFFFDU)
+#define RESET_VECTOR_LSB_ADDR    (0xFFFCU)
 
 #define NUM_SREGS                3
 

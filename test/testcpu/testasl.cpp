@@ -1,4 +1,5 @@
 #include "testasl.h"
+#include "test_helpers.h"
 
 using ::testing::Return;
 using ::testing::Exactly;
@@ -14,12 +15,11 @@ AslTest::~AslTest() {};
 
 // ---------------------------------------------------------------------------------------------- //
 void AslTest::SetUp() {
-    // Suppress "uninteresting mock function call" warnings with these expectations
-    EXPECT_CALL(memory, read(0xFFFCU)).WillOnce(Return(0xABU));
-    EXPECT_CALL(memory, read(0xFFFDU)).WillOnce(Return(0xBAU));
+    // Suppress "uninteresting mock function call" warnings with this expectation
+    EXPECT_MEM_READ_16(0xFFFCU, 0xABBAU);
     cpu.reset();
-    cpu.context.PC = 0x0800U;
-    cpu.context.P = 0x00U;
+    SET_REG_PC(0x0800U);
+    SET_REG_P(0x00U);
 };
 
 // ---------------------------------------------------------------------------------------------- //
@@ -27,146 +27,132 @@ void AslTest::TearDown() {};
 
 // ---------------------------------------------------------------------------------------------- //
 TEST_F(AslTest, AslAccumulator) {
-    {
-        EXPECT_CALL(memory, read(cpu.context.PC)).WillOnce(Return(0x0AU));
-        cpu.context.sregs[A] = 0x55U;
+    EXPECT_MEM_READ_8(REG_PC, 0x0AU);
+    SET_REG_A(0x55U);
 
-        cpu.tick();
+    cpu.tick();
 
-        EXPECT_EQ(cpu.context.sregs[A], 0xAAU);
-        EXPECT_EQ(cpu.context.PC, 0x0801U);
-    }
-
-    {
-        EXPECT_CALL(memory, read(cpu.context.PC)).WillOnce(Return(0x0AU));
-
-        cpu.tick();
-
-        EXPECT_EQ(cpu.context.sregs[A], 0x54U);
-        EXPECT_EQ(cpu.context.PC, 0x0802U);
-    }
+    EXPECT_EQ(REG_A, 0xAAU);
+    EXPECT_EQ(REG_PC, 0x0801U);
 }
 
 // ---------------------------------------------------------------------------------------------- //
 TEST_F(AslTest, AslAccumulatorZeroFlagSet) {
-    EXPECT_CALL(memory, read(cpu.context.PC)).WillOnce(Return(0x0AU));
-    cpu.context.sregs[A] = 0x80U;
+    EXPECT_MEM_READ_8(REG_PC, 0x0AU);
+    SET_REG_A(0x80U);
 
     cpu.tick();
 
-    EXPECT_EQ(cpu.context.sregs[A], 0x00U);
-    EXPECT_EQ(cpu.context.P & 0x02U, 0x02U);
+    EXPECT_EQ(REG_A, 0x00U);
+    EXPECT_EQ(ZEROF, true);
 }
 
 // ---------------------------------------------------------------------------------------------- //
 TEST_F(AslTest, AslAccumulatorZeroFlagCleared) {
-    EXPECT_CALL(memory, read(cpu.context.PC)).WillOnce(Return(0x0AU));
-    cpu.context.sregs[A] = 0x40U;
-    cpu.context.P = 0x02U;
+    EXPECT_MEM_READ_8(REG_PC, 0x0AU);
+    SET_REG_A(0x40U);
+    SET_ZEROF(1);
 
     cpu.tick();
 
-    EXPECT_EQ(cpu.context.sregs[A], 0x80U);
-    EXPECT_EQ(cpu.context.P & 0x02U, 0x00U);
+    EXPECT_EQ(REG_A, 0x80U);
+    EXPECT_EQ(ZEROF, false);
 }
 
 // ---------------------------------------------------------------------------------------------- //
 TEST_F(AslTest, AslAccumulatorNegativeFlagSet) {
-    EXPECT_CALL(memory, read(cpu.context.PC)).WillOnce(Return(0x0AU));
-    cpu.context.sregs[A] = 0x40U;
-    cpu.context.P = 0x00U;
+    EXPECT_MEM_READ_8(REG_PC, 0x0AU);
+    SET_REG_A(0x40U);
+    SET_ZEROF(0);
 
     cpu.tick();
 
-    EXPECT_EQ(cpu.context.sregs[A], 0x80U);
-    EXPECT_EQ(cpu.context.P & 0x80U, 0x80U);
+    EXPECT_EQ(REG_A, 0x80U);
+    EXPECT_EQ(NEGF, true);
 }
 
 // ---------------------------------------------------------------------------------------------- //
 TEST_F(AslTest, AslAccumulatorNegativeFlagCleared) {
-    EXPECT_CALL(memory, read(cpu.context.PC)).WillOnce(Return(0x0AU));
-    cpu.context.sregs[A] = 0x20U;
-    cpu.context.P = 0x00U;
-    cpu.context.P = 0x80U;
+    EXPECT_MEM_READ_8(REG_PC, 0x0AU);
+    SET_REG_A(0x20U);
+    SET_NEGF(1);
 
     cpu.tick();
 
-    EXPECT_EQ(cpu.context.sregs[A], 0x40U);
-    EXPECT_EQ(cpu.context.P & 0x80U, 0x00U);
+    EXPECT_EQ(REG_A, 0x40U);
+    EXPECT_EQ(NEGF, false);
 }
 
 // ---------------------------------------------------------------------------------------------- //
 TEST_F(AslTest, AslAccumulatorCarryFlagSet) {
-    EXPECT_CALL(memory, read(cpu.context.PC)).WillOnce(Return(0x0AU));
-    cpu.context.sregs[A] = 0x80U;
+    EXPECT_MEM_READ_8(REG_PC, 0x0AU);
+    SET_REG_A(0x80U);
 
     cpu.tick();
 
-    EXPECT_EQ(cpu.context.sregs[A], 0x00U);
-    EXPECT_EQ(cpu.context.P & 0x01U, 0x01U);
+    EXPECT_EQ(REG_A, 0x00U);
+    EXPECT_EQ(CARRYF, true);
 }
 
 // ---------------------------------------------------------------------------------------------- //
 TEST_F(AslTest, AslAccumulatorCarryFlagCleared) {
-    EXPECT_CALL(memory, read(cpu.context.PC)).WillOnce(Return(0x0AU));
-    cpu.context.sregs[A] = 0x02U;
-    cpu.context.P = 0x01U;
+    EXPECT_MEM_READ_8(REG_PC, 0x0AU);
+    SET_REG_A(0x02U);
+    SET_CARRYF(1);
 
     cpu.tick();
 
-    EXPECT_EQ(cpu.context.sregs[A], 0x04U);
-    EXPECT_EQ(cpu.context.P & 0x01U, 0x00U);
+    EXPECT_EQ(REG_A, 0x04U);
+    EXPECT_EQ(CARRYF, false);
 }
 
 
 // ---------------------------------------------------------------------------------------------- //
 TEST_F(AslTest, AslZeroPage) {
-    EXPECT_CALL(memory, read(cpu.context.PC)).WillOnce(Return(0x06U));
-    EXPECT_CALL(memory, read(cpu.context.PC + 1)).WillOnce(Return(0x0AU));
-    EXPECT_CALL(memory, read(0x000AU)).WillOnce(Return(0x33U));
+    EXPECT_MEM_READ_8(REG_PC, 0x06U);
+    EXPECT_MEM_READ_8(REG_PC + 1, 0x0AU);
+    EXPECT_MEM_READ_8(0x000A, 0x33U);
     EXPECT_CALL(memory, write(0x000AU, 0x66U));
 
     cpu.tick();
 
-    EXPECT_EQ(cpu.context.PC, 0x0802U);
+    EXPECT_EQ(REG_PC, 0x0802U);
 }
 
 // ---------------------------------------------------------------------------------------------- //
 TEST_F(AslTest, AslZeroPageXIndexed) {
-    EXPECT_CALL(memory, read(cpu.context.PC)).WillOnce(Return(0x16U));
-    EXPECT_CALL(memory, read(cpu.context.PC + 1)).WillOnce(Return(0xA0U));
-    EXPECT_CALL(memory, read(0x00A3U)).WillOnce(Return(0x33U));     // parameter value
+    EXPECT_MEM_READ_8(REG_PC, 0x16U);
+    EXPECT_MEM_READ_8(REG_PC + 1, 0xA0U);
+    EXPECT_MEM_READ_8(0x00A3U, 0x33U);     // parameter value
     EXPECT_CALL(memory, write(0x00A3U, 0x66U));
-    cpu.context.sregs[X] = 0x03U;
+    SET_REG_X(0x03U);
 
     cpu.tick();
 
-    EXPECT_EQ(cpu.context.PC, 0x0802U);
+    EXPECT_EQ(REG_PC, 0x0802U);
 }
 
 // ---------------------------------------------------------------------------------------------- //
 TEST_F(AslTest, AslAbsolute) {
-    EXPECT_CALL(memory, read(cpu.context.PC)).WillOnce(Return(0x0EU));
-    EXPECT_CALL(memory, read(cpu.context.PC + 1)).WillOnce(Return(0xBAU));
-    EXPECT_CALL(memory, read(cpu.context.PC + 2)).WillOnce(Return(0xABU));
-    EXPECT_CALL(memory, read(0xABBA)).WillOnce(Return(0x10U));      // parameter value
-    EXPECT_CALL(memory, write(0xABBAU, 0x20U));
+    EXPECT_MEM_READ_8(REG_PC, 0x0EU);
+    EXPECT_MEM_READ_16(REG_PC + 1, 0xABBAU);
+    EXPECT_MEM_READ_8(0xABBA, 0x10U);      // parameter value
+    EXPECT_MEM_WRITE_8(0xABBAU, 0x20U);
 
     cpu.tick();
 
-    EXPECT_EQ(cpu.context.PC, 0x0803U);
+    EXPECT_EQ(REG_PC, 0x0803U);
 }
 
 // ---------------------------------------------------------------------------------------------- //
 TEST_F(AslTest, AslAbsoluteXIndexed) {
-    EXPECT_CALL(memory, read(cpu.context.PC)).WillOnce(Return(0x1EU));
-    EXPECT_CALL(memory, read(cpu.context.PC + 1)).WillOnce(Return(0xBAU));
-    EXPECT_CALL(memory, read(cpu.context.PC + 2)).WillOnce(Return(0xABU));
-    EXPECT_CALL(memory, read(0xABBAU + 0x03U)).WillOnce(Return(0x10U));      // parameter value
-    EXPECT_CALL(memory, write(0xABBAU + 0x03U, 0x20U));
-    cpu.context.sregs[X] = 0x03U;
+    SET_REG_X(0x03U);
+    EXPECT_MEM_READ_8(REG_PC, 0x1EU);
+    EXPECT_MEM_READ_16(REG_PC + 1, 0xABBAU);
+    EXPECT_MEM_READ_8(0xABBA + REG_X, 0x10U);      // parameter value
+    EXPECT_MEM_WRITE_8(0xABBAU + REG_X, 0x20U);
 
     cpu.tick();
 
-    EXPECT_EQ(cpu.context.PC, 0x0803U);
+    EXPECT_EQ(REG_PC, 0x0803U);
 }

@@ -1,4 +1,5 @@
 #include "testreset.h"
+#include "test_helpers.h"
 
 using ::testing::Return;
 using ::testing::Exactly;
@@ -14,11 +15,6 @@ ResetTest::~ResetTest() {};
 
 // ---------------------------------------------------------------------------------------------- //
 void ResetTest::SetUp() {
-    // Suppress "uninteresting mock function call" warnings with these expectations
-    EXPECT_CALL(memory, read(0xFFFCU)).WillOnce(Return(0x80U));
-    EXPECT_CALL(memory, read(0xFFFDU)).WillOnce(Return(0x00U));
-    cpu.reset();
-    cpu.context.P = 0x00U;
 };
 
 // ---------------------------------------------------------------------------------------------- //
@@ -26,10 +22,9 @@ void ResetTest::TearDown() {};
 
 // ---------------------------------------------------------------------------------------------- //
 TEST_F(ResetTest, ReadResetVectorToPc) {
-    EXPECT_CALL(memory, read(0xFFFCU)).WillOnce(Return(0xABU));
-    EXPECT_CALL(memory, read(0xFFFDU)).WillOnce(Return(0xBAU));
+    EXPECT_MEM_READ_16(0xFFFCU, 0xABCDU);
 
     cpu.reset();
 
-    EXPECT_EQ(cpu.context.PC, 0xABBAU);
+    EXPECT_EQ(cpu.context.PC, 0xABCDU);
 }
