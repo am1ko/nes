@@ -63,7 +63,7 @@ TEST_F(AslTest, AslAccumulatorZeroFlagCleared) {
 TEST_F(AslTest, AslAccumulatorNegativeFlagSet) {
     EXPECT_MEM_READ_8(REG_PC, 0x0AU);
     SET_REG_A(0x40U);
-    SET_ZEROF(0);
+    SET_NEGF(0);
 
     cpu.tick();
 
