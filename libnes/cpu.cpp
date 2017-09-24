@@ -6,7 +6,7 @@
 #define RESET_VECTOR_LSB_ADDR    (0xFFFCU)
 
 // ---------------------------------------------------------------------------------------------- //
-Cpu::Cpu(IMemory& memory) : memory(memory) {
+Cpu::Cpu(IMemory& memory) : memory(memory), logger(0) {
     context.PC = 0U;
     context.SP = 0U;
     context.P = 0U;
@@ -178,14 +178,22 @@ void Cpu::update_flags(uint16_t result, uint8_t mask) {
 }
 
 // ---------------------------------------------------------------------------------------------- //
+void Cpu::set_logger(ICpuLogger * logger) {
+    this->logger = logger;
+}
+
+// ---------------------------------------------------------------------------------------------- //
 void Cpu::reset() {
     context.PC = memory.read(RESET_VECTOR_LSB_ADDR) | (memory.read(RESET_VECTOR_MSB_ADDR) << 8);
 }
 
 // ---------------------------------------------------------------------------------------------- //
 void Cpu::tick() {
+    uint16_t const pc = context.PC++;
+    uint8_t const i = memory.read(pc);
+
     // --- FETCH & DECODE INSTRUCTION --- //
-    struct CpuInstruction const * instr = &instruction_set[memory.read(context.PC++)];
+    struct CpuInstruction const * instr = &instruction_set[i];
 
     // --- FETCH PARAMETER ADDRESS ------ //
     uint16_t const addr = (*this.*instr->addrmode_handler)();
@@ -198,4 +206,7 @@ void Cpu::tick() {
 
     // --- STORE RESULT ----------------- //
     (*this.*instr->result_handler)(addr, result % 256U);
+
+    // --- LOG -------------------------- //
+    if (logger) { logger->log(i, addr, &context); }
 }

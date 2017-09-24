@@ -32,9 +32,16 @@ struct CpuContext {
 };
 
 // ---------------------------------------------------------------------------------------------- //
+class ICpuLogger {
+public:
+    virtual void log(uint8_t instr, uint16_t param_addr, struct CpuContext const * const context) = 0;
+};
+
+// ---------------------------------------------------------------------------------------------- //
 class Cpu
 {
     static const struct CpuInstruction instruction_set[256];
+    ICpuLogger * logger;
     IMemory & memory;
     // --- RESULT STORE MODES-------------------------------------------------------------------- //
     void resultmode_none(uint16_t addr, uint8_t result);
@@ -67,6 +74,7 @@ public:
     explicit Cpu(IMemory& memory);
     void reset();
     void tick();
+    void set_logger(ICpuLogger * logger);
 };
 
 struct CpuInstruction {

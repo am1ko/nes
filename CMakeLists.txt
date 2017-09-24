@@ -4,5 +4,6 @@ project(nes_emulator)
 
 enable_testing()
 
+add_subdirectory(main)
 add_subdirectory(test)
 add_subdirectory(libnes)
