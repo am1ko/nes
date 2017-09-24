@@ -7,6 +7,7 @@
 #define EXPECT_MEM_WRITE_8(addr, val)     EXPECT_CALL(memory, write(addr, val))
 
 #define REG_PC                            cpu.context.PC
+#define REG_SP                            cpu.context.SP
 #define REG_A                             cpu.context.sregs[A]
 #define REG_X                             cpu.context.sregs[X]
 #define REG_Y                             cpu.context.sregs[Y]

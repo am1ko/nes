@@ -14,17 +14,21 @@ ResetTest::ResetTest() : cpu(memory) {
 ResetTest::~ResetTest() {};
 
 // ---------------------------------------------------------------------------------------------- //
-void ResetTest::SetUp() {
-};
+void ResetTest::SetUp() {};
 
 // ---------------------------------------------------------------------------------------------- //
 void ResetTest::TearDown() {};
 
 // ---------------------------------------------------------------------------------------------- //
-TEST_F(ResetTest, ReadResetVectorToPc) {
+TEST_F(ResetTest, RegistersSetCorrectly) {
     EXPECT_MEM_READ_16(0xFFFCU, 0xABCDU);
 
     cpu.reset();
 
-    EXPECT_EQ(cpu.context.PC, 0xABCDU);
+    EXPECT_EQ(REG_PC, 0xABCDU);
+    EXPECT_EQ(REG_P,  0x24U);
+    EXPECT_EQ(REG_SP, 0xFDU);
+    EXPECT_EQ(REG_A,  0x00U);
+    EXPECT_EQ(REG_X,  0x00U);
+    EXPECT_EQ(REG_Y,  0x00U);
 }

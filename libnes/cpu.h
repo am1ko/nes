@@ -34,7 +34,8 @@ struct CpuContext {
 // ---------------------------------------------------------------------------------------------- //
 class ICpuLogger {
 public:
-    virtual void log(uint8_t instr, uint16_t param_addr, struct CpuContext const * const context) = 0;
+    virtual void log(uint8_t instr, uint16_t instr_addr, uint16_t param_addr,
+                     struct CpuContext const * const context) = 0;
 };
 
 // ---------------------------------------------------------------------------------------------- //
@@ -69,6 +70,7 @@ class Cpu
     uint16_t LDX(uint16_t param_addr);
     // --- OTHER -------------------------------------------------------------------------------- //
     void update_flags(uint16_t result, uint8_t mask);
+    void reset_registers();
 public:
     CpuContext context;
     explicit Cpu(IMemory& memory);

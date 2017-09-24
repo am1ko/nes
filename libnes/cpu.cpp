@@ -7,12 +7,7 @@
 
 // ---------------------------------------------------------------------------------------------- //
 Cpu::Cpu(IMemory& memory) : memory(memory), logger(0) {
-    context.PC = 0U;
-    context.SP = 0U;
-    context.P = 0U;
-    context.sregs[A] = 0U;
-    context.sregs[X] = 0U;
-    context.sregs[Y] = 0U;
+    reset_registers();
 }
 
 // ---------------------------------------------------------------------------------------------- //
@@ -178,12 +173,22 @@ void Cpu::update_flags(uint16_t result, uint8_t mask) {
 }
 
 // ---------------------------------------------------------------------------------------------- //
+void Cpu::reset_registers() {
+    context.P = (1U << 5) | F_I;
+    context.SP = 0xFDU;
+    context.sregs[A] = 0U;
+    context.sregs[X] = 0U;
+    context.sregs[Y] = 0U;
+}
+
+// ---------------------------------------------------------------------------------------------- //
 void Cpu::set_logger(ICpuLogger * logger) {
     this->logger = logger;
 }
 
 // ---------------------------------------------------------------------------------------------- //
 void Cpu::reset() {
+    reset_registers();
     context.PC = memory.read(RESET_VECTOR_LSB_ADDR) | (memory.read(RESET_VECTOR_MSB_ADDR) << 8);
 }
 
@@ -208,5 +213,5 @@ void Cpu::tick() {
     (*this.*instr->result_handler)(addr, result % 256U);
 
     // --- LOG -------------------------- //
-    if (logger) { logger->log(i, addr, &context); }
+    if (logger) { logger->log(i, pc, addr, &context); }
 }
