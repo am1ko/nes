@@ -49,12 +49,19 @@ uint16_t Cpu::addrmode_zpx() {
 }
 
 // ---------------------------------------------------------------------------------------------- //
+uint16_t Cpu::addrmode_zpy() {
+    return memory.read(context.PC++) + context.sregs[Y];
+}
+
+// ---------------------------------------------------------------------------------------------- //
+// TODO(amiko): need to use X with carry?
 uint16_t Cpu::addrmode_abx() {
     context.PC += 2U;
     return (memory.read(context.PC - 2U) | (memory.read(context.PC - 1) << 8)) + context.sregs[X];
 }
 
 // ---------------------------------------------------------------------------------------------- //
+// TODO(amiko): need to use Y with carry?
 uint16_t Cpu::addrmode_aby() {
     context.PC += 2U;
     return (memory.read(context.PC - 2U) | (memory.read(context.PC - 1U) << 8)) + context.sregs[Y];
@@ -118,6 +125,12 @@ uint16_t Cpu::NOP(uint16_t param_addr) {
 uint16_t Cpu::JMP(uint16_t param_addr) {
     context.PC = param_addr;
     return 0U;
+}
+
+// ---------------------------------------------------------------------------------------------- //
+uint16_t Cpu::LDX(uint16_t param_addr) {
+    context.sregs[X] = memory.read(param_addr);
+    return context.sregs[X];
 }
 
 // ---------------------------------------------------------------------------------------------- //

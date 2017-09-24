@@ -47,6 +47,7 @@ class Cpu
     uint16_t addrmode_zpg();
     uint16_t addrmode_abs();
     uint16_t addrmode_zpx();
+    uint16_t addrmode_zpy();
     uint16_t addrmode_abx();
     uint16_t addrmode_aby();
     uint16_t addrmode_inx();
@@ -58,6 +59,7 @@ class Cpu
     uint16_t ASL_ACC(uint16_t param_addr);
     uint16_t NOP(uint16_t param_addr);
     uint16_t JMP(uint16_t param_addr);
+    uint16_t LDX(uint16_t param_addr);
     // --- OTHER -------------------------------------------------------------------------------- //
     void update_flags(uint16_t result, uint8_t mask);
 public:
