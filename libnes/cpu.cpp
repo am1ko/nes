@@ -187,6 +187,15 @@ void Cpu::set_logger(ICpuLogger * logger) {
 }
 
 // ---------------------------------------------------------------------------------------------- //
+void Cpu::log(uint16_t pc, uint8_t len) {
+    if (logger) {
+        uint8_t instr_buf[3] = { memory.read(pc), 0U, 0U };
+        for (int i = 1; i < len; i++) { instr_buf[i] = memory.read(pc+i); }
+        logger->log(instr_buf, len, pc, &context);
+    }
+}
+
+// ---------------------------------------------------------------------------------------------- //
 void Cpu::reset() {
     reset_registers();
     context.PC = memory.read(RESET_VECTOR_LSB_ADDR) | (memory.read(RESET_VECTOR_MSB_ADDR) << 8);
@@ -194,24 +203,23 @@ void Cpu::reset() {
 
 // ---------------------------------------------------------------------------------------------- //
 void Cpu::tick() {
-    uint16_t const pc = context.PC++;
-    uint8_t const i = memory.read(pc);
+    uint16_t const pc = context.PC;
 
-    // --- FETCH & DECODE INSTRUCTION --- //
-    struct CpuInstruction const * instr = &instruction_set[i];
+    // --- FETCH & DECODE INSTRUCTION ------------- //
+    struct CpuInstruction const * instr = &instruction_set[memory.read(context.PC++)];
 
-    // --- FETCH PARAMETER ADDRESS ------ //
+    // --- FETCH OPERAND ADDRESS ------------------ //
     uint16_t const addr = (*this.*instr->addrmode_handler)();
 
-    // --- EXECUTE ---------------------- //
+    // --- EXECUTE -------------------------------- //
     uint16_t const result = (*this.*instr->instr_executor)(addr);
 
-    // --- UPDATE CPU STATE ------------- //
+    // --- UPDATE CPU STATE ----------------------- //
     update_flags(result, instr->flags);
 
-    // --- STORE RESULT ----------------- //
+    // --- STORE RESULT --------------------------- //
     (*this.*instr->result_handler)(addr, result % 256U);
 
-    // --- LOG -------------------------- //
-    if (logger) { logger->log(i, pc, addr, &context); }
+    // --- LOG ------------------------------------ //
+    log(pc, instr->bytes);
 }

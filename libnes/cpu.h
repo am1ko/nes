@@ -34,7 +34,7 @@ struct CpuContext {
 // ---------------------------------------------------------------------------------------------- //
 class ICpuLogger {
 public:
-    virtual void log(uint8_t instr, uint16_t instr_addr, uint16_t param_addr,
+    virtual void log(uint8_t const * instr, uint8_t bytes, uint16_t instr_addr,
                      struct CpuContext const * const context) = 0;
 };
 
@@ -69,6 +69,7 @@ class Cpu
     uint16_t JMP(uint16_t param_addr);
     uint16_t LDX(uint16_t param_addr);
     // --- OTHER -------------------------------------------------------------------------------- //
+    void log(uint16_t pc, uint8_t len);
     void update_flags(uint16_t result, uint8_t mask);
     void reset_registers();
 public:
@@ -83,6 +84,7 @@ struct CpuInstruction {
     uint16_t (Cpu::*instr_executor)(uint16_t);
     uint16_t (Cpu::*addrmode_handler)();
     uint8_t cycles;
+    uint8_t bytes;
     uint8_t flags;
     void (Cpu::*result_handler)(uint16_t, uint8_t);
 };

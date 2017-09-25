@@ -8,15 +8,22 @@
 // ---------------------------------------------------------------------------------------------- //
 class StdOutLogger : public ICpuLogger {
 public:
-    void log(uint8_t instr, uint16_t instr_addr, uint16_t param_addr,
+    void log(uint8_t const * instr, uint8_t bytes, uint16_t instr_addr,
              struct CpuContext const * const context);
 };
 
 // ---------------------------------------------------------------------------------------------- //
-void StdOutLogger::log(uint8_t instr, uint16_t instr_addr, uint16_t param_addr,
-             struct CpuContext const * const context) {
-    std::cout << boost::format("%-06X%-03X%-03X%-03X")
-    % instr_addr % static_cast<int>(instr) % (param_addr & 0xFFU) % ((param_addr & 0xFF00) >> 8) ;
+void StdOutLogger::log(uint8_t const * instr, uint8_t bytes, uint16_t instr_addr,
+                       struct CpuContext const * const context) {
+    std::cout << boost::format("%-06X") % instr_addr;
+
+    for (int i = 0; i < 3; i++) {
+        if (bytes > i) {
+            std::cout << boost::format("%02X ") % static_cast<int>(instr[i]);
+        } else {
+            std::cout << "   ";
+        }
+    }
 
     // TODO(amiko): disassembly
     std::cout << boost::format("%-20s") % "";

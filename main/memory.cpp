@@ -1,5 +1,5 @@
 #include "memory.h"
-// #include <iostream>
+#include <iostream>
 
 // ---------------------------------------------------------------------------------------------- //
 Memory::Memory(std::string& fname) : file(fname, std::ios::in | std::ios::binary) {
