@@ -187,11 +187,11 @@ void Cpu::set_logger(ICpuLogger * logger) {
 }
 
 // ---------------------------------------------------------------------------------------------- //
-void Cpu::log(uint16_t pc, uint8_t len) {
+void Cpu::log(uint16_t pc, uint8_t len, uint8_t cycles) {
     if (logger) {
         uint8_t instr_buf[3] = { memory.read(pc), 0U, 0U };
         for (int i = 1; i < len; i++) { instr_buf[i] = memory.read(pc+i); }
-        logger->log(instr_buf, len, pc, &context);
+        logger->log(instr_buf, len, pc, cycles, &context);
     }
 }
 
@@ -202,7 +202,7 @@ void Cpu::reset() {
 }
 
 // ---------------------------------------------------------------------------------------------- //
-void Cpu::tick() {
+unsigned Cpu::tick() {
     uint16_t const pc = context.PC;
 
     // --- FETCH & DECODE INSTRUCTION ------------- //
@@ -221,5 +221,7 @@ void Cpu::tick() {
     (*this.*instr->result_handler)(addr, result % 256U);
 
     // --- LOG ------------------------------------ //
-    log(pc, instr->bytes);
+    log(pc, instr->bytes, instr->cycles);
+
+    return instr->cycles;
 }
