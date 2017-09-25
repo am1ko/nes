@@ -135,6 +135,15 @@ uint16_t Cpu::STX(uint16_t param_addr) {
 }
 
 // ---------------------------------------------------------------------------------------------- //
+uint16_t Cpu::JSR(uint16_t param_addr) {
+    uint16_t const next_addr_minus_one = context.PC - 1U;
+    memory.write(0x100U + context.SP--, (next_addr_minus_one >> 8) & 0xFF);
+    memory.write(0x100U + context.SP--, next_addr_minus_one        & 0xFF);
+    context.PC = param_addr;
+    return 0U;
+}
+
+// ---------------------------------------------------------------------------------------------- //
 void Cpu::update_flags(uint16_t result, uint8_t mask) {
     // --- CARRY --- //
     if (mask & F_C) {

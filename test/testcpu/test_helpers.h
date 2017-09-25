@@ -17,7 +17,7 @@
 #define SET_REG_Y(val)                    cpu.context.sregs[Y] = val
 #define SET_REG_PC(val)                   cpu.context.PC = val
 #define SET_REG_P(val)                    cpu.context.P = val
-
+#define SET_REG_SP(val)                   cpu.context.SP = val
 #define SET_CARRYF(val)                   cpu.context.P |= ((uint8_t)val) << 0;
 #define SET_ZEROF(val)                    cpu.context.P |= ((uint8_t)val) << 1;
 #define SET_NEGF(val)                     cpu.context.P |= ((uint8_t)val) << 7;

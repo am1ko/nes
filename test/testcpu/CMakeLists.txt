@@ -25,3 +25,5 @@ add_test(NAME testldx
          COMMAND testcpu)
 add_test(NAME teststx
          COMMAND testcpu)
+add_test(NAME testjsr
+         COMMAND testcpu)
