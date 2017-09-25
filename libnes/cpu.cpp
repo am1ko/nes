@@ -129,6 +129,12 @@ uint16_t Cpu::LDX(uint16_t param_addr) {
 }
 
 // ---------------------------------------------------------------------------------------------- //
+uint16_t Cpu::STX(uint16_t param_addr) {
+    memory.write(param_addr, context.sregs[X]);
+    return 0U;
+}
+
+// ---------------------------------------------------------------------------------------------- //
 void Cpu::update_flags(uint16_t result, uint8_t mask) {
     // --- CARRY --- //
     if (mask & F_C) {

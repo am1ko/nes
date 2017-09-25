@@ -23,3 +23,5 @@ add_test(NAME testjmp
          COMMAND testcpu)
 add_test(NAME testldx
          COMMAND testcpu)
+add_test(NAME teststx
+         COMMAND testcpu)
