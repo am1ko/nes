@@ -223,6 +223,9 @@ unsigned Cpu::tick() {
     // --- FETCH & DECODE INSTRUCTION ------------- //
     struct CpuInstruction const * instr = &instruction_set[memory.read(context.PC++)];
 
+    // --- LOG ------------------------------------ //
+    log(pc, instr->bytes, instr->cycles);
+
     // --- FETCH OPERAND ADDRESS ------------------ //
     uint16_t const addr = (*this.*instr->addrmode_handler)();
 
@@ -234,9 +237,6 @@ unsigned Cpu::tick() {
 
     // --- STORE RESULT --------------------------- //
     (*this.*instr->result_handler)(addr, result % 256U);
-
-    // --- LOG ------------------------------------ //
-    log(pc, instr->bytes, instr->cycles);
 
     return instr->cycles;
 }
