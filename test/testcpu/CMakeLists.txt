@@ -27,3 +27,5 @@ add_test(NAME teststx
          COMMAND testcpu)
 add_test(NAME testjsr
          COMMAND testcpu)
+add_test(NAME testflaginstr
+         COMMAND testcpu)
