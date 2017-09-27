@@ -22,9 +22,20 @@ void FlagInstrTest::TearDown() {};
 
 TEST_F(FlagInstrTest, SetCarry) {
     EXPECT_MEM_READ_8(0x0600U, 0x38U);
+    SET_CARRYF(0);
 
     unsigned const ret = cpu.tick();
 
     EXPECT_EQ(ret, 2U);
-    EXPECT_EQ(REG_P, CARRYF);
+    EXPECT_EQ(CARRYF, true);
+}
+
+TEST_F(FlagInstrTest, ClearCarry) {
+    EXPECT_MEM_READ_8(0x0600U, 0x18U);
+    SET_CARRYF(1);
+
+    unsigned const ret = cpu.tick();
+
+    EXPECT_EQ(ret, 2U);
+    EXPECT_EQ(CARRYF, false);
 }

@@ -150,6 +150,12 @@ uint16_t Cpu::SEC(uint16_t param_addr) {
 }
 
 // ---------------------------------------------------------------------------------------------- //
+uint16_t Cpu::CLC(uint16_t param_addr) {
+    context.P &= ~(F_C);
+    return 0U;
+}
+
+// ---------------------------------------------------------------------------------------------- //
 // TODO(amiko): check cpu cycle count with this instruction
 uint16_t Cpu::BCS(uint16_t param_addr) {
     int8_t const operand = (int8_t)memory.read(param_addr);
