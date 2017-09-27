@@ -52,3 +52,14 @@ TEST_F(BranchTest, BCSNegative) {
     EXPECT_EQ(ret, 3U);
     EXPECT_EQ(REG_PC, 0xC0FFU);
 }
+
+TEST_F(BranchTest, BCCPositive) {
+    EXPECT_MEM_READ_8(0xC100U, 0x90U);
+    EXPECT_MEM_READ_8(0xC101U, 0x04U);
+    SET_CARRYF(0);
+
+    unsigned const ret = cpu.tick();
+
+    EXPECT_EQ(ret, 3U);
+    EXPECT_EQ(REG_PC, 0xC106U);
+}

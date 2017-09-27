@@ -72,8 +72,10 @@ class Cpu
     uint16_t JSR(uint16_t param_addr);
     uint16_t SEC(uint16_t param_addr);
     uint16_t BCS(uint16_t param_addr);
+    uint16_t BCC(uint16_t param_addr);
     uint16_t CLC(uint16_t param_addr);
     // --- OTHER -------------------------------------------------------------------------------- //
+    void branch(int8_t op);
     void log(uint16_t pc, uint8_t len, uint8_t cycles);
     void update_flags(uint16_t result, uint8_t mask);
     void reset_registers();

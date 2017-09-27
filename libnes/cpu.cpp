@@ -159,13 +159,18 @@ uint16_t Cpu::CLC(uint16_t param_addr) {
 // TODO(amiko): check cpu cycle count with this instruction
 uint16_t Cpu::BCS(uint16_t param_addr) {
     int8_t const operand = (int8_t)memory.read(param_addr);
-    if ((context.P & F_C) == F_C) {
-        if (operand >= 0) {
-            context.PC += operand;
-        }
-        else{
-            context.PC += (operand-2U);
-        }
+    if (context.P & F_C) {
+        branch(operand);
+    }
+
+    return 0;
+}
+
+// ---------------------------------------------------------------------------------------------- //
+uint16_t Cpu::BCC(uint16_t param_addr) {
+    int8_t const operand = (int8_t)memory.read(param_addr);
+    if (!(context.P & F_C)) {
+        branch(operand);
     }
 
     return 0;
@@ -212,6 +217,16 @@ void Cpu::update_flags(uint16_t result, uint8_t mask) {
         else {
             context.P &= ~(F_N);
         }
+    }
+}
+
+// ---------------------------------------------------------------------------------------------- //
+void Cpu::branch(int8_t op) {
+    if (op >= 0) {
+        context.PC += op;
+    }
+    else{
+        context.PC += (op-2U);
     }
 }
 
