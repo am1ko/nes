@@ -29,3 +29,5 @@ add_test(NAME testjsr
          COMMAND testcpu)
 add_test(NAME testflaginstr
          COMMAND testcpu)
+add_test(NAME testbranch
+         COMMAND testcpu)
