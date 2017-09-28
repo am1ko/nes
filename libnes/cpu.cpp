@@ -177,6 +177,12 @@ uint16_t Cpu::BCC(uint16_t param_addr) {
 }
 
 // ---------------------------------------------------------------------------------------------- //
+uint16_t Cpu::LDA(uint16_t param_addr) {
+    uint8_t const param = memory.read(param_addr);
+    return param;
+}
+
+// ---------------------------------------------------------------------------------------------- //
 void Cpu::update_flags(uint16_t result, uint8_t mask) {
     // --- CARRY --- //
     if (mask & F_C) {
