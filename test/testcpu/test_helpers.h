@@ -26,6 +26,7 @@
 #define CARRYF                            ((cpu.context.P & 0x01U) != 0U)
 #define ZEROF                             ((cpu.context.P & 0x02U) != 0U)
 #define INTERRUPTF                        ((cpu.context.P & 0x04U) != 0U)
+#define DECIMALF                          ((cpu.context.P & 0x08U) != 0U)
 #define OVERFLOWF                         ((cpu.context.P & 0x40U) != 0U)
 #define NEGF                              ((cpu.context.P & 0x80U) != 0U)
 

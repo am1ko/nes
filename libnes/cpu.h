@@ -84,6 +84,7 @@ class Cpu
     uint16_t STA(uint16_t param_addr);
     uint16_t BIT(uint16_t param_addr);
     uint16_t SEI(uint16_t param_addr);
+    uint16_t SED(uint16_t param_addr);
     // --- OTHER -------------------------------------------------------------------------------- //
     void branch(int8_t op);
     void log(uint16_t pc, uint8_t len, uint8_t cycles);
