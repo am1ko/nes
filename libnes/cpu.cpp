@@ -274,6 +274,18 @@ uint16_t Cpu::BIT(uint16_t param_addr) {
 }
 
 // ---------------------------------------------------------------------------------------------- //
+uint16_t Cpu::CMP(uint16_t param_addr) {
+    uint8_t  const ope = memory.read(param_addr);
+    uint16_t const ret = context.sregs[A] - ope;
+
+    if (context.sregs[A] >= ope) {
+        context.P |= F_C;
+    }
+
+    return ret;
+}
+
+// ---------------------------------------------------------------------------------------------- //
 void Cpu::update_flags(uint16_t result, uint8_t mask) {
     // --- CARRY --- //
     if (mask & F_C) {

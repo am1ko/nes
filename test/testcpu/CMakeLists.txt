@@ -39,3 +39,5 @@ add_test(NAME testinterrupt
          COMMAND testcpu)
 add_test(NAME teststackinstr
          COMMAND testcpu)
+add_test(NAME testcmp
+         COMMAND testcpu)
