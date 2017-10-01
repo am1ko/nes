@@ -1,5 +1,7 @@
 #include "memory.h"
+#ifdef DEBUG_MEM
 #include <iostream>
+#endif
 
 // ---------------------------------------------------------------------------------------------- //
 Memory::Memory(std::string& fname) : file(fname, std::ios::in | std::ios::binary) {
@@ -19,19 +21,50 @@ Memory::~Memory() {
 
 // ---------------------------------------------------------------------------------------------- //
 uint8_t Memory::read(uint16_t addr) {
-    uint8_t ret;
-    uint16_t const offset = 16 + addr - 0xC000U;
+    uint8_t ret = 0U;
+#ifdef DEBUG_MEM
+    std::cout << "read from " << std::hex << addr;
+#endif
 
-    file.seekg(offset);
-    file.get((char&)ret);
+    if (addr <= 0x2000U) {
+        // ram address
+        if (addr >= 0x800U) {
+            addr -= 0x800U;     // mirrored region
+        }
 
-    // std::cout << "read from " << std::hex << addr << " file offset " << offset << " return "
-    //           << std::hex << static_cast<int>(ret) << std::endl;
+        ret = ram[addr];
+    }
+    else if (addr >= 0xC000U) {
+        uint16_t const offset = 16 + addr - 0xC000U;
+
+        file.seekg(offset);
+        file.get((char&)ret);
+
+#ifdef DEBUG_MEM
+        std::cout << " file offset " << offset;
+#endif
+    }
+
+#ifdef DEBUG_MEM
+    std::cout << " return " << std::hex << static_cast<int>(ret) << std::endl;
+#endif
 
     return ret;
 }
 
 // ---------------------------------------------------------------------------------------------- //
 void Memory::write(uint16_t addr, uint8_t value) {
-    // std::cout << "write " << std::hex << value << " to " << std::hex << addr << std::endl;
+    if (addr < 0x2000U) {
+        // ram address
+        if (addr >= 0x800U) {
+            addr -= 0x800U;     // mirrored region
+        }
+
+        ram[addr] = value;
+    }
+
+#ifdef DEBUG_MEM
+    std::cout << "write " << std::hex << static_cast<int>(value) << " to " << std::hex
+              << addr << std::endl;
+#endif
 }
