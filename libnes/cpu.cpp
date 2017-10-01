@@ -152,7 +152,7 @@ uint16_t Cpu::RTS(uint16_t param_addr) {
 
 // ---------------------------------------------------------------------------------------------- //
 uint16_t Cpu::PHP(uint16_t param_addr) {
-    memory.write(0x100U + context.SP--, context.P);
+    memory.write(0x100U + context.SP--, (context.P | F_B));
     return 0U;
 }
 

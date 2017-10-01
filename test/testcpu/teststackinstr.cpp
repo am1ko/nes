@@ -23,13 +23,12 @@ void StackInstrTest::SetUp() {
 // ---------------------------------------------------------------------------------------------- //
 void StackInstrTest::TearDown() {};
 
-
 // ---------------------------------------------------------------------------------------------- //
 TEST_F(StackInstrTest, PHP) {
     SET_REG_SP(0xFFU);
     SET_REG_P(0xC0U);
     EXPECT_MEM_READ_8(0x8000U, 0x08U);
-    EXPECT_MEM_WRITE_8(0x01FFU, 0xC0U);
+    EXPECT_MEM_WRITE_8(0x01FFU, 0xD0U);     // <-- note: bit 4 (BREAK) flag set by PHP
 
     int const ret = cpu.tick();
 
@@ -37,6 +36,7 @@ TEST_F(StackInstrTest, PHP) {
     EXPECT_EQ(REG_PC, 0x8001U);
     EXPECT_EQ(REG_SP, 0xFEU);
 }
+
 
 // ---------------------------------------------------------------------------------------------- //
 TEST_F(StackInstrTest, PLA) {
