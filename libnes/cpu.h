@@ -73,6 +73,7 @@ class Cpu
     uint16_t SEC(uint16_t param_addr);
     uint16_t BCS(uint16_t param_addr);
     uint16_t BCC(uint16_t param_addr);
+    uint16_t BEQ(uint16_t param_addr);
     uint16_t CLC(uint16_t param_addr);
     uint16_t LDA(uint16_t param_addr);
     // --- OTHER -------------------------------------------------------------------------------- //

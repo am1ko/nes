@@ -163,7 +163,7 @@ uint16_t Cpu::BCS(uint16_t param_addr) {
         branch(operand);
     }
 
-    return 0;
+    return 0U;
 }
 
 // ---------------------------------------------------------------------------------------------- //
@@ -173,7 +173,16 @@ uint16_t Cpu::BCC(uint16_t param_addr) {
         branch(operand);
     }
 
-    return 0;
+    return 0U;
+}
+
+// ---------------------------------------------------------------------------------------------- //
+uint16_t Cpu::BEQ(uint16_t param_addr) {
+    int8_t const operand = (int8_t)memory.read(param_addr);
+    if (context.P & F_Z) {
+        branch(operand);
+    }
+    return 0U;
 }
 
 // ---------------------------------------------------------------------------------------------- //
