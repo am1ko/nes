@@ -35,3 +35,5 @@ add_test(NAME teststore
          COMMAND testcpu)
 add_test(NAME testbit
          COMMAND testcpu)
+add_test(NAME testinterrupt
+         COMMAND testcpu)

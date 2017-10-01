@@ -1,4 +1,4 @@
-#include "testnop.h"
+#include "testinterrupt.h"
 #include "test_helpers.h"
 
 using ::testing::Return;
@@ -6,37 +6,31 @@ using ::testing::Exactly;
 using ::testing::_;
 
 // ---------------------------------------------------------------------------------------------- //
-NopTest::NopTest() : cpu(memory) {
+InterruptTest::InterruptTest() : cpu(memory) {
     ON_CALL(memory, read(_)).WillByDefault(Return(0U));
 }
 
 // ---------------------------------------------------------------------------------------------- //
-NopTest::~NopTest() {};
+InterruptTest::~InterruptTest() {};
 
 // ---------------------------------------------------------------------------------------------- //
-void NopTest::SetUp() {
-    EXPECT_MEM_READ_16(0xFFFCU, 0x8000U);
+void InterruptTest::SetUp() {
+    EXPECT_MEM_READ_16(0xFFFCU, 0xC000U);
     cpu.reset();
     SET_REG_P(0x00U);
 };
 
 // ---------------------------------------------------------------------------------------------- //
-void NopTest::TearDown() {};
-
+void InterruptTest::TearDown() {};
 
 // ---------------------------------------------------------------------------------------------- //
-TEST_F(NopTest, AdvancePc) {
-    // EXPECT_CALL(memory, read(0x8000U)).WillRepeatedly(Return(0xEAU));
-    EXPECT_MEM_READ_8(0x8000U, 0xEAU);
-    SET_REG_A(1U);
-    SET_REG_X(2U);
-    SET_REG_Y(3U);
+TEST_F(InterruptTest, SEI) {
+    SET_REG_P(0x00U);
+    EXPECT_MEM_READ_8(0xC000U, 0x78U);
 
-    cpu.tick();
+    int const ret = cpu.tick();
 
-    EXPECT_EQ(REG_PC, 0x8001U);
-    EXPECT_EQ(REG_P, 0U);
-    EXPECT_EQ(REG_A, 1U);
-    EXPECT_EQ(REG_X, 2U);
-    EXPECT_EQ(REG_Y, 3U);
+    EXPECT_EQ(REG_PC, 0xC001U);
+    EXPECT_EQ(INTERRUPTF, true);
+    EXPECT_EQ(ret, 2U);
 }
