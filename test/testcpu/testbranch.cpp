@@ -85,3 +85,25 @@ TEST_F(BranchTest, BEQNoBranch) {
     EXPECT_EQ(ret, 3U);
     EXPECT_EQ(REG_PC, 0xC102U);
 }
+
+TEST_F(BranchTest, BNEPositive) {
+    EXPECT_MEM_READ_8(0xC100U, 0xD0U);
+    EXPECT_MEM_READ_8(0xC101U, 0x04U);
+    SET_ZEROF(0);
+
+    unsigned const ret = cpu.tick();
+
+    EXPECT_EQ(ret, 3U);
+    EXPECT_EQ(REG_PC, 0xC106U);
+}
+
+TEST_F(BranchTest, BNENoBranch) {
+    EXPECT_MEM_READ_8(0xC100U, 0xD0U);
+    EXPECT_MEM_READ_8(0xC101U, 0x04U);
+    SET_ZEROF(1);
+
+    unsigned const ret = cpu.tick();
+
+    EXPECT_EQ(ret, 3U);
+    EXPECT_EQ(REG_PC, 0xC102U);
+}
