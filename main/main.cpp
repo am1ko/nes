@@ -5,6 +5,8 @@
 #include "memory.h"
 #include "cpu.h"
 
+static unsigned ppu_cycles;
+
 // ---------------------------------------------------------------------------------------------- //
 class StdOutLogger : public ICpuLogger {
 public:
@@ -28,10 +30,10 @@ void StdOutLogger::log(uint8_t const * instr, uint8_t bytes, uint16_t instr_addr
     // TODO(amiko): disassembly
     std::cout << boost::format("%-20s") % "";
 
-    std::cout << boost::format("A:%02X X:%02X Y:%02X P:%02X SP:%02X CYC:%d \n")
+    std::cout << boost::format("A:%02X X:%02X Y:%02X P:%02X SP:%02X CYC:%3u \n")
     % static_cast<int>(context->sregs[A]) % static_cast<int>(context->sregs[X])
     % static_cast<int>(context->sregs[Y]) % static_cast<int>(context->P)
-    % static_cast<int>(context->SP) % static_cast<int>(cycles);
+    % static_cast<int>(context->SP) % (ppu_cycles);
 }
 
 // ---------------------------------------------------------------------------------------------- //
@@ -49,10 +51,11 @@ int main(int argc, char **argv)
 
     cpu.context.PC = 0xC000U;
 
-    unsigned ret;
+    unsigned ret = 0U;
     unsigned instructions = 0U;
     do {
         ret = cpu.tick();
+        ppu_cycles = (ppu_cycles + ret*3U) % 342U;
         instructions++;
     } while(ret != 0U);
 
