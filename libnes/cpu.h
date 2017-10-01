@@ -70,6 +70,7 @@ class Cpu
     uint16_t LDX(uint16_t param_addr);
     uint16_t STX(uint16_t param_addr);
     uint16_t JSR(uint16_t param_addr);
+    uint16_t RTS(uint16_t param_addr);
     uint16_t SEC(uint16_t param_addr);
     uint16_t BCS(uint16_t param_addr);
     uint16_t BCC(uint16_t param_addr);

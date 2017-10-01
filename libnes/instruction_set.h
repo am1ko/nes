@@ -105,7 +105,7 @@ const struct CpuInstruction Cpu::instruction_set[256] = {
 /* $5D */   {&Cpu::NOP,     &Cpu::addrmode_imm,   0U,     2U,    (    NO_FLAGS   ),   RESULT_NONE},
 /* $5E */   {&Cpu::NOP,     &Cpu::addrmode_imm,   0U,     2U,    (    NO_FLAGS   ),   RESULT_NONE},
 /* $5F */   {&Cpu::NOP,     &Cpu::addrmode_imm,   0U,     2U,    (    NO_FLAGS   ),   RESULT_NONE},
-/* $60 */   {&Cpu::NOP,     &Cpu::addrmode_imm,   0U,     2U,    (    NO_FLAGS   ),   RESULT_NONE},
+/* $60 */   {&Cpu::RTS,     &Cpu::addrmode_imm,   6U,     1U,    (    NO_FLAGS   ),   RESULT_NONE},
 /* $61 */   {&Cpu::ADC,     &Cpu::addrmode_inx,   2U,     2U,    (F_N|F_V|F_Z|F_C),   RESULT_A   },
 /* $62 */   {&Cpu::NOP,     &Cpu::addrmode_imm,   0U,     2U,    (    NO_FLAGS   ),   RESULT_NONE},
 /* $63 */   {&Cpu::NOP,     &Cpu::addrmode_imm,   0U,     2U,    (    NO_FLAGS   ),   RESULT_NONE},

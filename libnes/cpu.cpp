@@ -144,6 +144,13 @@ uint16_t Cpu::JSR(uint16_t param_addr) {
 }
 
 // ---------------------------------------------------------------------------------------------- //
+uint16_t Cpu::RTS(uint16_t param_addr) {
+    context.PC =  memory.read(0x100U + ++context.SP) + 1U
+               + (memory.read(0x100U + ++context.SP) << 8);
+    return 0U;
+}
+
+// ---------------------------------------------------------------------------------------------- //
 uint16_t Cpu::SEC(uint16_t param_addr) {
     context.P |= F_C;
     return 0U;
@@ -219,7 +226,6 @@ uint16_t Cpu::BPL(uint16_t param_addr) {
         branch(operand);
     }
     return 0U;
-
 }
 
 // ---------------------------------------------------------------------------------------------- //

@@ -1,3 +1,4 @@
+// #define DEBUG_MEM
 #include "memory.h"
 #ifdef DEBUG_MEM
 #include <iostream>

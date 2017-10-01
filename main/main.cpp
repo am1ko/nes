@@ -57,7 +57,7 @@ int main(int argc, char **argv)
     } while(ret != 0U);
 
     std::cout << "Unknown instruction" << std::endl;
-    std::cout << instructions - 1 <<  " instructions executed" << std::endl;
+    std::cout << std::dec << instructions - 1 <<  " instructions executed" << std::endl;
 
     return 0;
 }

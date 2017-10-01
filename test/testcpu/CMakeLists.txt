@@ -23,7 +23,7 @@ add_test(NAME testjmp
          COMMAND testcpu)
 add_test(NAME testldx
          COMMAND testcpu)
-add_test(NAME testjsr
+add_test(NAME testsubroutine
          COMMAND testcpu)
 add_test(NAME testflaginstr
          COMMAND testcpu)

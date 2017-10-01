@@ -2,10 +2,10 @@
 #include "mockmemory.h"
 #include "cpu.h"
 
-class JsrTest : public ::testing::Test {
+class SubroutineTest : public ::testing::Test {
 protected:
-    JsrTest();
-    virtual ~JsrTest();
+    SubroutineTest();
+    virtual ~SubroutineTest();
     virtual void SetUp();
     virtual void TearDown();
 
