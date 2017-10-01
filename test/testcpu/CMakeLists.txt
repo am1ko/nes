@@ -23,8 +23,6 @@ add_test(NAME testjmp
          COMMAND testcpu)
 add_test(NAME testldx
          COMMAND testcpu)
-add_test(NAME teststx
-         COMMAND testcpu)
 add_test(NAME testjsr
          COMMAND testcpu)
 add_test(NAME testflaginstr
@@ -32,4 +30,6 @@ add_test(NAME testflaginstr
 add_test(NAME testbranch
          COMMAND testcpu)
 add_test(NAME testload
+         COMMAND testcpu)
+add_test(NAME teststore
          COMMAND testcpu)

@@ -201,6 +201,11 @@ uint16_t Cpu::LDA(uint16_t param_addr) {
 }
 
 // ---------------------------------------------------------------------------------------------- //
+uint16_t Cpu::STA(uint16_t param_addr) {
+    return context.sregs[A];
+}
+
+// ---------------------------------------------------------------------------------------------- //
 void Cpu::update_flags(uint16_t result, uint8_t mask) {
     // --- CARRY --- //
     if (mask & F_C) {

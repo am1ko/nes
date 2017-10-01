@@ -2,10 +2,10 @@
 #include "mockmemory.h"
 #include "cpu.h"
 
-class StxTest : public ::testing::Test {
+class StoreTest : public ::testing::Test {
 protected:
-    StxTest();
-    virtual ~StxTest();
+    StoreTest();
+    virtual ~StoreTest();
     virtual void SetUp();
     virtual void TearDown();
 
