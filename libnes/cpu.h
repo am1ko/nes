@@ -77,6 +77,7 @@ class Cpu
     uint16_t BNE(uint16_t param_addr);
     uint16_t BVS(uint16_t param_addr);
     uint16_t BVC(uint16_t param_addr);
+    uint16_t BPL(uint16_t param_addr);
     uint16_t CLC(uint16_t param_addr);
     uint16_t LDA(uint16_t param_addr);
     uint16_t STA(uint16_t param_addr);
