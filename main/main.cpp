@@ -50,9 +50,14 @@ int main(int argc, char **argv)
     cpu.context.PC = 0xC000U;
 
     unsigned ret;
+    unsigned instructions = 0U;
     do {
         ret = cpu.tick();
+        instructions++;
     } while(ret != 0U);
+
+    std::cout << "Unknown instruction" << std::endl;
+    std::cout << instructions - 1 <<  " instructions executed" << std::endl;
 
     return 0;
 }
