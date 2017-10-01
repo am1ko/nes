@@ -206,6 +206,17 @@ uint16_t Cpu::STA(uint16_t param_addr) {
 }
 
 // ---------------------------------------------------------------------------------------------- //
+uint16_t Cpu::BIT(uint16_t param_addr) {
+    uint8_t const param = memory.read(param_addr);
+    uint16_t const ret =  context.sregs[A] & param;
+
+    context.P &= ~(F_N | F_V);
+    context.P |= (param & (F_N | F_V));
+
+    return ret;
+}
+
+// ---------------------------------------------------------------------------------------------- //
 void Cpu::update_flags(uint16_t result, uint8_t mask) {
     // --- CARRY --- //
     if (mask & F_C) {
