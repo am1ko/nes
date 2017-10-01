@@ -17,7 +17,7 @@ const struct CpuInstruction Cpu::instruction_set[256] = {
 /* $05 */   {&Cpu::NOP,     &Cpu::addrmode_imm,   0U,     2U,    (    NO_FLAGS   ),   RESULT_NONE},
 /* $06 */   {&Cpu::ASL,     &Cpu::addrmode_zpg,   2U,     2U,    (  F_C|F_Z|F_N  ),   RESULT_MEM},
 /* $07 */   {&Cpu::NOP,     &Cpu::addrmode_imm,   0U,     2U,    (    NO_FLAGS   ),   RESULT_NONE},
-/* $08 */   {&Cpu::NOP,     &Cpu::addrmode_imm,   0U,     2U,    (    NO_FLAGS   ),   RESULT_NONE},
+/* $08 */   {&Cpu::PHP,     &Cpu::addrmode_imp,   3U,     1U,    (    NO_FLAGS   ),   RESULT_NONE},
 /* $09 */   {&Cpu::NOP,     &Cpu::addrmode_imm,   0U,     2U,    (    NO_FLAGS   ),   RESULT_NONE},
 /* $0A */   {&Cpu::ASL_ACC, &Cpu::addrmode_imp,   2U,     1U,    (  F_C|F_Z|F_N  ),   RESULT_A   },
 /* $0B */   {&Cpu::NOP,     &Cpu::addrmode_imm,   0U,     2U,    (    NO_FLAGS   ),   RESULT_NONE},

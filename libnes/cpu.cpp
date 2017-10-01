@@ -151,6 +151,12 @@ uint16_t Cpu::RTS(uint16_t param_addr) {
 }
 
 // ---------------------------------------------------------------------------------------------- //
+uint16_t Cpu::PHP(uint16_t param_addr) {
+    memory.write(0x100U + context.SP--, context.P);
+    return 0U;
+}
+
+// ---------------------------------------------------------------------------------------------- //
 uint16_t Cpu::SEC(uint16_t param_addr) {
     context.P |= F_C;
     return 0U;

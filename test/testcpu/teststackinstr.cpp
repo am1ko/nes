@@ -1,4 +1,4 @@
-#include "testnop.h"
+#include "teststackinstr.h"
 #include "test_helpers.h"
 
 using ::testing::Return;
@@ -6,38 +6,34 @@ using ::testing::Exactly;
 using ::testing::_;
 
 // ---------------------------------------------------------------------------------------------- //
-NopTest::NopTest() : cpu(memory) {
+StackInstrTest::StackInstrTest() : cpu(memory) {
     ON_CALL(memory, read(_)).WillByDefault(Return(0U));
 }
 
 // ---------------------------------------------------------------------------------------------- //
-NopTest::~NopTest() {};
+StackInstrTest::~StackInstrTest() {};
 
 // ---------------------------------------------------------------------------------------------- //
-void NopTest::SetUp() {
+void StackInstrTest::SetUp() {
     EXPECT_MEM_READ_16(0xFFFCU, 0x8000U);
     cpu.reset();
     SET_REG_P(0x00U);
 };
 
 // ---------------------------------------------------------------------------------------------- //
-void NopTest::TearDown() {};
+void StackInstrTest::TearDown() {};
 
 
 // ---------------------------------------------------------------------------------------------- //
-TEST_F(NopTest, AdvancePc) {
-    // EXPECT_CALL(memory, read(0x8000U)).WillRepeatedly(Return(0xEAU));
-    EXPECT_MEM_READ_8(0x8000U, 0xEAU);
-    SET_REG_A(1U);
-    SET_REG_X(2U);
-    SET_REG_Y(3U);
+TEST_F(StackInstrTest, PHP) {
+    SET_REG_SP(0xFFU);
+    SET_REG_P(0xC0U);
+    EXPECT_MEM_READ_8(0x8000U, 0x08U);
+    EXPECT_MEM_WRITE_8(0x01FFU, 0xC0U);
 
     int const ret = cpu.tick();
 
-    EXPECT_EQ(ret, 2U);
+    EXPECT_EQ(ret, 3U);
     EXPECT_EQ(REG_PC, 0x8001U);
-    EXPECT_EQ(REG_P, 0U);
-    EXPECT_EQ(REG_A, 1U);
-    EXPECT_EQ(REG_X, 2U);
-    EXPECT_EQ(REG_Y, 3U);
+    EXPECT_EQ(REG_SP, 0xFEU);
 }
