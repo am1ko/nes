@@ -46,7 +46,7 @@ TEST_F(FlagInstrTest, ClearCarry) {
 }
 
 // ---------------------------------------------------------------------------------------------- //
-TEST_F(FlagInstrTest, SED) {
+TEST_F(FlagInstrTest, SetDecimalMode) {
     SET_REG_P(0x00U);
     EXPECT_MEM_READ_8(0x0600U, 0xF8U);
 
@@ -54,4 +54,15 @@ TEST_F(FlagInstrTest, SED) {
 
     EXPECT_EQ(ret, 2U);
     EXPECT_EQ(DECIMALF, true);
+}
+
+// ---------------------------------------------------------------------------------------------- //
+TEST_F(FlagInstrTest, ClearDecimalMode) {
+    EXPECT_MEM_READ_8(0x0600U, 0xD8U);
+    SET_DECIMALF(1);
+
+    unsigned const ret = cpu.tick();
+
+    EXPECT_EQ(ret, 2U);
+    EXPECT_EQ(DECIMALF, false);
 }

@@ -85,6 +85,7 @@ class Cpu
     uint16_t BIT(uint16_t param_addr);
     uint16_t SEI(uint16_t param_addr);
     uint16_t SED(uint16_t param_addr);
+    uint16_t CLD(uint16_t param_addr);
     uint16_t PHP(uint16_t param_addr);
     uint16_t PLA(uint16_t param_addr);
     uint16_t CMP(uint16_t param_addr);
