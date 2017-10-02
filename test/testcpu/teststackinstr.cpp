@@ -37,6 +37,20 @@ TEST_F(StackInstrTest, PHP) {
     EXPECT_EQ(REG_SP, 0xFEU);
 }
 
+// ---------------------------------------------------------------------------------------------- //
+TEST_F(StackInstrTest, PLP) {
+    SET_REG_SP(0xFEU);
+    SET_REG_P(0xFFU);
+    EXPECT_MEM_READ_8(0x8000U, 0x28U);
+    EXPECT_MEM_READ_8(0x01FFU, 0x14U);
+
+    int const ret = cpu.tick();
+
+    EXPECT_EQ(ret, 4U);
+    EXPECT_EQ(REG_PC, 0x8001U);
+    EXPECT_EQ(REG_SP, 0xFFU);
+    EXPECT_EQ(REG_P, 0x24U);
+}
 
 // ---------------------------------------------------------------------------------------------- //
 TEST_F(StackInstrTest, PLA) {

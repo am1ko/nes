@@ -157,6 +157,14 @@ uint16_t Cpu::PHP(uint16_t param_addr) {
 }
 
 // ---------------------------------------------------------------------------------------------- //
+uint16_t Cpu::PLP(uint16_t param_addr) {
+    context.P = memory.read(0x100U + ++context.SP);
+    context.P &= ~(F_B);      // bit 4 is not a normal status flag, ignore it
+    context.P |= 1U << 5;     // bit 5 is always set
+    return 0U;
+}
+
+// ---------------------------------------------------------------------------------------------- //
 uint16_t Cpu::PLA(uint16_t param_addr) {
     return memory.read(0x100U + ++context.SP);
 }
