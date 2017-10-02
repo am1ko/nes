@@ -162,6 +162,12 @@ uint16_t Cpu::PLA(uint16_t param_addr) {
 }
 
 // ---------------------------------------------------------------------------------------------- //
+uint16_t Cpu::PHA(uint16_t param_addr) {
+    memory.write(0x100U + context.SP--, context.sregs[A]);
+    return 0U;
+}
+
+// ---------------------------------------------------------------------------------------------- //
 uint16_t Cpu::SEC(uint16_t param_addr) {
     context.P |= F_C;
     return 0U;

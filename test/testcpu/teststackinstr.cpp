@@ -67,3 +67,17 @@ TEST_F(StackInstrTest, PLAZeroFlag) {
 
     EXPECT_EQ(ZEROF, true);
 }
+
+// ---------------------------------------------------------------------------------------------- //
+TEST_F(StackInstrTest, PHA) {
+    SET_REG_SP(0xFFU);
+    SET_REG_A(0xC0U);
+    EXPECT_MEM_READ_8(REG_PC, 0x48U);
+    EXPECT_MEM_WRITE_8(0x01FFU, 0xC0U);
+
+    int const ret = cpu.tick();
+
+    EXPECT_EQ(ret, 3U);
+    EXPECT_EQ(REG_PC, 0x8001U);
+    EXPECT_EQ(REG_SP, 0xFEU);
+}

@@ -88,6 +88,7 @@ class Cpu
     uint16_t CLD(uint16_t param_addr);
     uint16_t PHP(uint16_t param_addr);
     uint16_t PLA(uint16_t param_addr);
+    uint16_t PHA(uint16_t param_addr);
     uint16_t CMP(uint16_t param_addr);
     // --- OTHER -------------------------------------------------------------------------------- //
     void branch(int8_t op);
