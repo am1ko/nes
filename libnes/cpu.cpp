@@ -206,6 +206,12 @@ uint16_t Cpu::CLD(uint16_t operand_addr, uint8_t &extra_cycles) {
 }
 
 // ---------------------------------------------------------------------------------------------- //
+uint16_t Cpu::CLV(uint16_t operand_addr, uint8_t &extra_cycles) {
+    context.P &= ~(F_V);
+    return 0U;
+}
+
+// ---------------------------------------------------------------------------------------------- //
 // TODO(amiko): check cpu cycle count with this instruction
 uint16_t Cpu::BCS(uint16_t operand_addr, uint8_t &extra_cycles) {
     int8_t const operand = (int8_t)memory.read(operand_addr);

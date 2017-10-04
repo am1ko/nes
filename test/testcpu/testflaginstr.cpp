@@ -66,3 +66,14 @@ TEST_F(FlagInstrTest, ClearDecimalMode) {
     EXPECT_EQ(ret, 2U);
     EXPECT_EQ(DECIMALF, false);
 }
+
+// ---------------------------------------------------------------------------------------------- //
+TEST_F(FlagInstrTest, ClearOverflow) {
+    SET_OVERFLOWF(1);
+    EXPECT_MEM_READ_8(0x0600U, 0xB8U);
+
+    unsigned const ret = cpu.tick();
+
+    EXPECT_EQ(ret, 2U);
+    EXPECT_EQ(OVERFLOWF, false);
+}

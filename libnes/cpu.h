@@ -86,6 +86,7 @@ class Cpu
     uint16_t SEI(uint16_t operand_addr, uint8_t &extra_cycles);
     uint16_t SED(uint16_t operand_addr, uint8_t &extra_cycles);
     uint16_t CLD(uint16_t operand_addr, uint8_t &extra_cycles);
+    uint16_t CLV(uint16_t operand_addr, uint8_t &extra_cycles);
     uint16_t PHP(uint16_t operand_addr, uint8_t &extra_cycles);
     uint16_t PLP(uint16_t operand_addr, uint8_t &extra_cycles);
     uint16_t PHA(uint16_t operand_addr, uint8_t &extra_cycles);
