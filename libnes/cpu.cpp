@@ -88,76 +88,76 @@ void Cpu::resultmode_reg_a(uint16_t addr, uint8_t result) {
 }
 
 // ---------------------------------------------------------------------------------------------- //
-uint16_t Cpu::ADC(uint16_t param_addr) {
-    uint8_t const param = memory.read(param_addr);
+uint16_t Cpu::ADC(uint16_t operand_addr, uint8_t &extra_cycles) {
+    uint8_t const param = memory.read(operand_addr);
     return context.sregs[A] + param + (context.P & F_C);
 }
 
 // ---------------------------------------------------------------------------------------------- //
-uint16_t Cpu::AND(uint16_t param_addr) {
-    uint8_t const param = memory.read(param_addr);
+uint16_t Cpu::AND(uint16_t operand_addr, uint8_t &extra_cycles) {
+    uint8_t const param = memory.read(operand_addr);
     return context.sregs[A] & param;
 }
 
 // ---------------------------------------------------------------------------------------------- //
-uint16_t Cpu::ASL(uint16_t param_addr) {
-    uint8_t const param = memory.read(param_addr);
+uint16_t Cpu::ASL(uint16_t operand_addr, uint8_t &extra_cycles) {
+    uint8_t const param = memory.read(operand_addr);
     return param << 1;
 }
 
 // ---------------------------------------------------------------------------------------------- //
-uint16_t Cpu::ASL_ACC(uint16_t param_addr) {
+uint16_t Cpu::ASL_ACC(uint16_t operand_addr, uint8_t &extra_cycles) {
     uint8_t const param = context.sregs[A];
     return param << 1;
 }
 
 // ---------------------------------------------------------------------------------------------- //
-uint16_t Cpu::NOP(uint16_t param_addr) {
+uint16_t Cpu::NOP(uint16_t operand_addr, uint8_t &extra_cycles) {
     return 0U;
 }
 
 // ---------------------------------------------------------------------------------------------- //
-uint16_t Cpu::JMP(uint16_t param_addr) {
-    context.PC = param_addr;
+uint16_t Cpu::JMP(uint16_t operand_addr, uint8_t &extra_cycles) {
+    context.PC = operand_addr;
     return 0U;
 }
 
 // ---------------------------------------------------------------------------------------------- //
-uint16_t Cpu::LDX(uint16_t param_addr) {
-    context.sregs[X] = memory.read(param_addr);
+uint16_t Cpu::LDX(uint16_t operand_addr, uint8_t &extra_cycles) {
+    context.sregs[X] = memory.read(operand_addr);
     return context.sregs[X];
 }
 
 // ---------------------------------------------------------------------------------------------- //
-uint16_t Cpu::STX(uint16_t param_addr) {
-    memory.write(param_addr, context.sregs[X]);
+uint16_t Cpu::STX(uint16_t operand_addr, uint8_t &extra_cycles) {
+    memory.write(operand_addr, context.sregs[X]);
     return 0U;
 }
 
 // ---------------------------------------------------------------------------------------------- //
-uint16_t Cpu::JSR(uint16_t param_addr) {
+uint16_t Cpu::JSR(uint16_t operand_addr, uint8_t &extra_cycles) {
     uint16_t const next_addr_minus_one = context.PC - 1U;
     memory.write(0x100U + context.SP--, (next_addr_minus_one >> 8) & 0xFF);
     memory.write(0x100U + context.SP--, next_addr_minus_one        & 0xFF);
-    context.PC = param_addr;
+    context.PC = operand_addr;
     return 0U;
 }
 
 // ---------------------------------------------------------------------------------------------- //
-uint16_t Cpu::RTS(uint16_t param_addr) {
+uint16_t Cpu::RTS(uint16_t operand_addr, uint8_t &extra_cycles) {
     context.PC =  memory.read(0x100U + ++context.SP) + 1U
                + (memory.read(0x100U + ++context.SP) << 8);
     return 0U;
 }
 
 // ---------------------------------------------------------------------------------------------- //
-uint16_t Cpu::PHP(uint16_t param_addr) {
+uint16_t Cpu::PHP(uint16_t operand_addr, uint8_t &extra_cycles) {
     memory.write(0x100U + context.SP--, (context.P | F_B));
     return 0U;
 }
 
 // ---------------------------------------------------------------------------------------------- //
-uint16_t Cpu::PLP(uint16_t param_addr) {
+uint16_t Cpu::PLP(uint16_t operand_addr, uint8_t &extra_cycles) {
     context.P = memory.read(0x100U + ++context.SP);
     context.P &= ~(F_B);      // bit 4 is not a normal status flag, ignore it
     context.P |= 1U << 5;     // bit 5 is always set
@@ -165,135 +165,135 @@ uint16_t Cpu::PLP(uint16_t param_addr) {
 }
 
 // ---------------------------------------------------------------------------------------------- //
-uint16_t Cpu::PLA(uint16_t param_addr) {
+uint16_t Cpu::PLA(uint16_t operand_addr, uint8_t &extra_cycles) {
     return memory.read(0x100U + ++context.SP);
 }
 
 // ---------------------------------------------------------------------------------------------- //
-uint16_t Cpu::PHA(uint16_t param_addr) {
+uint16_t Cpu::PHA(uint16_t operand_addr, uint8_t &extra_cycles) {
     memory.write(0x100U + context.SP--, context.sregs[A]);
     return 0U;
 }
 
 // ---------------------------------------------------------------------------------------------- //
-uint16_t Cpu::SEC(uint16_t param_addr) {
+uint16_t Cpu::SEC(uint16_t operand_addr, uint8_t &extra_cycles) {
     context.P |= F_C;
     return 0U;
 }
 
 // ---------------------------------------------------------------------------------------------- //
-uint16_t Cpu::CLC(uint16_t param_addr) {
+uint16_t Cpu::CLC(uint16_t operand_addr, uint8_t &extra_cycles) {
     context.P &= ~(F_C);
     return 0U;
 }
 
 // ---------------------------------------------------------------------------------------------- //
-uint16_t Cpu::SEI(uint16_t param_addr) {
+uint16_t Cpu::SEI(uint16_t operand_addr, uint8_t &extra_cycles) {
     context.P |= F_I;
     return 0U;
 }
 
 // ---------------------------------------------------------------------------------------------- //
-uint16_t Cpu::SED(uint16_t param_addr) {
+uint16_t Cpu::SED(uint16_t operand_addr, uint8_t &extra_cycles) {
     context.P |= F_D;
     return 0U;
 }
 
 // ---------------------------------------------------------------------------------------------- //
-uint16_t Cpu::CLD(uint16_t param_addr) {
+uint16_t Cpu::CLD(uint16_t operand_addr, uint8_t &extra_cycles) {
     context.P &= ~(F_D);
     return 0U;
 }
 
 // ---------------------------------------------------------------------------------------------- //
 // TODO(amiko): check cpu cycle count with this instruction
-uint16_t Cpu::BCS(uint16_t param_addr) {
-    int8_t const operand = (int8_t)memory.read(param_addr);
+uint16_t Cpu::BCS(uint16_t operand_addr, uint8_t &extra_cycles) {
+    int8_t const operand = (int8_t)memory.read(operand_addr);
     if (context.P & F_C) {
-        branch(operand);
+        branch(operand, extra_cycles);
     }
 
     return 0U;
 }
 
 // ---------------------------------------------------------------------------------------------- //
-uint16_t Cpu::BCC(uint16_t param_addr) {
-    int8_t const operand = (int8_t)memory.read(param_addr);
+uint16_t Cpu::BCC(uint16_t operand_addr, uint8_t &extra_cycles) {
+    int8_t const operand = (int8_t)memory.read(operand_addr);
     if (!(context.P & F_C)) {
-        branch(operand);
+        branch(operand, extra_cycles);
     }
 
     return 0U;
 }
 
 // ---------------------------------------------------------------------------------------------- //
-uint16_t Cpu::BEQ(uint16_t param_addr) {
-    int8_t const operand = (int8_t)memory.read(param_addr);
+uint16_t Cpu::BEQ(uint16_t operand_addr, uint8_t &extra_cycles) {
+    int8_t const operand = (int8_t)memory.read(operand_addr);
     if (context.P & F_Z) {
-        branch(operand);
+        branch(operand, extra_cycles);
     }
     return 0U;
 }
 
 // ---------------------------------------------------------------------------------------------- //
-uint16_t Cpu::BNE(uint16_t param_addr) {
-    int8_t const operand = (int8_t)memory.read(param_addr);
+uint16_t Cpu::BNE(uint16_t operand_addr, uint8_t &extra_cycles) {
+    int8_t const operand = (int8_t)memory.read(operand_addr);
     if (!(context.P & F_Z)) {
-        branch(operand);
+        branch(operand, extra_cycles);
     }
     return 0U;
 }
 
 // ---------------------------------------------------------------------------------------------- //
-uint16_t Cpu::BVS(uint16_t param_addr) {
-    int8_t const operand = (int8_t)memory.read(param_addr);
+uint16_t Cpu::BVS(uint16_t operand_addr, uint8_t &extra_cycles) {
+    int8_t const operand = (int8_t)memory.read(operand_addr);
     if (context.P & F_V) {
-        branch(operand);
+        branch(operand, extra_cycles);
     }
     return 0U;
 }
 
 // ---------------------------------------------------------------------------------------------- //
-uint16_t Cpu::BVC(uint16_t param_addr) {
-    int8_t const operand = (int8_t)memory.read(param_addr);
+uint16_t Cpu::BVC(uint16_t operand_addr, uint8_t &extra_cycles) {
+    int8_t const operand = (int8_t)memory.read(operand_addr);
     if (!(context.P & F_V)) {
-        branch(operand);
+        branch(operand, extra_cycles);
     }
     return 0U;
 }
 
 // ---------------------------------------------------------------------------------------------- //
-uint16_t Cpu::BMI(uint16_t param_addr) {
-    int8_t const operand = (int8_t)memory.read(param_addr);
+uint16_t Cpu::BMI(uint16_t operand_addr, uint8_t &extra_cycles) {
+    int8_t const operand = (int8_t)memory.read(operand_addr);
     if (context.P & F_N) {
-        branch(operand);
+        branch(operand, extra_cycles);
     }
     return 0U;
 }
 
 // ---------------------------------------------------------------------------------------------- //
-uint16_t Cpu::BPL(uint16_t param_addr) {
-    int8_t const operand = (int8_t)memory.read(param_addr);
+uint16_t Cpu::BPL(uint16_t operand_addr, uint8_t &extra_cycles) {
+    int8_t const operand = (int8_t)memory.read(operand_addr);
     if (!(context.P & F_N)) {
-        branch(operand);
+        branch(operand, extra_cycles);
     }
     return 0U;
 }
 
 // ---------------------------------------------------------------------------------------------- //
-uint16_t Cpu::LDA(uint16_t param_addr) {
-    uint8_t const param = memory.read(param_addr);
+uint16_t Cpu::LDA(uint16_t operand_addr, uint8_t &extra_cycles) {
+    uint8_t const param = memory.read(operand_addr);
     return param;
 }
 
 // ---------------------------------------------------------------------------------------------- //
-uint16_t Cpu::STA(uint16_t param_addr) {
+uint16_t Cpu::STA(uint16_t operand_addr, uint8_t &extra_cycles) {
     return context.sregs[A];
 }
 
 // ---------------------------------------------------------------------------------------------- //
-uint16_t Cpu::BIT(uint16_t param_addr) {
-    uint8_t const param = memory.read(param_addr);
+uint16_t Cpu::BIT(uint16_t operand_addr, uint8_t &extra_cycles) {
+    uint8_t const param = memory.read(operand_addr);
     uint16_t const ret =  context.sregs[A] & param;
 
     context.P &= ~(F_N | F_V);
@@ -303,8 +303,8 @@ uint16_t Cpu::BIT(uint16_t param_addr) {
 }
 
 // ---------------------------------------------------------------------------------------------- //
-uint16_t Cpu::CMP(uint16_t param_addr) {
-    uint8_t  const ope = memory.read(param_addr);
+uint16_t Cpu::CMP(uint16_t operand_addr, uint8_t &extra_cycles) {
+    uint8_t  const ope = memory.read(operand_addr);
     uint16_t const ret = context.sregs[A] - ope;
 
     if (context.sregs[A] >= ope) {
@@ -359,7 +359,8 @@ void Cpu::update_flags(uint16_t result, uint8_t mask) {
 }
 
 // ---------------------------------------------------------------------------------------------- //
-void Cpu::branch(int8_t op) {
+void Cpu::branch(int8_t op, uint8_t &extra_cycles) {
+    extra_cycles = 1U;
     if (op >= 0) {
         context.PC += op;
     }
@@ -400,6 +401,7 @@ void Cpu::reset() {
 // ---------------------------------------------------------------------------------------------- //
 unsigned Cpu::tick() {
     uint16_t const pc = context.PC;
+    uint8_t extra_cycles = 0U;
 
     // --- FETCH & DECODE INSTRUCTION ------------- //
     struct CpuInstruction const * instr = &instruction_set[memory.read(context.PC++)];
@@ -411,7 +413,7 @@ unsigned Cpu::tick() {
     uint16_t const addr = (*this.*instr->addrmode_handler)();
 
     // --- EXECUTE -------------------------------- //
-    uint16_t const result = (*this.*instr->instr_executor)(addr);
+    uint16_t const result = (*this.*instr->instr_executor)(addr, extra_cycles);
 
     // --- UPDATE CPU STATE ----------------------- //
     update_flags(result, instr->flags);
@@ -419,5 +421,5 @@ unsigned Cpu::tick() {
     // --- STORE RESULT --------------------------- //
     (*this.*instr->result_handler)(addr, result % 256U);
 
-    return instr->cycles;
+    return instr->cycles + extra_cycles;
 }

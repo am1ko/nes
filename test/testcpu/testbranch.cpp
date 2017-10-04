@@ -5,18 +5,22 @@ using ::testing::Return;
 using ::testing::Exactly;
 using ::testing::_;
 
+// ---------------------------------------------------------------------------------------------- //
 BranchTest::BranchTest() : cpu(memory) {
     ON_CALL(memory, read(_)).WillByDefault(Return(0U));
 }
 
+// ---------------------------------------------------------------------------------------------- //
 BranchTest::~BranchTest() {};
 
+// ---------------------------------------------------------------------------------------------- //
 void BranchTest::SetUp() {
     EXPECT_MEM_READ_16(0xFFFCU, 0xC100U);
     cpu.reset();
     SET_REG_P(0x00U);
 };
 
+// ---------------------------------------------------------------------------------------------- //
 void BranchTest::TearDown() {};
 
 // ---------------------------------------------------------------------------------------------- //
@@ -39,7 +43,7 @@ TEST_F(BranchTest, BCSNoBranch) {
 
     unsigned const ret = cpu.tick();
 
-    EXPECT_EQ(ret, 3U);
+    EXPECT_EQ(ret, 2U);
     EXPECT_EQ(REG_PC, 0xC102U);
 }
 
@@ -87,7 +91,7 @@ TEST_F(BranchTest, BEQNoBranch) {
 
     unsigned const ret = cpu.tick();
 
-    EXPECT_EQ(ret, 3U);
+    EXPECT_EQ(ret, 2U);
     EXPECT_EQ(REG_PC, 0xC102U);
 }
 
@@ -111,7 +115,7 @@ TEST_F(BranchTest, BNENoBranch) {
 
     unsigned const ret = cpu.tick();
 
-    EXPECT_EQ(ret, 3U);
+    EXPECT_EQ(ret, 2U);
     EXPECT_EQ(REG_PC, 0xC102U);
 }
 
@@ -135,7 +139,7 @@ TEST_F(BranchTest, BVSNoBranch) {
 
     unsigned const ret = cpu.tick();
 
-    EXPECT_EQ(ret, 3U);
+    EXPECT_EQ(ret, 2U);
     EXPECT_EQ(REG_PC, 0xC102U);
 }
 
@@ -159,7 +163,7 @@ TEST_F(BranchTest, BVCNoBranch) {
 
     unsigned const ret = cpu.tick();
 
-    EXPECT_EQ(ret, 3U);
+    EXPECT_EQ(ret, 2U);
     EXPECT_EQ(REG_PC, 0xC102U);
 }
 
@@ -183,7 +187,7 @@ TEST_F(BranchTest, BPLNoBranch) {
 
     unsigned const ret = cpu.tick();
 
-    EXPECT_EQ(ret, 3U);
+    EXPECT_EQ(ret, 2U);
     EXPECT_EQ(REG_PC, 0xC102U);
 }
 
@@ -207,6 +211,6 @@ TEST_F(BranchTest, BMINoBranch) {
 
     unsigned const ret = cpu.tick();
 
-    EXPECT_EQ(ret, 3U);
+    EXPECT_EQ(ret, 2U);
     EXPECT_EQ(REG_PC, 0xC102U);
 }

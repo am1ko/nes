@@ -55,7 +55,7 @@ int main(int argc, char **argv)
     unsigned instructions = 0U;
     do {
         ret = cpu.tick();
-        ppu_cycles = (ppu_cycles + ret*3U) % 342U;
+        ppu_cycles = (ppu_cycles + ret*3U) % 341U;
         instructions++;
     } while(ret != 0U);
 
