@@ -43,3 +43,5 @@ add_test(NAME testcmp
          COMMAND testcpu)
 add_test(NAME testor
          COMMAND testcpu)
+add_test(NAME testeor
+         COMMAND testcpu)
