@@ -263,6 +263,15 @@ uint16_t Cpu::BVC(uint16_t param_addr) {
 }
 
 // ---------------------------------------------------------------------------------------------- //
+uint16_t Cpu::BMI(uint16_t param_addr) {
+    int8_t const operand = (int8_t)memory.read(param_addr);
+    if (context.P & F_N) {
+        branch(operand);
+    }
+    return 0U;
+}
+
+// ---------------------------------------------------------------------------------------------- //
 uint16_t Cpu::BPL(uint16_t param_addr) {
     int8_t const operand = (int8_t)memory.read(param_addr);
     if (!(context.P & F_N)) {

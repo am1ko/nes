@@ -186,3 +186,27 @@ TEST_F(BranchTest, BPLNoBranch) {
     EXPECT_EQ(ret, 3U);
     EXPECT_EQ(REG_PC, 0xC102U);
 }
+
+// ---------------------------------------------------------------------------------------------- //
+TEST_F(BranchTest, BMIPositive) {
+    EXPECT_MEM_READ_8(0xC100U, 0x30U);
+    EXPECT_MEM_READ_8(0xC101U, 0x04U);
+    SET_NEGF(1);
+
+    unsigned const ret = cpu.tick();
+
+    EXPECT_EQ(ret, 3U);
+    EXPECT_EQ(REG_PC, 0xC106U);
+}
+
+// ---------------------------------------------------------------------------------------------- //
+TEST_F(BranchTest, BMINoBranch) {
+    EXPECT_MEM_READ_8(0xC100U, 0x30U);
+    EXPECT_MEM_READ_8(0xC101U, 0x04U);
+    SET_NEGF(0);
+
+    unsigned const ret = cpu.tick();
+
+    EXPECT_EQ(ret, 3U);
+    EXPECT_EQ(REG_PC, 0xC102U);
+}
