@@ -91,6 +91,7 @@ class Cpu
     uint16_t PHA(uint16_t operand_addr, uint8_t &extra_cycles);
     uint16_t PLA(uint16_t operand_addr, uint8_t &extra_cycles);
     uint16_t CMP(uint16_t operand_addr, uint8_t &extra_cycles);
+    uint16_t ORA(uint16_t operand_addr, uint8_t &extra_cycles);
     uint16_t ASL_ACC(uint16_t operand_addr, uint8_t &extra_cycles);
     // --- OTHER -------------------------------------------------------------------------------- //
     void branch(int8_t op, uint8_t &extra_cycles);

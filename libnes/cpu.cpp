@@ -315,6 +315,12 @@ uint16_t Cpu::CMP(uint16_t operand_addr, uint8_t &extra_cycles) {
 }
 
 // ---------------------------------------------------------------------------------------------- //
+uint16_t Cpu::ORA(uint16_t operand_addr, uint8_t &extra_cycles) {
+    uint8_t const param = memory.read(operand_addr);
+    return context.sregs[A] | param;
+}
+
+// ---------------------------------------------------------------------------------------------- //
 void Cpu::update_flags(uint16_t result, uint8_t mask) {
     // --- CARRY --- //
     if (mask & F_C) {
