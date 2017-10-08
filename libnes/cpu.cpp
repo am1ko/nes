@@ -8,6 +8,8 @@
 // ---------------------------------------------------------------------------------------------- //
 Cpu::Cpu(IMemory& memory) : memory(memory), logger(0) {
     reset_registers();
+    operand = 0U;
+    acc_cached = context.sregs[A];
 }
 
 // ---------------------------------------------------------------------------------------------- //
@@ -89,26 +91,27 @@ void Cpu::resultmode_reg_a(uint16_t addr, uint8_t result) {
 
 // ---------------------------------------------------------------------------------------------- //
 uint16_t Cpu::ADC(uint16_t operand_addr, uint8_t &extra_cycles) {
-    uint8_t const param = memory.read(operand_addr);
-    return context.sregs[A] + param + (context.P & F_C);
+    operand = memory.read(operand_addr);
+    return context.sregs[A] + operand + (context.P & F_C);
 }
 
 // ---------------------------------------------------------------------------------------------- //
 uint16_t Cpu::AND(uint16_t operand_addr, uint8_t &extra_cycles) {
-    uint8_t const param = memory.read(operand_addr);
-    return context.sregs[A] & param;
+    operand = memory.read(operand_addr);
+    return context.sregs[A] & operand;
 }
 
 // ---------------------------------------------------------------------------------------------- //
 uint16_t Cpu::ASL(uint16_t operand_addr, uint8_t &extra_cycles) {
-    uint8_t const param = memory.read(operand_addr);
-    return param << 1;
+    operand = memory.read(operand_addr);
+    return operand << 1;
 }
 
 // ---------------------------------------------------------------------------------------------- //
+// TODO(amiko): use parameter (bool operand_in_acc = false) instead?
 uint16_t Cpu::ASL_ACC(uint16_t operand_addr, uint8_t &extra_cycles) {
-    uint8_t const param = context.sregs[A];
-    return param << 1;
+    operand = context.sregs[A];
+    return operand << 1;
 }
 
 // ---------------------------------------------------------------------------------------------- //
@@ -288,8 +291,8 @@ uint16_t Cpu::BPL(uint16_t operand_addr, uint8_t &extra_cycles) {
 
 // ---------------------------------------------------------------------------------------------- //
 uint16_t Cpu::LDA(uint16_t operand_addr, uint8_t &extra_cycles) {
-    uint8_t const param = memory.read(operand_addr);
-    return param;
+    operand = memory.read(operand_addr);
+    return operand;
 }
 
 // ---------------------------------------------------------------------------------------------- //
@@ -299,11 +302,11 @@ uint16_t Cpu::STA(uint16_t operand_addr, uint8_t &extra_cycles) {
 
 // ---------------------------------------------------------------------------------------------- //
 uint16_t Cpu::BIT(uint16_t operand_addr, uint8_t &extra_cycles) {
-    uint8_t const param = memory.read(operand_addr);
-    uint16_t const ret =  context.sregs[A] & param;
+    operand = memory.read(operand_addr);
+    uint16_t const ret =  context.sregs[A] & operand;
 
     context.P &= ~(F_N | F_V);
-    context.P |= (param & (F_N | F_V));
+    context.P |= (operand & (F_N | F_V));
 
     return ret;
 }
@@ -322,14 +325,14 @@ uint16_t Cpu::CMP(uint16_t operand_addr, uint8_t &extra_cycles) {
 
 // ---------------------------------------------------------------------------------------------- //
 uint16_t Cpu::ORA(uint16_t operand_addr, uint8_t &extra_cycles) {
-    uint8_t const param = memory.read(operand_addr);
-    return context.sregs[A] | param;
+    operand = memory.read(operand_addr);
+    return context.sregs[A] | operand;
 }
 
 // ---------------------------------------------------------------------------------------------- //
 uint16_t Cpu::EOR(uint16_t operand_addr, uint8_t &extra_cycles) {
-    uint8_t const param = memory.read(operand_addr);
-    return context.sregs[A] ^ param;
+    operand = memory.read(operand_addr);
+    return context.sregs[A] ^ operand;
 }
 
 // ---------------------------------------------------------------------------------------------- //
@@ -356,8 +359,9 @@ void Cpu::update_flags(uint16_t result, uint8_t mask) {
     }
 
     // --- OVERFLOW --- //
+    // Overflow is set if: Positive + Positive = Negative or Negative + Negative = Positive
     if (mask & F_V) {
-        if ((result & 0x80U) != (context.sregs[A] & 0x80U)) {
+        if ((acc_cached ^ result) & (operand ^ result) & 0x80U) {
             context.P |= F_V;
         }
         else {
@@ -420,6 +424,7 @@ void Cpu::reset() {
 unsigned Cpu::tick() {
     uint16_t const pc = context.PC;
     uint8_t extra_cycles = 0U;
+    acc_cached = context.sregs[A];
 
     // --- FETCH & DECODE INSTRUCTION ------------- //
     struct CpuInstruction const * instr = &instruction_set[memory.read(context.PC++)];

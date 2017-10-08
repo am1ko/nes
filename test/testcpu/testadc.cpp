@@ -37,6 +37,20 @@ TEST_F(AdcTest, AdcImmediate) {
 }
 
 // ---------------------------------------------------------------------------------------------- //
+TEST_F(AdcTest, AdcImmediate2) {
+    EXPECT_MEM_READ_8(REG_PC, 0x69U);
+    EXPECT_MEM_READ_8(REG_PC+1, 0x80U);
+    SET_REG_A(0x7FU);
+    SET_REG_P(0x64U);
+
+    cpu.tick();
+
+    EXPECT_EQ(REG_A,  0xFFU);
+    EXPECT_EQ(REG_P,  0xA4U);
+    EXPECT_EQ(REG_PC, 0x0602U);
+}
+
+// ---------------------------------------------------------------------------------------------- //
 TEST_F(AdcTest, AdcImmediateNoCarryFlagSet) {
     EXPECT_MEM_READ_8(REG_PC, 0x69U);
     EXPECT_MEM_READ_8(REG_PC+1, 0x01U);
@@ -139,12 +153,12 @@ TEST_F(AdcTest, AdcImmediateNegativeFlagCleared) {
 // ---------------------------------------------------------------------------------------------- //
 TEST_F(AdcTest, AdcImmediateOverflowFlagSet) {
     EXPECT_MEM_READ_8(REG_PC, 0x69U);
-    EXPECT_MEM_READ_8(REG_PC+1, 0x06U);
-    SET_REG_A(0xFDU);
+    EXPECT_MEM_READ_8(REG_PC+1, 0x81U);
+    SET_REG_A(0x80U);
 
     cpu.tick();
 
-    EXPECT_EQ(REG_A, 0x03U);
+    EXPECT_EQ(REG_A, 0x01U);
     EXPECT_EQ(OVERFLOWF, true);
 }
 

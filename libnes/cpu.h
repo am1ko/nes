@@ -44,6 +44,9 @@ class Cpu
     static const struct CpuInstruction instruction_set[256];
     ICpuLogger * logger;
     IMemory & memory;
+    // --- CACHED VALUES ------------------------------------------------------------------------ //
+    uint8_t operand;
+    uint8_t acc_cached;
     // --- RESULT STORE MODES-------------------------------------------------------------------- //
     void resultmode_none(uint16_t addr, uint8_t result);
     void resultmode_mem(uint16_t addr, uint8_t result);
