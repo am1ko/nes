@@ -37,3 +37,17 @@ TEST_F(CmpTest, CmpImmediate) {
     EXPECT_EQ(REG_PC, 0x8002U);
     EXPECT_EQ(REG_P, 0x6F);
 }
+
+// ---------------------------------------------------------------------------------------------- //
+TEST_F(CmpTest, CmpImmediateCarryFlagCleared) {
+    SET_REG_A(0x40U);
+    SET_REG_P(0x25U);
+    EXPECT_MEM_READ_8(REG_PC, 0xC9U);
+    EXPECT_MEM_READ_8(REG_PC + 1U, 0x41U);
+
+    int const ret = cpu.tick();
+
+    EXPECT_EQ(ret, 2U);
+    EXPECT_EQ(REG_PC, 0x8002U);
+    EXPECT_EQ(REG_P, 0xA4U);
+}

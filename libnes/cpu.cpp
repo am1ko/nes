@@ -313,12 +313,10 @@ uint16_t Cpu::BIT(uint16_t operand_addr, uint8_t &extra_cycles) {
 
 // ---------------------------------------------------------------------------------------------- //
 uint16_t Cpu::CMP(uint16_t operand_addr, uint8_t &extra_cycles) {
-    uint8_t  const ope = memory.read(operand_addr);
-    uint16_t const ret = context.sregs[A] - ope;
+    operand = memory.read(operand_addr);
+    uint16_t const ret = context.sregs[A] - operand;
 
-    if (context.sregs[A] >= ope) {
-        context.P |= F_C;
-    }
+    if (ret < 256U) { context.P |= F_C; } else { context.P &= ~(F_C); }
 
     return ret;
 }
@@ -337,7 +335,7 @@ uint16_t Cpu::EOR(uint16_t operand_addr, uint8_t &extra_cycles) {
 
 // ---------------------------------------------------------------------------------------------- //
 void Cpu::update_flags(uint16_t result, uint8_t mask) {
-    // --- CARRY --- //
+    // --- CARRY (UNSIGNED RESULT INVALID) ------------------------------------------------------ //
     if (mask & F_C) {
         if (result > 0xFFU) {
             context.P |= F_C;
@@ -348,7 +346,7 @@ void Cpu::update_flags(uint16_t result, uint8_t mask) {
         }
     }
 
-    // --- ZERO --- //
+    // --- ZERO --------------------------------------------------------------------------------- //
     if (mask & F_Z) {
         if ((result) == 0U) {
             context.P |= F_Z;
@@ -358,7 +356,7 @@ void Cpu::update_flags(uint16_t result, uint8_t mask) {
         }
     }
 
-    // --- OVERFLOW --- //
+    // --- OVERFLOW (SIGNED RESULT INVALID)------------------------------------------------------ //
     // Overflow is set if: Positive + Positive = Negative or Negative + Negative = Positive
     if (mask & F_V) {
         if ((acc_cached ^ result) & (operand ^ result) & 0x80U) {
@@ -369,7 +367,7 @@ void Cpu::update_flags(uint16_t result, uint8_t mask) {
         }
     }
 
-    // --- NEGATIVE --- //
+    // --- NEGATIVE ----------------------------------------------------------------------------- //
     if (mask & F_N) {
         if (result & 0x80U) {
             context.P |= F_N;
