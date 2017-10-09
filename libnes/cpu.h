@@ -70,6 +70,7 @@ class Cpu
     uint16_t NOP(uint16_t operand_addr, uint8_t &extra_cycles);
     uint16_t JMP(uint16_t operand_addr, uint8_t &extra_cycles);
     uint16_t LDX(uint16_t operand_addr, uint8_t &extra_cycles);
+    uint16_t LDY(uint16_t operand_addr, uint8_t &extra_cycles);
     uint16_t STX(uint16_t operand_addr, uint8_t &extra_cycles);
     uint16_t JSR(uint16_t operand_addr, uint8_t &extra_cycles);
     uint16_t RTS(uint16_t operand_addr, uint8_t &extra_cycles);

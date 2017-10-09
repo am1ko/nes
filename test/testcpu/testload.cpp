@@ -162,3 +162,110 @@ TEST_F(LoadTest, LDAImmediateZeroFlag) {
     EXPECT_EQ(REG_A, 0x00U);
     EXPECT_EQ(ZEROF, true);
 }
+
+// ---------------------------------------------------------------------------------------------- //
+TEST_F(LoadTest, LdyImmediate) {
+    EXPECT_MEM_READ_8(REG_PC, 0xA0U);
+    EXPECT_MEM_READ_8(REG_PC+1, 0x44U);
+
+    int const ret = cpu.tick();
+
+    EXPECT_EQ(ret, 2U);
+    EXPECT_EQ(REG_Y, 0x44U);
+}
+
+// ---------------------------------------------------------------------------------------------- //
+TEST_F(LoadTest, LdyImmediateZeroFlagSet) {
+    EXPECT_MEM_READ_8(REG_PC, 0xA0U);
+    EXPECT_MEM_READ_8(REG_PC+1, 0x00U);
+
+    cpu.tick();
+
+    EXPECT_EQ(REG_Y, 0x00U);
+    EXPECT_EQ(ZEROF, true);
+}
+
+// ---------------------------------------------------------------------------------------------- //
+TEST_F(LoadTest, LdyImmediateZeroFlagCleared) {
+    EXPECT_MEM_READ_8(REG_PC, 0xA0U);
+    EXPECT_MEM_READ_8(REG_PC+1, 0x01U);
+    SET_ZEROF(true);
+
+    cpu.tick();
+
+    EXPECT_EQ(REG_Y, 0x01U);
+    EXPECT_EQ(ZEROF, false);
+}
+
+// ---------------------------------------------------------------------------------------------- //
+TEST_F(LoadTest, LdyImmediateNegativeFlagSet) {
+    EXPECT_MEM_READ_8(REG_PC, 0xA0U);
+    EXPECT_MEM_READ_8(REG_PC+1, 0x80U);
+
+    cpu.tick();
+
+    EXPECT_EQ(REG_Y, 0x80U);
+    EXPECT_EQ(NEGF, true);
+}
+
+// ---------------------------------------------------------------------------------------------- //
+TEST_F(LoadTest, LdyImmediateNegativeFlagCleared) {
+    EXPECT_MEM_READ_8(REG_PC, 0xA0U);
+    EXPECT_MEM_READ_8(REG_PC+1, 0x01U);
+    SET_NEGF(true);
+
+    cpu.tick();
+
+    EXPECT_EQ(REG_Y, 0x01U);
+    EXPECT_EQ(NEGF, false);
+}
+
+// ---------------------------------------------------------------------------------------------- //
+TEST_F(LoadTest, LdyZeroPage) {
+    EXPECT_MEM_READ_8(REG_PC, 0xA4U);
+    EXPECT_MEM_READ_8(REG_PC + 1, 0x0AU);
+    EXPECT_MEM_READ_8(0x000A, 0x33U);
+
+    int const ret = cpu.tick();
+
+    EXPECT_EQ(ret, 3);
+    EXPECT_EQ(REG_Y, 0x33U);
+}
+
+// ---------------------------------------------------------------------------------------------- //
+TEST_F(LoadTest, LdyZeroPageXIndexed) {
+    SET_REG_X(0x03U);
+    EXPECT_MEM_READ_8(REG_PC, 0xB4U);
+    EXPECT_MEM_READ_8(REG_PC + 1, 0x0AU);
+    EXPECT_MEM_READ_8(0x000A + REG_X, 0x33U);
+
+    int const ret = cpu.tick();
+
+    EXPECT_EQ(ret, 4);
+    EXPECT_EQ(REG_Y, 0x33U);
+}
+
+// ---------------------------------------------------------------------------------------------- //
+TEST_F(LoadTest, LdyAbsolute) {
+    EXPECT_MEM_READ_8(REG_PC, 0xACU);
+    EXPECT_MEM_READ_16(REG_PC + 1, 0xABBAU);
+    EXPECT_MEM_READ_8(0xABBAU, 0x11U);
+
+    int const ret = cpu.tick();
+
+    EXPECT_EQ(ret, 4);
+    EXPECT_EQ(REG_Y, 0x11U);
+}
+
+// ---------------------------------------------------------------------------------------------- //
+TEST_F(LoadTest, LdyAbsoluteXIndexed) {
+    SET_REG_X(0x08U);
+    EXPECT_MEM_READ_8(REG_PC, 0xBCU);
+    EXPECT_MEM_READ_16(REG_PC + 1, 0xABBAU);
+    EXPECT_MEM_READ_8(0xABBAU + REG_X, 0x22U);
+
+    int const ret = cpu.tick();
+
+    EXPECT_EQ(ret, 4);
+    EXPECT_EQ(REG_Y, 0x22U);
+}

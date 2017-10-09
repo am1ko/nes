@@ -132,6 +132,12 @@ uint16_t Cpu::LDX(uint16_t operand_addr, uint8_t &extra_cycles) {
 }
 
 // ---------------------------------------------------------------------------------------------- //
+uint16_t Cpu::LDY(uint16_t operand_addr, uint8_t &extra_cycles) {
+    context.sregs[Y] = memory.read(operand_addr);
+    return context.sregs[Y];
+}
+
+// ---------------------------------------------------------------------------------------------- //
 uint16_t Cpu::STX(uint16_t operand_addr, uint8_t &extra_cycles) {
     memory.write(operand_addr, context.sregs[X]);
     return 0U;
