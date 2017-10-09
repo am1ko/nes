@@ -151,7 +151,7 @@ TEST_F(CmpTest, CmpIndirectX) {
 TEST_F(CmpTest, CmpIndirectY) {
     SET_REG_A(0x6FU);
     SET_REG_Y(1U);
-    SET_REG_P(0x6DU);
+    SET_REG_P(0x6CU);
     EXPECT_MEM_READ_8(REG_PC, 0xD1U);
     EXPECT_MEM_READ_8(REG_PC + 1U, 0x07U);
     EXPECT_MEM_READ_8(0x07U, 0x11U);
@@ -161,5 +161,49 @@ TEST_F(CmpTest, CmpIndirectY) {
 
     EXPECT_EQ(ret, 5U);
     EXPECT_EQ(REG_PC, 0x8002U);
+    EXPECT_EQ(REG_P, 0x6F);
+}
+
+// ---------------------------------------------------------------------------------------------- //
+TEST_F(CmpTest, CpyImmediate) {
+    SET_REG_Y(0x6FU);
+    SET_REG_P(0x6CU);
+    EXPECT_MEM_READ_8(REG_PC, 0xC0U);
+    EXPECT_MEM_READ_8(REG_PC + 1U, 0x6FU);
+
+    int const ret = cpu.tick();
+
+    EXPECT_EQ(ret, 2U);
+    EXPECT_EQ(REG_PC, 0x8002U);
+    EXPECT_EQ(REG_P, 0x6F);
+}
+
+// ---------------------------------------------------------------------------------------------- //
+TEST_F(CmpTest, CpyZeroPage) {
+    SET_REG_Y(0x6FU);
+    SET_REG_P(0x6CU);
+    EXPECT_MEM_READ_8(REG_PC, 0xC4U);
+    EXPECT_MEM_READ_8(REG_PC + 1U, 0x11U);
+    EXPECT_MEM_READ_8(0x11U, 0x6FU);
+
+    int const ret = cpu.tick();
+
+    EXPECT_EQ(ret, 3U);
+    EXPECT_EQ(REG_PC, 0x8002U);
+    EXPECT_EQ(REG_P, 0x6F);
+}
+
+// ---------------------------------------------------------------------------------------------- //
+TEST_F(CmpTest, CpyAbsolute) {
+    SET_REG_Y(0x6FU);
+    SET_REG_P(0x6CU);
+    EXPECT_MEM_READ_8(REG_PC, 0xCCU);
+    EXPECT_MEM_READ_16(REG_PC + 1U, 0x1111U);
+    EXPECT_MEM_READ_8(0x1111U, 0x6FU);
+
+    int const ret = cpu.tick();
+
+    EXPECT_EQ(ret, 4U);
+    EXPECT_EQ(REG_PC, 0x8003U);
     EXPECT_EQ(REG_P, 0x6F);
 }

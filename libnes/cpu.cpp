@@ -319,12 +319,12 @@ uint16_t Cpu::BIT(uint16_t operand_addr, uint8_t &extra_cycles) {
 
 // ---------------------------------------------------------------------------------------------- //
 uint16_t Cpu::CMP(uint16_t operand_addr, uint8_t &extra_cycles) {
-    operand = memory.read(operand_addr);
-    uint16_t const ret = context.sregs[A] - operand;
+    return compare(operand_addr, context.sregs[A]);
+}
 
-    if (ret < 256U) { context.P |= F_C; } else { context.P &= ~(F_C); }
-
-    return ret;
+// ---------------------------------------------------------------------------------------------- //
+uint16_t Cpu::CPY(uint16_t operand_addr, uint8_t &extra_cycles) {
+    return compare(operand_addr, context.sregs[Y]);
 }
 
 // ---------------------------------------------------------------------------------------------- //
@@ -393,6 +393,16 @@ void Cpu::branch(int8_t op, uint8_t &extra_cycles) {
     else{
         context.PC += (op-2U);
     }
+}
+
+// ---------------------------------------------------------------------------------------------- //
+uint8_t Cpu::compare(uint16_t operand_addr, uint8_t reg) {
+    operand = memory.read(operand_addr);
+    uint16_t const ret = reg - operand;
+
+    if (ret < 256U) { context.P |= F_C; } else { context.P &= ~(F_C); }
+
+    return ret;
 }
 
 // ---------------------------------------------------------------------------------------------- //

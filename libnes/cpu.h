@@ -96,14 +96,16 @@ class Cpu
     uint16_t PHA(uint16_t operand_addr, uint8_t &extra_cycles);
     uint16_t PLA(uint16_t operand_addr, uint8_t &extra_cycles);
     uint16_t CMP(uint16_t operand_addr, uint8_t &extra_cycles);
+    uint16_t CPY(uint16_t operand_addr, uint8_t &extra_cycles);
     uint16_t ORA(uint16_t operand_addr, uint8_t &extra_cycles);
     uint16_t EOR(uint16_t operand_addr, uint8_t &extra_cycles);
     uint16_t ASL_ACC(uint16_t operand_addr, uint8_t &extra_cycles);
     // --- OTHER -------------------------------------------------------------------------------- //
-    void branch(int8_t op, uint8_t &extra_cycles);
-    void log(uint16_t pc, uint8_t len, uint8_t cycles);
-    void update_flags(uint16_t result, uint8_t mask);
-    void reset_registers();
+    void    branch(int8_t op, uint8_t &extra_cycles);
+    uint8_t compare(uint16_t operand_addr, uint8_t reg);
+    void    log(uint16_t pc, uint8_t len, uint8_t cycles);
+    void    update_flags(uint16_t result, uint8_t mask);
+    void    reset_registers();
 public:
     CpuContext context;
     explicit Cpu(IMemory& memory);
