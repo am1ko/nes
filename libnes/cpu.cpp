@@ -328,6 +328,11 @@ uint16_t Cpu::CPY(uint16_t operand_addr, uint8_t &extra_cycles) {
 }
 
 // ---------------------------------------------------------------------------------------------- //
+uint16_t Cpu::CPX(uint16_t operand_addr, uint8_t &extra_cycles) {
+    return compare(operand_addr, context.sregs[X]);
+}
+
+// ---------------------------------------------------------------------------------------------- //
 uint16_t Cpu::ORA(uint16_t operand_addr, uint8_t &extra_cycles) {
     operand = memory.read(operand_addr);
     return context.sregs[A] | operand;

@@ -207,3 +207,47 @@ TEST_F(CmpTest, CpyAbsolute) {
     EXPECT_EQ(REG_PC, 0x8003U);
     EXPECT_EQ(REG_P, 0x6F);
 }
+
+// ---------------------------------------------------------------------------------------------- //
+TEST_F(CmpTest, CpxImmediate) {
+    SET_REG_X(0x6FU);
+    SET_REG_P(0x6CU);
+    EXPECT_MEM_READ_8(REG_PC, 0xE0U);
+    EXPECT_MEM_READ_8(REG_PC + 1U, 0x6FU);
+
+    int const ret = cpu.tick();
+
+    EXPECT_EQ(ret, 2U);
+    EXPECT_EQ(REG_PC, 0x8002U);
+    EXPECT_EQ(REG_P, 0x6F);
+}
+
+// ---------------------------------------------------------------------------------------------- //
+TEST_F(CmpTest, CpxZeroPage) {
+    SET_REG_X(0x6FU);
+    SET_REG_P(0x6CU);
+    EXPECT_MEM_READ_8(REG_PC, 0xE4U);
+    EXPECT_MEM_READ_8(REG_PC + 1U, 0x11U);
+    EXPECT_MEM_READ_8(0x11U, 0x6FU);
+
+    int const ret = cpu.tick();
+
+    EXPECT_EQ(ret, 3U);
+    EXPECT_EQ(REG_PC, 0x8002U);
+    EXPECT_EQ(REG_P, 0x6F);
+}
+
+// ---------------------------------------------------------------------------------------------- //
+TEST_F(CmpTest, CpxAbsolute) {
+    SET_REG_X(0x6FU);
+    SET_REG_P(0x6CU);
+    EXPECT_MEM_READ_8(REG_PC, 0xECU);
+    EXPECT_MEM_READ_16(REG_PC + 1U, 0x1111U);
+    EXPECT_MEM_READ_8(0x1111U, 0x6FU);
+
+    int const ret = cpu.tick();
+
+    EXPECT_EQ(ret, 4U);
+    EXPECT_EQ(REG_PC, 0x8003U);
+    EXPECT_EQ(REG_P, 0x6F);
+}

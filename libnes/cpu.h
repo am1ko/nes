@@ -97,6 +97,7 @@ class Cpu
     uint16_t PLA(uint16_t operand_addr, uint8_t &extra_cycles);
     uint16_t CMP(uint16_t operand_addr, uint8_t &extra_cycles);
     uint16_t CPY(uint16_t operand_addr, uint8_t &extra_cycles);
+    uint16_t CPX(uint16_t operand_addr, uint8_t &extra_cycles);
     uint16_t ORA(uint16_t operand_addr, uint8_t &extra_cycles);
     uint16_t EOR(uint16_t operand_addr, uint8_t &extra_cycles);
     uint16_t ASL_ACC(uint16_t operand_addr, uint8_t &extra_cycles);
