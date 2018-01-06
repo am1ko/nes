@@ -101,6 +101,7 @@ class Cpu
     uint16_t ORA(uint16_t operand_addr, uint8_t &extra_cycles);
     uint16_t EOR(uint16_t operand_addr, uint8_t &extra_cycles);
     uint16_t SBC(uint16_t operand_addr, uint8_t &extra_cycles);
+    uint16_t INY(uint16_t operand_addr, uint8_t &extra_cycles);
     uint16_t ASL_ACC(uint16_t operand_addr, uint8_t &extra_cycles);
 
     // --- OTHER -------------------------------------------------------------------------------- //
