@@ -39,6 +39,19 @@ TEST_F(IncTest, Iny) {
 }
 
 // ---------------------------------------------------------------------------------------------- //
+TEST_F(IncTest, Dey) {
+    EXPECT_MEM_READ_8(REG_PC, 0x88U);
+    SET_REG_Y(0x00U);
+
+    int const ret = cpu.tick();
+
+    EXPECT_EQ(REG_Y,  0xFFU);
+    EXPECT_EQ(ret, 2);
+    EXPECT_EQ(ZEROF, false);
+    EXPECT_EQ(NEGF, true);
+}
+
+// ---------------------------------------------------------------------------------------------- //
 TEST_F(IncTest, Inx) {
     EXPECT_MEM_READ_8(REG_PC, 0xE8U);
     SET_REG_X(0x80U);

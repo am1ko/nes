@@ -357,6 +357,11 @@ uint16_t Cpu::INY(uint16_t operand_addr, uint8_t &extra_cycles) {
 }
 
 // ---------------------------------------------------------------------------------------------- //
+uint16_t Cpu::DEY(uint16_t operand_addr, uint8_t &extra_cycles) {
+    return --context.sregs[Y];
+}
+
+// ---------------------------------------------------------------------------------------------- //
 uint16_t Cpu::INX(uint16_t operand_addr, uint8_t &extra_cycles) {
     return ++context.sregs[X];
 }
