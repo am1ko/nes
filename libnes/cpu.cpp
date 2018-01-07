@@ -357,6 +357,11 @@ uint16_t Cpu::INY(uint16_t operand_addr, uint8_t &extra_cycles) {
 }
 
 // ---------------------------------------------------------------------------------------------- //
+uint16_t Cpu::INX(uint16_t operand_addr, uint8_t &extra_cycles) {
+    return ++context.sregs[X];
+}
+
+// ---------------------------------------------------------------------------------------------- //
 void Cpu::update_flags(uint16_t result, uint8_t mask) {
     // --- CARRY (UNSIGNED RESULT INVALID) ------------------------------------------------------ //
     if (mask & F_C) {
