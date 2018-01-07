@@ -211,7 +211,7 @@ const struct CpuInstruction Cpu::instruction_set[256] = {
 /* $C7 */   {&Cpu::NOP,     &Cpu::addrmode_imm,   0U,     2U,    (    NO_FLAGS   ),   RESULT_NONE},
 /* $C8 */   {&Cpu::INY,     &Cpu::addrmode_imp,   2U,     1U,    (    F_N|F_Z    ),   RESULT_NONE},
 /* $C9 */   {&Cpu::CMP,     &Cpu::addrmode_imm,   2U,     2U,    (    F_N|F_Z    ),   RESULT_NONE},
-/* $CA */   {&Cpu::NOP,     &Cpu::addrmode_imm,   0U,     2U,    (    NO_FLAGS   ),   RESULT_NONE},
+/* $CA */   {&Cpu::DEX,     &Cpu::addrmode_imp,   2U,     1U,    (    F_N|F_Z    ),   RESULT_NONE},
 /* $CB */   {&Cpu::NOP,     &Cpu::addrmode_imm,   0U,     2U,    (    NO_FLAGS   ),   RESULT_NONE},
 /* $CC */   {&Cpu::CPY,     &Cpu::addrmode_abs,   4U,     3U,    (    F_N|F_Z    ),   RESULT_NONE},
 /* $CD */   {&Cpu::CMP,     &Cpu::addrmode_abs,   4U,     3U,    (    F_N|F_Z    ),   RESULT_NONE},

@@ -63,3 +63,16 @@ TEST_F(IncTest, Inx) {
     EXPECT_EQ(ZEROF, false);
     EXPECT_EQ(NEGF, true);
 }
+
+// ---------------------------------------------------------------------------------------------- //
+TEST_F(IncTest, Dex) {
+    EXPECT_MEM_READ_8(REG_PC, 0xCAU);
+    SET_REG_X(0x00U);
+
+    int const ret = cpu.tick();
+
+    EXPECT_EQ(REG_X,  0xFFU);
+    EXPECT_EQ(ret, 2);
+    EXPECT_EQ(ZEROF, false);
+    EXPECT_EQ(NEGF, true);
+}
