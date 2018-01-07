@@ -347,9 +347,8 @@ uint16_t Cpu::EOR(uint16_t operand_addr, uint8_t &extra_cycles) {
 // ---------------------------------------------------------------------------------------------- //
 uint16_t Cpu::SBC(uint16_t operand_addr, uint8_t &extra_cycles) {
     operand = memory.read(operand_addr);
-    uint8_t const twos_complement = (operand ^ 0xFFU) + 1U;
-
-    return context.sregs[A] + twos_complement + ((context.P & F_C) ^ 1U);
+    operand ^= 0xFFU;
+    return context.sregs[A] + operand + (context.P & F_C); // <- same as ADC
 }
 
 // ---------------------------------------------------------------------------------------------- //
@@ -363,7 +362,7 @@ void Cpu::update_flags(uint16_t result, uint8_t mask) {
     if (mask & F_C) {
         if (result > 0xFFU) {
             context.P |= F_C;
-            result %= 256U;
+            result &= 0xFFU;
         }
         else {
             context.P &= ~(F_C);
@@ -381,9 +380,13 @@ void Cpu::update_flags(uint16_t result, uint8_t mask) {
     }
 
     // --- OVERFLOW (SIGNED RESULT INVALID)------------------------------------------------------ //
-    // Overflow is set if: Positive + Positive = Negative or Negative + Negative = Positive
     if (mask & F_V) {
-        if ((acc_cached ^ result) & (operand ^ result) & 0x80U) {
+        // Overflow is set if: Positive + Positive = Negative or Negative + Negative = Positive
+        uint8_t const a_neg = acc_cached & 0x80U;
+        uint8_t const o_neg = operand & 0x80U;
+        uint8_t const r_neg = result & 0x80U;
+
+        if ((!a_neg && !o_neg && r_neg) || (a_neg && o_neg && !r_neg)) {
             context.P |= F_V;
         }
         else {

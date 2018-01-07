@@ -25,16 +25,29 @@ void SbcTest::SetUp() {
 void SbcTest::TearDown() {};
 
 // ---------------------------------------------------------------------------------------------- //
-// A <= A + M + (C^1)
+// Carry = unsigned overflow
+//           - ADC - result does not fit into 8 bits
+//           - SBC - borrow required to most significant bit subtracted
+//
+// Overflow - signed overflow
+//           - ADC - positive + positive and result negative
+//           - ADC - negative + negative and result positive
+//           - SBC - positive - negative and result negative
+//           - SBC - negative - positive and result positive
+// ---------------------------------------------------------------------------------------------- //
+
+
+// ---------------------------------------------------------------------------------------------- //
+// A <= A + (M ^ 0xFF) + C
 //     01000000 (64)
-//   + 11111011 (-5)
-//   +        0
+//   + 11111010 (1s complement of 5)
+//   +        1
 //   ----------
 //   1 00111011    => 59 excluding carry
 TEST_F(SbcTest, SbcImmediateCarryFlagSet) {
     EXPECT_MEM_READ_8(REG_PC, 0xE9U);
     EXPECT_MEM_READ_8(REG_PC+1, 0x05U);
-    SET_REG_P(0x01U);
+    SET_REG_P(0x01U);  // <- need to set carry to convert 1's complement to 2's complement
     SET_REG_A(0x40U);
 
     int const ret = cpu.tick();
@@ -46,6 +59,7 @@ TEST_F(SbcTest, SbcImmediateCarryFlagSet) {
     EXPECT_EQ(ret, 2U);
 }
 
+// ---------------------------------------------------------------------------------------------- //
 TEST_F(SbcTest, SbcImmediateCarryFlagSet2) {
     EXPECT_MEM_READ_8(REG_PC, 0xE9U);
     EXPECT_MEM_READ_8(REG_PC+1, 0x02U);
@@ -62,12 +76,26 @@ TEST_F(SbcTest, SbcImmediateCarryFlagSet2) {
 }
 
 // ---------------------------------------------------------------------------------------------- //
-// A <= A + M + (C^1)
+TEST_F(SbcTest, SbcImmediateNoCarryFlagSet3) {
+    EXPECT_MEM_READ_8(REG_PC, 0xE9U);
+    EXPECT_MEM_READ_8(REG_PC+1, 0x05U);
+    SET_REG_P(0x01U);
+    SET_REG_A(0x06U);
+
+    cpu.tick();
+
+    EXPECT_EQ(REG_A, 0x01U);
+    EXPECT_EQ(CARRYF, true);
+    EXPECT_EQ(NEGF, false);
+}
+
+// ---------------------------------------------------------------------------------------------- //
+// A <= A + (M ^ 0xFF) + C
 //     00000110 (6)
-//   + 11111011 (-5)
-//   +        1
+//   + 11111010 (1s complement of 5)
+//   +        0
 //   ----------
-//   1 00000010
+//   1 00000000
 TEST_F(SbcTest, SbcImmediateNoCarryFlagSet) {
     EXPECT_MEM_READ_8(REG_PC, 0xE9U);
     EXPECT_MEM_READ_8(REG_PC+1, 0x05U);
@@ -76,16 +104,16 @@ TEST_F(SbcTest, SbcImmediateNoCarryFlagSet) {
 
     cpu.tick();
 
-    EXPECT_EQ(REG_A, 0x02U);
+    EXPECT_EQ(REG_A, 0x00U);  // <- result "wrong" since no carry added
     EXPECT_EQ(CARRYF, true);
     EXPECT_EQ(NEGF, false);
 }
 
 // ---------------------------------------------------------------------------------------------- //
-// A <= A + M + (C^1)
+// A <= A + (M ^ 0xFF) + C
 //     00000101 (5)
-//   + 11111010 (-6)
-//   +        0
+//   + 11111001 (1s complement of 6)
+//   +        1
 //   ----------
 //   0 11111111
 TEST_F(SbcTest, SbcImmediateNegativeResult) {
@@ -99,6 +127,40 @@ TEST_F(SbcTest, SbcImmediateNegativeResult) {
     EXPECT_EQ(REG_A, 0xFFU);
     EXPECT_EQ(CARRYF, false);
     EXPECT_EQ(NEGF, true);
+}
+
+// ---------------------------------------------------------------------------------------------- //
+//   carry in to msb is 1
+//   carry out from msb is 1
+//   1 XOR 1 is 0 => no overflow
+//     10000000
+//   + 11111110
+//   +        1
+//   ----------
+//   1 01111111
+TEST_F(SbcTest, SbcImmediateOverflow) {
+    EXPECT_MEM_READ_8(REG_PC, 0xE9U);
+    EXPECT_MEM_READ_8(REG_PC+1, 0x1U);
+    SET_REG_P(0x01U);   // <- set borrow
+    SET_REG_A(0x80U);
+
+    cpu.tick();
+
+    EXPECT_EQ(REG_A, 0x7FU);
+    EXPECT_EQ(OVERFLOWF, true);
+}
+
+// // ---------------------------------------------------------------------------------------------- //
+TEST_F(SbcTest, SbcImmediateNoOverflow) {
+    EXPECT_MEM_READ_8(REG_PC, 0xE9U);
+    EXPECT_MEM_READ_8(REG_PC+1, 0x41U);
+    SET_REG_P(0x01U);   // <- set borrow
+    SET_REG_A(0x40U);
+
+    cpu.tick();
+
+    EXPECT_EQ(REG_A, 0xFFU);
+    EXPECT_EQ(OVERFLOWF, false);
 }
 
 // // ---------------------------------------------------------------------------------------------- //

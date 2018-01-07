@@ -176,6 +176,28 @@ TEST_F(AdcTest, AdcImmediateOverflowFlagCleared) {
 }
 
 // ---------------------------------------------------------------------------------------------- //
+//    carry in to msb is 1
+//    carry out of msb is 1
+//    ovf = carry_in XOR carry_out
+//   0111 1111
+// + 1000 0000
+// +         1
+// -----------
+// 1 0000 0000
+TEST_F(AdcTest, AdcImmediateOverflowFlagCleared2) {
+    EXPECT_MEM_READ_8(REG_PC, 0x69U);
+    EXPECT_MEM_READ_8(REG_PC+1, 0x80U);  // <- negative (-128)
+    SET_REG_A(0x7FU);                    // <- positive (127)
+    SET_REG_P(0x25U);
+
+    cpu.tick();
+
+    EXPECT_EQ(REG_A, 0x00U);
+    EXPECT_EQ(OVERFLOWF, false);
+}
+
+
+// ---------------------------------------------------------------------------------------------- //
 TEST_F(AdcTest, AdcZeroPage) {
     EXPECT_MEM_READ_8(REG_PC, 0x65U);
     EXPECT_MEM_READ_8(REG_PC+1, 0x0AU);
