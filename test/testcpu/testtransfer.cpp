@@ -53,6 +53,34 @@ TEST_F(TransferTest, TayZero) {
 }
 
 // ---------------------------------------------------------------------------------------------- //
+TEST_F(TransferTest, TyaZero) {
+    EXPECT_MEM_READ_8(REG_PC, 0x98U);
+    SET_REG_A(0x80U);
+    SET_REG_Y(0x00U);
+
+    int const ret = cpu.tick();
+
+    EXPECT_EQ(REG_A,  0x00U);
+    EXPECT_EQ(NEGF, false);
+    EXPECT_EQ(ZEROF, true);
+    EXPECT_EQ(ret, 2U);
+}
+
+// ---------------------------------------------------------------------------------------------- //
+TEST_F(TransferTest, TyaNegative) {
+    EXPECT_MEM_READ_8(REG_PC, 0x98U);
+    SET_REG_A(0x00U);
+    SET_REG_Y(0xFFU);
+
+    int const ret = cpu.tick();
+
+    EXPECT_EQ(REG_A,  0xFFU);
+    EXPECT_EQ(NEGF, true);
+    EXPECT_EQ(ZEROF, false);
+    EXPECT_EQ(ret, 2U);
+}
+
+// ---------------------------------------------------------------------------------------------- //
 TEST_F(TransferTest, TaxNegative) {
     EXPECT_MEM_READ_8(REG_PC, 0xAAU);
     SET_REG_A(0x80U);

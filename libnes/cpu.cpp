@@ -379,6 +379,13 @@ uint16_t Cpu::TAY(uint16_t operand_addr, uint8_t &extra_cycles)
 }
 
 // ---------------------------------------------------------------------------------------------- //
+uint16_t Cpu::TYA(uint16_t operand_addr, uint8_t &extra_cycles)
+{
+    context.sregs[A] = context.sregs[Y];
+    return context.sregs[A];
+}
+
+// ---------------------------------------------------------------------------------------------- //
 uint16_t Cpu::TAX(uint16_t operand_addr, uint8_t &extra_cycles)
 {
     context.sregs[X] = context.sregs[A];
