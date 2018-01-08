@@ -135,3 +135,59 @@ TEST_F(TransferTest, TxaZero) {
     EXPECT_EQ(ZEROF, true);
     EXPECT_EQ(ret, 2U);
 }
+
+// ---------------------------------------------------------------------------------------------- //
+TEST_F(TransferTest, TsxNegative) {
+    EXPECT_MEM_READ_8(REG_PC, 0xBAU);
+    SET_REG_X(0x00U);
+    SET_REG_SP(0xFFU);
+
+    int const ret = cpu.tick();
+
+    EXPECT_EQ(REG_X,  0xFFU);
+    EXPECT_EQ(NEGF, true);
+    EXPECT_EQ(ZEROF, false);
+    EXPECT_EQ(ret, 2U);
+}
+
+// ---------------------------------------------------------------------------------------------- //
+TEST_F(TransferTest, TsxZero) {
+    EXPECT_MEM_READ_8(REG_PC, 0xBAU);
+    SET_REG_X(0x80U);
+    SET_REG_SP(0x00U);
+
+    int const ret = cpu.tick();
+
+    EXPECT_EQ(REG_X,  0x00U);
+    EXPECT_EQ(NEGF, false);
+    EXPECT_EQ(ZEROF, true);
+    EXPECT_EQ(ret, 2U);
+}
+
+// ---------------------------------------------------------------------------------------------- //
+TEST_F(TransferTest, TxsNegative) {
+    EXPECT_MEM_READ_8(REG_PC, 0x9AU);
+    SET_REG_X(0x80U);
+    SET_REG_SP(0x00U);
+
+    int const ret = cpu.tick();
+
+    EXPECT_EQ(REG_SP,  0x80U);
+    EXPECT_EQ(NEGF, false);
+    EXPECT_EQ(ZEROF, false);
+    EXPECT_EQ(ret, 2U);
+}
+
+// ---------------------------------------------------------------------------------------------- //
+TEST_F(TransferTest, TxsZero) {
+    EXPECT_MEM_READ_8(REG_PC, 0x9AU);
+    SET_REG_X(0x00U);
+    SET_REG_SP(0xFFU);
+
+    int const ret = cpu.tick();
+
+    EXPECT_EQ(REG_SP,  0x00U);
+    EXPECT_EQ(NEGF, false);
+    EXPECT_EQ(ZEROF, false);
+    EXPECT_EQ(ret, 2U);
+}

@@ -109,6 +109,8 @@ class Cpu
     uint16_t TAX(uint16_t operand_addr, uint8_t &extra_cycles);
     uint16_t TYA(uint16_t operand_addr, uint8_t &extra_cycles);
     uint16_t TXA(uint16_t operand_addr, uint8_t &extra_cycles);
+    uint16_t TSX(uint16_t operand_addr, uint8_t &extra_cycles);
+    uint16_t TXS(uint16_t operand_addr, uint8_t &extra_cycles);
     uint16_t ASL_ACC(uint16_t operand_addr, uint8_t &extra_cycles);
 
     // --- OTHER -------------------------------------------------------------------------------- //
