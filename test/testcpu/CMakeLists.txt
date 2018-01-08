@@ -49,3 +49,5 @@ add_test(NAME testsbc
          COMMAND testcpu)
 add_test(NAME testinc
          COMMAND testcpu)
+add_test(NAME testtransfer
+         COMMAND testcpu)
