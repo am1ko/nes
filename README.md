@@ -1,6 +1,6 @@
 Yet another NES emulator written in C++ / TDD style
 
-##Building
+## Building
 
 ~~~
 mkdir build
@@ -9,7 +9,7 @@ cmake ..
 make
 ~~~
 
-##Running
+## Running
 
 ~~~
 cd build && make test
