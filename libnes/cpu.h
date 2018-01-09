@@ -112,7 +112,9 @@ class Cpu
     uint16_t TSX(uint16_t operand_addr, uint8_t &extra_cycles);
     uint16_t TXS(uint16_t operand_addr, uint8_t &extra_cycles);
     uint16_t RTI(uint16_t operand_addr, uint8_t &extra_cycles);
+    uint16_t LSR(uint16_t operand_addr, uint8_t &extra_cycles);
     uint16_t ASL_ACC(uint16_t operand_addr, uint8_t &extra_cycles);
+    uint16_t LSR_ACC(uint16_t operand_addr, uint8_t &extra_cycles);
 
     // --- OTHER -------------------------------------------------------------------------------- //
     void    branch(int8_t op, uint8_t &extra_cycles);

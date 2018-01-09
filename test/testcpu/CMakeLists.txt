@@ -17,6 +17,8 @@ add_test(NAME testand
          COMMAND testcpu)
 add_test(NAME testasl
          COMMAND testcpu)
+add_test(NAME testlsr
+         COMMAND testcpu)
 add_test(NAME testnop
          COMMAND testcpu)
 add_test(NAME testjmp

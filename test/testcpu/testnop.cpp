@@ -36,7 +36,7 @@ TEST_F(NopTest, AdvancePc) {
 
     EXPECT_EQ(ret, 2U);
     EXPECT_EQ(REG_PC, 0x8001U);
-    EXPECT_EQ(REG_P, 0U);
+    EXPECT_EQ(REG_P, 0x20U);
     EXPECT_EQ(REG_A, 1U);
     EXPECT_EQ(REG_X, 2U);
     EXPECT_EQ(REG_Y, 3U);

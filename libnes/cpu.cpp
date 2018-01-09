@@ -115,6 +115,27 @@ uint16_t Cpu::ASL_ACC(uint16_t operand_addr, uint8_t &extra_cycles) {
 }
 
 // ---------------------------------------------------------------------------------------------- //
+uint16_t Cpu::LSR(uint16_t operand_addr, uint8_t &extra_cycles) {
+    operand = memory.read(operand_addr);
+
+    uint16_t ret = (operand & 0x01U) << 8;
+    ret |= (operand >> 1);
+
+    return ret;
+}
+
+// ---------------------------------------------------------------------------------------------- //
+// TODO(amiko): use parameter (bool operand_in_acc = false) instead?
+uint16_t Cpu::LSR_ACC(uint16_t operand_addr, uint8_t &extra_cycles) {
+    operand = context.sregs[A];
+
+    uint16_t ret = (operand & 0x01U) << 8;
+    ret |= (operand >> 1);
+
+    return ret;
+}
+
+// ---------------------------------------------------------------------------------------------- //
 uint16_t Cpu::NOP(uint16_t operand_addr, uint8_t &extra_cycles) {
     return 0U;
 }
