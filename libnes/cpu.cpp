@@ -169,7 +169,6 @@ uint16_t Cpu::PHP(uint16_t operand_addr, uint8_t &extra_cycles) {
 uint16_t Cpu::PLP(uint16_t operand_addr, uint8_t &extra_cycles) {
     context.P = memory.read(0x100U + ++context.SP);
     context.P &= ~(F_B);      // bit 4 is not a normal status flag, ignore it
-    context.P |= 1U << 5;     // bit 5 is always set
     return 0U;
 }
 
@@ -372,45 +371,47 @@ uint16_t Cpu::DEX(uint16_t operand_addr, uint8_t &extra_cycles) {
 }
 
 // ---------------------------------------------------------------------------------------------- //
-uint16_t Cpu::TAY(uint16_t operand_addr, uint8_t &extra_cycles)
-{
+uint16_t Cpu::TAY(uint16_t operand_addr, uint8_t &extra_cycles) {
     context.sregs[Y] = context.sregs[A];
     return context.sregs[Y];
 }
 
 // ---------------------------------------------------------------------------------------------- //
-uint16_t Cpu::TYA(uint16_t operand_addr, uint8_t &extra_cycles)
-{
+uint16_t Cpu::TYA(uint16_t operand_addr, uint8_t &extra_cycles) {
     context.sregs[A] = context.sregs[Y];
     return context.sregs[A];
 }
 
 // ---------------------------------------------------------------------------------------------- //
-uint16_t Cpu::TAX(uint16_t operand_addr, uint8_t &extra_cycles)
-{
+uint16_t Cpu::TAX(uint16_t operand_addr, uint8_t &extra_cycles) {
     context.sregs[X] = context.sregs[A];
     return context.sregs[X];
 }
 
 // ---------------------------------------------------------------------------------------------- //
-uint16_t Cpu::TXA(uint16_t operand_addr, uint8_t &extra_cycles)
-{
+uint16_t Cpu::TXA(uint16_t operand_addr, uint8_t &extra_cycles) {
     context.sregs[A] = context.sregs[X];
     return context.sregs[A];
 }
 
 // ---------------------------------------------------------------------------------------------- //
-uint16_t Cpu::TSX(uint16_t operand_addr, uint8_t &extra_cycles)
-{
+uint16_t Cpu::TSX(uint16_t operand_addr, uint8_t &extra_cycles) {
     context.sregs[X] = context.SP;
     return context.sregs[X];
 }
 
 // ---------------------------------------------------------------------------------------------- //
-uint16_t Cpu::TXS(uint16_t operand_addr, uint8_t &extra_cycles)
-{
+uint16_t Cpu::TXS(uint16_t operand_addr, uint8_t &extra_cycles) {
     context.SP = context.sregs[X];
     return context.SP;
+}
+
+// ---------------------------------------------------------------------------------------------- //
+uint16_t Cpu::RTI(uint16_t operand_addr, uint8_t &extra_cycles) {
+    context.P =   memory.read(0x100U + ++context.SP);
+    context.PC =  memory.read(0x100U + ++context.SP)
+               + (memory.read(0x100U + ++context.SP) << 8);
+    return 0U;
 }
 
 // ---------------------------------------------------------------------------------------------- //
@@ -460,6 +461,8 @@ void Cpu::update_flags(uint16_t result, uint8_t mask) {
             context.P &= ~(F_N);
         }
     }
+
+    context.P |= 1U << 5;     // bit 5 is always set
 }
 
 // ---------------------------------------------------------------------------------------------- //
