@@ -104,7 +104,7 @@ class Cpu
     uint16_t PLA(uint16_t operand_addr, uint8_t &extra_cycles, bool op_in_acc);
     uint16_t PLP(uint16_t operand_addr, uint8_t &extra_cycles, bool op_in_acc);
 //  uint16_t ROL(uint16_t operand_addr, uint8_t &extra_cycles, bool op_in_acc);
-//  uint16_t ROR(uint16_t operand_addr, uint8_t &extra_cycles, bool op_in_acc);
+    uint16_t ROR(uint16_t operand_addr, uint8_t &extra_cycles, bool op_in_acc);
     uint16_t RTI(uint16_t operand_addr, uint8_t &extra_cycles, bool op_in_acc);
     uint16_t RTS(uint16_t operand_addr, uint8_t &extra_cycles, bool op_in_acc);
     uint16_t SBC(uint16_t operand_addr, uint8_t &extra_cycles, bool op_in_acc);

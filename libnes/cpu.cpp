@@ -118,6 +118,18 @@ uint16_t Cpu::LSR(uint16_t operand_addr, uint8_t &extra_cycles, bool op_in_acc) 
 }
 
 // ---------------------------------------------------------------------------------------------- //
+uint16_t Cpu::ROR(uint16_t operand_addr, uint8_t &extra_cycles, bool op_in_acc) {
+    operand = op_in_acc ? context.sregs[A] : memory.read(operand_addr);
+
+    uint16_t ret = (operand & 0x01U) << 8;
+    ret |= (operand >> 1);
+    ret |= (context.P & F_C) << 7;
+
+    return ret;
+}
+
+
+// ---------------------------------------------------------------------------------------------- //
 uint16_t Cpu::NOP(uint16_t operand_addr, uint8_t &extra_cycles, bool op_in_acc) {
     return 0U;
 }
