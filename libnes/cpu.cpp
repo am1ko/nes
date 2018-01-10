@@ -128,6 +128,11 @@ uint16_t Cpu::ROR(uint16_t operand_addr, uint8_t &extra_cycles, bool op_in_acc) 
     return ret;
 }
 
+// ---------------------------------------------------------------------------------------------- //
+uint16_t Cpu::ROL(uint16_t operand_addr, uint8_t &extra_cycles, bool op_in_acc) {
+    operand = op_in_acc ? context.sregs[A] : memory.read(operand_addr);
+    return (operand << 1) | (context.P & F_C) ;
+}
 
 // ---------------------------------------------------------------------------------------------- //
 uint16_t Cpu::NOP(uint16_t operand_addr, uint8_t &extra_cycles, bool op_in_acc) {

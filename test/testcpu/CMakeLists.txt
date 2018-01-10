@@ -55,3 +55,5 @@ add_test(NAME testtransfer
          COMMAND testcpu)
 add_test(NAME testror
          COMMAND testcpu)
+add_test(NAME testrol
+         COMMAND testcpu)

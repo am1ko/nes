@@ -10,7 +10,7 @@
 
 // ---------------------------------------------------------------------------------------------- //
 const struct CpuInstruction Cpu::instruction_set[256] = {
-// INSTR ---- OPCODE --------- ADDR MODE ------ CYCLES - BYTES ------- FLAGS ---------  RESULT -- ACC-OP //
+// INSTR ---- OPCODE --------- ADDR MODE ------ CYCLES - BYTES ------- FLAGS ---------  RESULT -- //
 /* $00 */   {&Cpu::NOP,     &Cpu::addrmode_imm,   0U,     2U,    (    NO_FLAGS   ),   RESULT_NONE, false},
 /* $01 */   {&Cpu::ORA,     &Cpu::addrmode_inx,   6U,     2U,    (    F_Z|F_N    ),   RESULT_A   , false},
 /* $02 */   {&Cpu::NOP,     &Cpu::addrmode_imm,   0U,     2U,    (    NO_FLAGS   ),   RESULT_NONE, false},
@@ -49,15 +49,15 @@ const struct CpuInstruction Cpu::instruction_set[256] = {
 /* $23 */   {&Cpu::NOP,     &Cpu::addrmode_imm,   0U,     2U,    (    NO_FLAGS   ),   RESULT_NONE, false},
 /* $24 */   {&Cpu::BIT,     &Cpu::addrmode_zpg,   3U,     2U,    (    F_Z        ),   RESULT_NONE, false},
 /* $25 */   {&Cpu::AND,     &Cpu::addrmode_zpg,   2U,     2U,    (    F_Z|F_N    ),   RESULT_A   , false},
-/* $26 */   {&Cpu::NOP,     &Cpu::addrmode_imm,   0U,     2U,    (    NO_FLAGS   ),   RESULT_NONE, false},
+/* $26 */   {&Cpu::ROL,     &Cpu::addrmode_zpg,   5U,     2U,    (  F_C|F_Z|F_N  ),   RESULT_MEM , false},
 /* $27 */   {&Cpu::NOP,     &Cpu::addrmode_imm,   0U,     2U,    (    NO_FLAGS   ),   RESULT_NONE, false},
 /* $28 */   {&Cpu::PLP,     &Cpu::addrmode_imp,   4U,     1U,    (    NO_FLAGS   ),   RESULT_NONE, false},
 /* $29 */   {&Cpu::AND,     &Cpu::addrmode_imm,   2U,     2U,    (    F_Z|F_N    ),   RESULT_A   , false},
-/* $2A */   {&Cpu::NOP,     &Cpu::addrmode_imm,   0U,     2U,    (    NO_FLAGS   ),   RESULT_NONE, false},
+/* $2A */   {&Cpu::ROL,     &Cpu::addrmode_imp,   2U,     1U,    (  F_C|F_Z|F_N  ),   RESULT_A   , true },
 /* $2B */   {&Cpu::NOP,     &Cpu::addrmode_imm,   0U,     2U,    (    NO_FLAGS   ),   RESULT_NONE, false},
 /* $2C */   {&Cpu::BIT,     &Cpu::addrmode_abs,   4U,     3U,    (    F_Z        ),   RESULT_NONE, false},
 /* $2D */   {&Cpu::AND,     &Cpu::addrmode_abs,   2U,     3U,    (    F_Z|F_N    ),   RESULT_A   , false},
-/* $2E */   {&Cpu::NOP,     &Cpu::addrmode_imm,   0U,     2U,    (    NO_FLAGS   ),   RESULT_NONE, false},
+/* $2E */   {&Cpu::ROL,     &Cpu::addrmode_abs,   6U,     3U,    (  F_C|F_Z|F_N  ),   RESULT_MEM , false},
 /* $2F */   {&Cpu::NOP,     &Cpu::addrmode_imm,   0U,     2U,    (    NO_FLAGS   ),   RESULT_NONE, false},
 /* $30 */   {&Cpu::BMI,     &Cpu::addrmode_imm,   2U,     2U,    (    NO_FLAGS   ),   RESULT_NONE, false},
 /* $31 */   {&Cpu::AND,     &Cpu::addrmode_iny,   2U,     2U,    (    F_Z|F_N    ),   RESULT_A   , false},
@@ -65,7 +65,7 @@ const struct CpuInstruction Cpu::instruction_set[256] = {
 /* $33 */   {&Cpu::NOP,     &Cpu::addrmode_imm,   0U,     2U,    (    NO_FLAGS   ),   RESULT_NONE, false},
 /* $34 */   {&Cpu::NOP,     &Cpu::addrmode_imm,   0U,     2U,    (    NO_FLAGS   ),   RESULT_NONE, false},
 /* $35 */   {&Cpu::AND,     &Cpu::addrmode_zpx,   2U,     2U,    (    F_Z|F_N    ),   RESULT_A   , false},
-/* $36 */   {&Cpu::NOP,     &Cpu::addrmode_imm,   0U,     2U,    (    NO_FLAGS   ),   RESULT_NONE, false},
+/* $36 */   {&Cpu::ROL,     &Cpu::addrmode_zpx,   6U,     2U,    (  F_C|F_Z|F_N  ),   RESULT_MEM , false},
 /* $37 */   {&Cpu::NOP,     &Cpu::addrmode_imm,   0U,     2U,    (    NO_FLAGS   ),   RESULT_NONE, false},
 /* $38 */   {&Cpu::SEC,     &Cpu::addrmode_imp,   2U,     1U,    (    NO_FLAGS   ),   RESULT_NONE, false},
 /* $39 */   {&Cpu::AND,     &Cpu::addrmode_aby,   2U,     3U,    (    F_Z|F_N    ),   RESULT_A   , false},
@@ -73,7 +73,7 @@ const struct CpuInstruction Cpu::instruction_set[256] = {
 /* $3B */   {&Cpu::NOP,     &Cpu::addrmode_imm,   0U,     2U,    (    NO_FLAGS   ),   RESULT_NONE, false},
 /* $3C */   {&Cpu::NOP,     &Cpu::addrmode_imm,   0U,     2U,    (    NO_FLAGS   ),   RESULT_NONE, false},
 /* $3D */   {&Cpu::AND,     &Cpu::addrmode_abx,   2U,     3U,    (    F_Z|F_N    ),   RESULT_A   , false},
-/* $3E */   {&Cpu::NOP,     &Cpu::addrmode_imm,   0U,     2U,    (    NO_FLAGS   ),   RESULT_NONE, false},
+/* $3E */   {&Cpu::ROL,     &Cpu::addrmode_abx,   7U,     3U,    (  F_C|F_Z|F_N  ),   RESULT_MEM , false},
 /* $3F */   {&Cpu::NOP,     &Cpu::addrmode_imm,   0U,     2U,    (    NO_FLAGS   ),   RESULT_NONE, false},
 /* $40 */   {&Cpu::RTI,     &Cpu::addrmode_imp,   6U,     1U,    (    NO_FLAGS   ),   RESULT_NONE, false},
 /* $41 */   {&Cpu::EOR,     &Cpu::addrmode_inx,   6U,     2U,    (    F_Z|F_N    ),   RESULT_A   , false},
