@@ -40,7 +40,7 @@ TEST_F(LoadTest, LDAZeroPage) {
     int const ret = cpu.tick();
 
     EXPECT_EQ(REG_A, 0x0BU);
-    EXPECT_EQ(ret, 2);
+    EXPECT_EQ(ret, 3);
     EXPECT_EQ(REG_PC, 0x8002U);
 }
 

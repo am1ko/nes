@@ -176,7 +176,7 @@ const struct CpuInstruction Cpu::instruction_set[256] = {
 /* $A2 */   {&Cpu::LDX,     &Cpu::addrmode_imm,   2U,     2U,    (    F_N|F_Z    ),   RESULT_NONE, false},
 /* $A3 */   {&Cpu::NOP,     &Cpu::addrmode_imm,   0U,     2U,    (    NO_FLAGS   ),   RESULT_NONE, false},
 /* $A4 */   {&Cpu::LDY,     &Cpu::addrmode_zpg,   3U,     2U,    (    F_N|F_Z    ),   RESULT_NONE, false},
-/* $A5 */   {&Cpu::LDA,     &Cpu::addrmode_zpg,   2U,     2U,    (    F_N|F_Z    ),   RESULT_A   , false},
+/* $A5 */   {&Cpu::LDA,     &Cpu::addrmode_zpg,   3U,     2U,    (    F_N|F_Z    ),   RESULT_A   , false},
 /* $A6 */   {&Cpu::LDX,     &Cpu::addrmode_zpg,   3U,     2U,    (    F_N|F_Z    ),   RESULT_NONE, false},
 /* $A7 */   {&Cpu::NOP,     &Cpu::addrmode_imm,   0U,     2U,    (    NO_FLAGS   ),   RESULT_NONE, false},
 /* $A8 */   {&Cpu::TAY,     &Cpu::addrmode_imp,   2U,     1U,    (    F_N|F_Z    ),   RESULT_NONE, false},
