@@ -42,11 +42,13 @@ uint16_t Cpu::addrmode_abs() {
 
 // ---------------------------------------------------------------------------------------------- //
 uint16_t Cpu::addrmode_zpx() {
+    // TODO(amiko): need to wrap at zero page boundary
     return memory.read(context.PC++) + context.sregs[X];
 }
 
 // ---------------------------------------------------------------------------------------------- //
 uint16_t Cpu::addrmode_zpy() {
+    // TODO(amiko): need to wrap at zero page boundary
     return memory.read(context.PC++) + context.sregs[Y];
 }
 
@@ -66,7 +68,10 @@ uint16_t Cpu::addrmode_aby() {
 
 // ---------------------------------------------------------------------------------------------- //
 uint16_t Cpu::addrmode_inx() {
-    return memory.read(memory.read(context.PC++) + context.sregs[X]);
+    uint16_t const addr_lsb = (memory.read(context.PC++) + context.sregs[X]) % 256U;
+    uint16_t const addr_msb = (addr_lsb + 1U) % 256U;
+
+    return memory.read(addr_lsb) | (memory.read(addr_msb) << 8);
 }
 
 // ---------------------------------------------------------------------------------------------- //

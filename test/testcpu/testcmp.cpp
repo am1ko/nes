@@ -137,8 +137,8 @@ TEST_F(CmpTest, CmpIndirectX) {
     SET_REG_P(0x6DU);
     EXPECT_MEM_READ_8(REG_PC, 0xC1U);
     EXPECT_MEM_READ_8(REG_PC + 1U, 0x07U);
-    EXPECT_MEM_READ_8(0x07U + REG_X, 0x11U);
-    EXPECT_MEM_READ_8(0x11U, 0x6FU);
+    EXPECT_MEM_READ_16(0x07U + REG_X, 0x1111U);
+    EXPECT_MEM_READ_8(0x1111U, 0x6FU);
 
     int const ret = cpu.tick();
 

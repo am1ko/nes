@@ -104,8 +104,8 @@ TEST_F(LoadTest, LDAIndirectX) {
     SET_REG_X(0x05U);                           // index
     EXPECT_MEM_READ_8(REG_PC, 0xA1U);           // instruction
     EXPECT_MEM_READ_8(REG_PC+1, 0xA0U);         // address of base address
-    EXPECT_MEM_READ_8(0x00A0U + REG_X, 0x11U);  // parameter address
-    EXPECT_MEM_READ_8(0x11U, 0x0BU);            // parameter value
+    EXPECT_MEM_READ_16(0x00A0U + REG_X, 0x1111U);  // parameter address
+    EXPECT_MEM_READ_8(0x1111U, 0x0BU);            // parameter value
 
     int const ret = cpu.tick();
 

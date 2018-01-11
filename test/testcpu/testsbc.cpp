@@ -247,8 +247,8 @@ TEST_F(SbcTest, SbcIndexedIndirect) {
     SET_REG_X(0x04U);                           // index
     EXPECT_MEM_READ_8(REG_PC, 0xE1U);           // instruction
     EXPECT_MEM_READ_8(REG_PC+1, 0xF6U);         // address of base address
-    EXPECT_MEM_READ_8(0x00F6U + REG_X, 0x11U);  // parameter address
-    EXPECT_MEM_READ_8(0x11U, 0x02U);            // parameter value
+    EXPECT_MEM_READ_16(0x00F6U + REG_X, 0x1111U);  // parameter address
+    EXPECT_MEM_READ_8(0x1111U, 0x02U);            // parameter value
     SET_REG_A(0x70U);
     SET_REG_P(0x01U);
 

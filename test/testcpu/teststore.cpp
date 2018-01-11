@@ -126,8 +126,8 @@ TEST_F(StoreTest, STAIndirectX) {
     SET_REG_X(0x01U);
     EXPECT_MEM_READ_8(REG_PC, 0x81U);
     EXPECT_MEM_READ_8(REG_PC+1, 0x0BU);
-    EXPECT_MEM_READ_8(0x0BU + REG_X, 0xAAU);
-    EXPECT_MEM_WRITE_8(0x00AAU, 0x33U);
+    EXPECT_MEM_READ_16(0x0BU + REG_X, 0xAAAAU);
+    EXPECT_MEM_WRITE_8(0xAAAAU, 0x33U);
 
     int const ret = cpu.tick();
 

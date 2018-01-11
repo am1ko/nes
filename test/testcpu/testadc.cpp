@@ -268,11 +268,11 @@ TEST_F(AdcTest, AdcAbsoluteYIndexed) {
 
 // ---------------------------------------------------------------------------------------------- //
 TEST_F(AdcTest, AdcIndexedIndirect) {
-    SET_REG_X(0x04U);                           // index
-    EXPECT_MEM_READ_8(REG_PC, 0x61U);           // instruction
-    EXPECT_MEM_READ_8(REG_PC+1, 0xF6U);         // address of base address
-    EXPECT_MEM_READ_8(0x00F6U + REG_X, 0x11U);  // parameter address
-    EXPECT_MEM_READ_8(0x11U, 0x20U);            // parameter value
+    SET_REG_X(0x04U);                              // index
+    EXPECT_MEM_READ_8(REG_PC, 0x61U);              // instruction
+    EXPECT_MEM_READ_8(REG_PC+1, 0xF6U);            // address of base address
+    EXPECT_MEM_READ_16(0x00F6U + REG_X, 0x1111U);  // parameter address
+    EXPECT_MEM_READ_8(0x1111U, 0x20U);             // parameter value
     SET_REG_A(0x21U);
 
     cpu.tick();
@@ -280,6 +280,23 @@ TEST_F(AdcTest, AdcIndexedIndirect) {
     EXPECT_EQ(REG_A, 0x41U);
     EXPECT_EQ(REG_PC, 0x0602U);
 }
+
+// ---------------------------------------------------------------------------------------------- //
+TEST_F(AdcTest, AdcIndexedIndirectPageBoundary) {
+    SET_REG_X(0x00U);                              // index
+    EXPECT_MEM_READ_8(REG_PC, 0x61U);              // instruction
+    EXPECT_MEM_READ_8(REG_PC+1, 0xFFU);            // address of base address
+    EXPECT_MEM_READ_8(0x00FFU + REG_X, 0x11U);     // parameter address LSB
+    EXPECT_MEM_READ_8(0x0000U + REG_X, 0x22U);     // parameter address MSB
+    EXPECT_MEM_READ_8(0x2211U, 0x20U);             // parameter value
+    SET_REG_A(0x21U);
+
+    cpu.tick();
+
+    EXPECT_EQ(REG_A, 0x41U);
+    EXPECT_EQ(REG_PC, 0x0602U);
+}
+
 
 // ---------------------------------------------------------------------------------------------- //
 TEST_F(AdcTest, AdcIndirectIndexed) {
