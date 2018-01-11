@@ -162,3 +162,89 @@ TEST_F(IncTest, IncAbsoluteXIndexed) {
     EXPECT_EQ(ZEROF, false);
     EXPECT_EQ(NEGF, true);
 }
+
+// ---------------------------------------------------------------------------------------------- //
+TEST_F(IncTest, DecZeroPage) {
+    EXPECT_MEM_READ_8(REG_PC, 0xC6U);
+    EXPECT_MEM_READ_8(REG_PC+1U, 0x55U);
+    EXPECT_MEM_READ_8(0x0055U, 0x03U);
+    EXPECT_MEM_WRITE_8(0x0055U, 0x02U);
+
+    int const ret = cpu.tick();
+
+    EXPECT_EQ(ret, 5);
+    EXPECT_EQ(ZEROF, false);
+    EXPECT_EQ(NEGF, false);
+}
+
+// ---------------------------------------------------------------------------------------------- //
+TEST_F(IncTest, DecZeroPageZeroFlag) {
+    EXPECT_MEM_READ_8(REG_PC, 0xC6U);
+    EXPECT_MEM_READ_8(REG_PC+1U, 0x55U);
+    EXPECT_MEM_READ_8(0x0055U, 0x01U);
+    EXPECT_MEM_WRITE_8(0x0055U, 0x00U);
+
+    int const ret = cpu.tick();
+
+    EXPECT_EQ(ret, 5);
+    EXPECT_EQ(ZEROF, true);
+    EXPECT_EQ(NEGF, false);
+}
+
+// ---------------------------------------------------------------------------------------------- //
+TEST_F(IncTest, DecZeroPageNegative) {
+    EXPECT_MEM_READ_8(REG_PC, 0xC6U);
+    EXPECT_MEM_READ_8(REG_PC+1U, 0x55U);
+    EXPECT_MEM_READ_8(0x0055U, 0x00U);
+    EXPECT_MEM_WRITE_8(0x0055U, 0xFFU);
+
+    int const ret = cpu.tick();
+
+    EXPECT_EQ(ret, 5);
+    EXPECT_EQ(ZEROF, false);
+    EXPECT_EQ(NEGF, true);
+}
+
+// ---------------------------------------------------------------------------------------------- //
+TEST_F(IncTest, DecZeroPageXIndexed) {
+    SET_REG_X(8U);
+    EXPECT_MEM_READ_8(REG_PC, 0xD6U);
+    EXPECT_MEM_READ_8(REG_PC+1U, 0x55U);
+    EXPECT_MEM_READ_8(0x0055U + 8U, 0x03U);
+    EXPECT_MEM_WRITE_8(0x0055U + 8U, 0x02U);
+
+    int const ret = cpu.tick();
+
+    EXPECT_EQ(ret, 6);
+    EXPECT_EQ(ZEROF, false);
+    EXPECT_EQ(NEGF, false);
+}
+
+// ---------------------------------------------------------------------------------------------- //
+TEST_F(IncTest, DecAbsolute) {
+    EXPECT_MEM_READ_8(REG_PC, 0xCEU);
+    EXPECT_MEM_READ_16(REG_PC+1U, 0x4455U);
+    EXPECT_MEM_READ_8(0x4455U, 0xAAU);
+    EXPECT_MEM_WRITE_8(0x4455U, 0xA9U);
+
+    int const ret = cpu.tick();
+
+    EXPECT_EQ(ret, 6);
+    EXPECT_EQ(ZEROF, false);
+    EXPECT_EQ(NEGF, true);
+}
+
+// ---------------------------------------------------------------------------------------------- //
+TEST_F(IncTest, DecAbsoluteXIndexed) {
+    SET_REG_X(9U);
+    EXPECT_MEM_READ_8(REG_PC, 0xDEU);
+    EXPECT_MEM_READ_16(REG_PC+1U, 0x4455U);
+    EXPECT_MEM_READ_8(0x4455U + 9U, 0xAAU);
+    EXPECT_MEM_WRITE_8(0x4455U + 9U, 0xA9U);
+
+    int const ret = cpu.tick();
+
+    EXPECT_EQ(ret, 7);
+    EXPECT_EQ(ZEROF, false);
+    EXPECT_EQ(NEGF, true);
+}

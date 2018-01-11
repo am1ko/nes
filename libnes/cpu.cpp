@@ -401,6 +401,12 @@ uint16_t Cpu::INC(uint16_t operand_addr, uint8_t &extra_cycles, bool op_in_acc) 
 }
 
 // ---------------------------------------------------------------------------------------------- //
+uint16_t Cpu::DEC(uint16_t operand_addr, uint8_t &extra_cycles, bool op_in_acc) {
+    operand = memory.read(operand_addr);
+    return operand-1U;
+}
+
+// ---------------------------------------------------------------------------------------------- //
 uint16_t Cpu::DEX(uint16_t operand_addr, uint8_t &extra_cycles, bool op_in_acc) {
     return --context.sregs[X];
 }

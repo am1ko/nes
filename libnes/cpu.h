@@ -84,7 +84,7 @@ class Cpu
     uint16_t CMP(uint16_t operand_addr, uint8_t &extra_cycles, bool op_in_acc);
     uint16_t CPX(uint16_t operand_addr, uint8_t &extra_cycles, bool op_in_acc);
     uint16_t CPY(uint16_t operand_addr, uint8_t &extra_cycles, bool op_in_acc);
-//  uint16_t DEC(uint16_t operand_addr, uint8_t &extra_cycles, bool op_in_acc);
+    uint16_t DEC(uint16_t operand_addr, uint8_t &extra_cycles, bool op_in_acc);
     uint16_t DEX(uint16_t operand_addr, uint8_t &extra_cycles, bool op_in_acc);
     uint16_t DEY(uint16_t operand_addr, uint8_t &extra_cycles, bool op_in_acc);
     uint16_t EOR(uint16_t operand_addr, uint8_t &extra_cycles, bool op_in_acc);
