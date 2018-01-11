@@ -30,8 +30,9 @@ TEST_F(AslTest, AslAccumulator) {
     EXPECT_MEM_READ_8(REG_PC, 0x0AU);
     SET_REG_A(0x55U);
 
-    cpu.tick();
+    int const ret = cpu.tick();
 
+    EXPECT_EQ(ret, 2U);
     EXPECT_EQ(REG_A, 0xAAU);
     EXPECT_EQ(REG_PC, 0x0801U);
 }
@@ -114,8 +115,9 @@ TEST_F(AslTest, AslZeroPage) {
     EXPECT_MEM_READ_8(0x000A, 0x33U);
     EXPECT_CALL(memory, write(0x000AU, 0x66U));
 
-    cpu.tick();
+    int const ret = cpu.tick();
 
+    EXPECT_EQ(ret, 5U);
     EXPECT_EQ(REG_PC, 0x0802U);
 }
 
@@ -127,8 +129,9 @@ TEST_F(AslTest, AslZeroPageXIndexed) {
     EXPECT_CALL(memory, write(0x00A3U, 0x66U));
     SET_REG_X(0x03U);
 
-    cpu.tick();
+    int const ret = cpu.tick();
 
+    EXPECT_EQ(ret, 6U);
     EXPECT_EQ(REG_PC, 0x0802U);
 }
 
@@ -139,8 +142,9 @@ TEST_F(AslTest, AslAbsolute) {
     EXPECT_MEM_READ_8(0xABBA, 0x10U);      // parameter value
     EXPECT_MEM_WRITE_8(0xABBAU, 0x20U);
 
-    cpu.tick();
+    int const ret = cpu.tick();
 
+    EXPECT_EQ(ret, 6U);
     EXPECT_EQ(REG_PC, 0x0803U);
 }
 
@@ -152,7 +156,8 @@ TEST_F(AslTest, AslAbsoluteXIndexed) {
     EXPECT_MEM_READ_8(0xABBA + REG_X, 0x10U);      // parameter value
     EXPECT_MEM_WRITE_8(0xABBAU + REG_X, 0x20U);
 
-    cpu.tick();
+    int const ret = cpu.tick();
 
+    EXPECT_EQ(ret, 7U);
     EXPECT_EQ(REG_PC, 0x0803U);
 }
