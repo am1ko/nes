@@ -113,7 +113,7 @@ class Cpu
     uint16_t SEI(uint16_t operand_addr, uint8_t &extra_cycles, bool op_in_acc);
     uint16_t STA(uint16_t operand_addr, uint8_t &extra_cycles, bool op_in_acc);
     uint16_t STX(uint16_t operand_addr, uint8_t &extra_cycles, bool op_in_acc);
-//  uint16_t STY(uint16_t operand_addr, uint8_t &extra_cycles, bool op_in_acc);
+    uint16_t STY(uint16_t operand_addr, uint8_t &extra_cycles, bool op_in_acc);
     uint16_t TAX(uint16_t operand_addr, uint8_t &extra_cycles, bool op_in_acc);
     uint16_t TAY(uint16_t operand_addr, uint8_t &extra_cycles, bool op_in_acc);
     uint16_t TSX(uint16_t operand_addr, uint8_t &extra_cycles, bool op_in_acc);

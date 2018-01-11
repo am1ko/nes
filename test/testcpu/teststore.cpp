@@ -147,3 +147,40 @@ TEST_F(StoreTest, STAIndirectY) {
 
     EXPECT_EQ(ret, 6U);
 }
+
+// ---------------------------------------------------------------------------------------------- //
+TEST_F(StoreTest, STYZeroPage) {
+    SET_REG_Y(0x33U);
+    EXPECT_MEM_READ_8(REG_PC, 0x84U);
+    EXPECT_MEM_READ_8(REG_PC+1, 0x0BU);
+    EXPECT_MEM_WRITE_8(0x000BU, 0x33U);
+
+    int const ret = cpu.tick();
+
+    EXPECT_EQ(ret, 3U);
+}
+
+// ---------------------------------------------------------------------------------------------- //
+TEST_F(StoreTest, STYZeroPageX) {
+    SET_REG_Y(0x33U);
+    SET_REG_X(0x10U);
+    EXPECT_MEM_READ_8(REG_PC, 0x94U);
+    EXPECT_MEM_READ_8(REG_PC+1, 0x0BU);
+    EXPECT_MEM_WRITE_8(0x001BU, 0x33U);
+
+    int const ret = cpu.tick();
+
+    EXPECT_EQ(ret, 4U);
+}
+
+// ---------------------------------------------------------------------------------------------- //
+TEST_F(StoreTest, STYAbsolute) {
+    SET_REG_Y(0x33U);
+    EXPECT_MEM_READ_8(REG_PC, 0x8CU);
+    EXPECT_MEM_READ_16(REG_PC+1, 0x0B0BU);
+    EXPECT_MEM_WRITE_8(0x0B0BU, 0x33U);
+
+    int const ret = cpu.tick();
+
+    EXPECT_EQ(ret, 4U);
+}

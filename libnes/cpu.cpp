@@ -163,12 +163,6 @@ uint16_t Cpu::LDY(uint16_t operand_addr, uint8_t &extra_cycles, bool op_in_acc) 
 }
 
 // ---------------------------------------------------------------------------------------------- //
-uint16_t Cpu::STX(uint16_t operand_addr, uint8_t &extra_cycles, bool op_in_acc) {
-    memory.write(operand_addr, context.sregs[X]);
-    return 0U;
-}
-
-// ---------------------------------------------------------------------------------------------- //
 uint16_t Cpu::JSR(uint16_t operand_addr, uint8_t &extra_cycles, bool op_in_acc) {
     uint16_t const next_addr_minus_one = context.PC - 1U;
     memory.write(0x100U + context.SP--, (next_addr_minus_one >> 8) & 0xFF);
@@ -328,6 +322,16 @@ uint16_t Cpu::LDA(uint16_t operand_addr, uint8_t &extra_cycles, bool op_in_acc) 
 // ---------------------------------------------------------------------------------------------- //
 uint16_t Cpu::STA(uint16_t operand_addr, uint8_t &extra_cycles, bool op_in_acc) {
     return context.sregs[A];
+}
+
+// ---------------------------------------------------------------------------------------------- //
+uint16_t Cpu::STX(uint16_t operand_addr, uint8_t &extra_cycles, bool op_in_acc) {
+    return context.sregs[X];
+}
+
+// ---------------------------------------------------------------------------------------------- //
+uint16_t Cpu::STY(uint16_t operand_addr, uint8_t &extra_cycles, bool op_in_acc) {
+    return context.sregs[Y];
 }
 
 // ---------------------------------------------------------------------------------------------- //
