@@ -241,7 +241,7 @@ const struct CpuInstruction Cpu::instruction_set[256] = {
 /* $E3 */   {&Cpu::NOP,     &Cpu::addrmode_imm,   0U,     2U,    (    NO_FLAGS   ),   RESULT_NONE, false},
 /* $E4 */   {&Cpu::CPX,     &Cpu::addrmode_zpg,   3U,     2U,    (    F_N|F_Z    ),   RESULT_NONE, false},
 /* $E5 */   {&Cpu::SBC,     &Cpu::addrmode_zpg,   3U,     2U,    (F_N|F_V|F_Z|F_C),   RESULT_A   , false},
-/* $E6 */   {&Cpu::NOP,     &Cpu::addrmode_imm,   0U,     2U,    (    NO_FLAGS   ),   RESULT_NONE, false},
+/* $E6 */   {&Cpu::INC,     &Cpu::addrmode_zpg,   5U,     2U,    (    F_N|F_Z    ),   RESULT_MEM , false},
 /* $E7 */   {&Cpu::NOP,     &Cpu::addrmode_imm,   0U,     2U,    (    NO_FLAGS   ),   RESULT_NONE, false},
 /* $E8 */   {&Cpu::INX,     &Cpu::addrmode_imp,   2U,     1U,    (    F_N|F_Z    ),   RESULT_NONE, false},
 /* $E9 */   {&Cpu::SBC,     &Cpu::addrmode_imm,   2U,     2U,    (F_N|F_V|F_Z|F_C),   RESULT_A   , false},
@@ -249,7 +249,7 @@ const struct CpuInstruction Cpu::instruction_set[256] = {
 /* $EB */   {&Cpu::NOP,     &Cpu::addrmode_imm,   0U,     2U,    (    NO_FLAGS   ),   RESULT_NONE, false},
 /* $EC */   {&Cpu::CPX,     &Cpu::addrmode_abs,   4U,     3U,    (    F_N|F_Z    ),   RESULT_NONE, false},
 /* $ED */   {&Cpu::SBC,     &Cpu::addrmode_abs,   4U,     3U,    (F_N|F_V|F_Z|F_C),   RESULT_A   , false},
-/* $EE */   {&Cpu::NOP,     &Cpu::addrmode_imm,   0U,     2U,    (    NO_FLAGS   ),   RESULT_NONE, false},
+/* $EE */   {&Cpu::INC,     &Cpu::addrmode_abs,   6U,     3U,    (    F_N|F_Z    ),   RESULT_MEM , false},
 /* $EF */   {&Cpu::NOP,     &Cpu::addrmode_imm,   0U,     2U,    (    NO_FLAGS   ),   RESULT_NONE, false},
 /* $F0 */   {&Cpu::BEQ,     &Cpu::addrmode_imm,   2U,     2U,    (    NO_FLAGS   ),   RESULT_NONE, false},
 /* $F1 */   {&Cpu::SBC,     &Cpu::addrmode_iny,   5U,     2U,    (F_N|F_V|F_Z|F_C),   RESULT_A   , false},
@@ -257,7 +257,7 @@ const struct CpuInstruction Cpu::instruction_set[256] = {
 /* $F3 */   {&Cpu::NOP,     &Cpu::addrmode_imm,   0U,     2U,    (    NO_FLAGS   ),   RESULT_NONE, false},
 /* $F4 */   {&Cpu::NOP,     &Cpu::addrmode_imm,   0U,     2U,    (    NO_FLAGS   ),   RESULT_NONE, false},
 /* $F5 */   {&Cpu::SBC,     &Cpu::addrmode_zpx,   4U,     2U,    (F_N|F_V|F_Z|F_C),   RESULT_A   , false},
-/* $F6 */   {&Cpu::NOP,     &Cpu::addrmode_imm,   0U,     2U,    (    NO_FLAGS   ),   RESULT_NONE, false},
+/* $F6 */   {&Cpu::INC,     &Cpu::addrmode_zpx,   6U,     2U,    (    F_N|F_Z    ),   RESULT_MEM , false},
 /* $F7 */   {&Cpu::NOP,     &Cpu::addrmode_imm,   0U,     2U,    (    NO_FLAGS   ),   RESULT_NONE, false},
 /* $F8 */   {&Cpu::SED,     &Cpu::addrmode_imp,   2U,     1U,    (    NO_FLAGS   ),   RESULT_NONE, false},
 /* $F9 */   {&Cpu::SBC,     &Cpu::addrmode_aby,   4U,     3U,    (F_N|F_V|F_Z|F_C),   RESULT_A   , false},
@@ -265,7 +265,7 @@ const struct CpuInstruction Cpu::instruction_set[256] = {
 /* $FB */   {&Cpu::NOP,     &Cpu::addrmode_imm,   0U,     2U,    (    NO_FLAGS   ),   RESULT_NONE, false},
 /* $FC */   {&Cpu::NOP,     &Cpu::addrmode_imm,   0U,     2U,    (    NO_FLAGS   ),   RESULT_NONE, false},
 /* $FD */   {&Cpu::SBC,     &Cpu::addrmode_abx,   4U,     3U,    (F_N|F_V|F_Z|F_C),   RESULT_A   , false},
-/* $FE */   {&Cpu::NOP,     &Cpu::addrmode_imm,   0U,     2U,    (    NO_FLAGS   ),   RESULT_NONE, false},
+/* $FE */   {&Cpu::INC,     &Cpu::addrmode_abx,   7U,     3U,    (    F_N|F_Z    ),   RESULT_MEM , false},
 /* $FF */   {&Cpu::NOP,     &Cpu::addrmode_imm,   0U,     2U,    (    NO_FLAGS   ),   RESULT_NONE, false}
 };
 
