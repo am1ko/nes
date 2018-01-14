@@ -119,8 +119,8 @@ TEST_F(LoadTest, LDAIndirectY) {
     SET_REG_Y(0x04U);                           // index
     EXPECT_MEM_READ_8(REG_PC, 0xB1U);           // instruction
     EXPECT_MEM_READ_8(REG_PC+1, 0xF6U);         // pointer to pointer to table
-    EXPECT_MEM_READ_8(0x00F6U, 0x11U);          // table base address
-    EXPECT_MEM_READ_8(0x11U + REG_Y, 0x0BU);    // index the table using Y
+    EXPECT_MEM_READ_16(0x00F6U, 0x1111U);       // table base address
+    EXPECT_MEM_READ_8(0x1111U + REG_Y, 0x0BU);  // index the table using Y
 
     int const ret = cpu.tick();
 

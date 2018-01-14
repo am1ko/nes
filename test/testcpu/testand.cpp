@@ -197,9 +197,9 @@ TEST_F(AndTest, AndIndexedIndirect) {
 // ---------------------------------------------------------------------------------------------- //
 TEST_F(AndTest, AndIndirectIndexed) {
     EXPECT_MEM_READ_8(REG_PC, 0x31U);
-    EXPECT_MEM_READ_8(REG_PC + 1, 0xF6U);  // F6 == addr of addr base
-    EXPECT_MEM_READ_8(0x00F6U, 0x11U);             // addr = read(F6 + offset)
-    EXPECT_MEM_READ_8(0x11U + 0x04U, 0x20U);       // read actual parameter value
+    EXPECT_MEM_READ_8(REG_PC + 1, 0xF6U);          // F6 == addr of addr base
+    EXPECT_MEM_READ_16(0x00F6U, 0x1122U);          // addr = read(F6 + offset)
+    EXPECT_MEM_READ_8(0x1122U + 0x04U, 0x20U);     // read actual parameter value
     SET_REG_A(0x21U);
     SET_REG_Y(0x04U);
 

@@ -310,8 +310,8 @@ TEST_F(AdcTest, AdcIndirectIndexed) {
     SET_REG_Y(0x04U);                           // index
     EXPECT_MEM_READ_8(REG_PC, 0x71U);           // instruction
     EXPECT_MEM_READ_8(REG_PC+1, 0xF6U);         // address of base address
-    EXPECT_MEM_READ_8(0x00F6U, 0x11U);          // base address
-    EXPECT_MEM_READ_8(0x11U + REG_Y, 0x20U);    // parameter value
+    EXPECT_MEM_READ_16(0x00F6U, 0x1111U);       // base address
+    EXPECT_MEM_READ_8(0x1111U + REG_Y, 0x20U);  // parameter value
     SET_REG_A(0x21U);
 
     int const ret = cpu.tick();
@@ -319,4 +319,20 @@ TEST_F(AdcTest, AdcIndirectIndexed) {
     EXPECT_EQ(ret, 5U);
     EXPECT_EQ(REG_A, 0x41U);
     EXPECT_EQ(REG_PC, 0x0602U);
+}
+
+// ---------------------------------------------------------------------------------------------- //
+TEST_F(AdcTest, AdcIndirectIndexedPageBoundary) {
+    SET_REG_Y(0x01U);                              // index
+    EXPECT_MEM_READ_8(REG_PC, 0x71U);              // instruction
+    EXPECT_MEM_READ_8(REG_PC+1, 0xFFU);            // address of base address
+    EXPECT_MEM_READ_8(0x00FFU, 0x11U);             // parameter address LSB
+    EXPECT_MEM_READ_8(0x0000U, 0x22U);             // parameter address MSB
+    EXPECT_MEM_READ_8(0x2211U + 0x01U, 0x20U);     // parameter value
+    SET_REG_A(0x21U);
+
+    cpu.tick();
+
+    // EXPECT_EQ(REG_A, 0x41U);
+    // EXPECT_EQ(REG_PC, 0x0602U);
 }
