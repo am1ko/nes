@@ -13,61 +13,61 @@ Cpu::Cpu(IMemory& memory) : memory(memory), logger(0) {
 }
 
 // ---------------------------------------------------------------------------------------------- //
-uint16_t Cpu::addrmode_imp() {
+uint16_t Cpu::addrmode_imp(uint8_t &extra_cycles) {
     return 0UL;
 }
 
 // ---------------------------------------------------------------------------------------------- //
-uint16_t Cpu::addrmode_imm() {
+uint16_t Cpu::addrmode_imm(uint8_t &extra_cycles) {
     context.PC++;
     return context.PC-1;
 }
 
 // ---------------------------------------------------------------------------------------------- //
-uint16_t Cpu::addrmode_ind() {
-    uint16_t const addr = addrmode_abs();
+uint16_t Cpu::addrmode_ind(uint8_t &extra_cycles) {
+    uint16_t const addr = addrmode_abs(extra_cycles);
     return memory.read(addr) | (memory.read(addr+1) << 8);
 }
 
 // ---------------------------------------------------------------------------------------------- //
-uint16_t Cpu::addrmode_zpg() {
+uint16_t Cpu::addrmode_zpg(uint8_t &extra_cycles) {
     return memory.read(context.PC++);
 }
 
 // ---------------------------------------------------------------------------------------------- //
-uint16_t Cpu::addrmode_abs() {
+uint16_t Cpu::addrmode_abs(uint8_t &extra_cycles) {
     context.PC += 2U;
     return memory.read(context.PC - 2U) | (memory.read(context.PC - 1U) << 8);
 }
 
 // ---------------------------------------------------------------------------------------------- //
-uint16_t Cpu::addrmode_zpx() {
+uint16_t Cpu::addrmode_zpx(uint8_t &extra_cycles) {
     // TODO(amiko): need to wrap at zero page boundary
     return memory.read(context.PC++) + context.sregs[X];
 }
 
 // ---------------------------------------------------------------------------------------------- //
-uint16_t Cpu::addrmode_zpy() {
+uint16_t Cpu::addrmode_zpy(uint8_t &extra_cycles) {
     // TODO(amiko): need to wrap at zero page boundary
     return memory.read(context.PC++) + context.sregs[Y];
 }
 
 // ---------------------------------------------------------------------------------------------- //
 // TODO(amiko): need to use X with carry?
-uint16_t Cpu::addrmode_abx() {
+uint16_t Cpu::addrmode_abx(uint8_t &extra_cycles) {
     context.PC += 2U;
     return (memory.read(context.PC - 2U) | (memory.read(context.PC - 1) << 8)) + context.sregs[X];
 }
 
 // ---------------------------------------------------------------------------------------------- //
 // TODO(amiko): need to use Y with carry?
-uint16_t Cpu::addrmode_aby() {
+uint16_t Cpu::addrmode_aby(uint8_t &extra_cycles) {
     context.PC += 2U;
     return (memory.read(context.PC - 2U) | (memory.read(context.PC - 1U) << 8)) + context.sregs[Y];
 }
 
 // ---------------------------------------------------------------------------------------------- //
-uint16_t Cpu::addrmode_inx() {
+uint16_t Cpu::addrmode_inx(uint8_t &extra_cycles) {
     uint16_t const addr_lsb = (memory.read(context.PC++) + context.sregs[X]) % 256U;
     uint16_t const addr_msb = (addr_lsb + 1U) % 256U;
 
@@ -75,11 +75,19 @@ uint16_t Cpu::addrmode_inx() {
 }
 
 // ---------------------------------------------------------------------------------------------- //
-uint16_t Cpu::addrmode_iny() {
+uint16_t Cpu::addrmode_iny(uint8_t &extra_cycles) {
     uint16_t const addr_lsb = memory.read(context.PC++);
     uint16_t const addr_msb = (addr_lsb + 1U) % 256U;
+    uint16_t const base_addr = (memory.read(addr_lsb) | (memory.read(addr_msb) << 8));
 
-    return (memory.read(addr_lsb) | (memory.read(addr_msb) << 8)) + context.sregs[Y];
+    uint8_t const page_1 = base_addr / 256U;
+    uint8_t const page_2 = (base_addr + context.sregs[Y] % 256) / 256U;
+
+    if (page_1 != page_2) {
+        extra_cycles++;
+    }
+
+    return base_addr + context.sregs[Y];
 }
 
 // ---------------------------------------------------------------------------------------------- //
@@ -511,7 +519,7 @@ void Cpu::update_flags(uint16_t result, uint8_t mask) {
 
 // ---------------------------------------------------------------------------------------------- //
 void Cpu::branch(int8_t op, uint8_t &extra_cycles) {
-    extra_cycles = 1U;
+    extra_cycles++;
     if (op >= 0) {
         context.PC += op;
     }
@@ -572,7 +580,7 @@ unsigned Cpu::tick() {
     log(pc, instr->bytes, instr->cycles);
 
     // --- FETCH OPERAND ADDRESS ------------------ //
-    uint16_t const addr = (*this.*instr->addrmode_handler)();
+    uint16_t const addr = (*this.*instr->addrmode_handler)(extra_cycles);
 
     // --- EXECUTE -------------------------------- //
     uint16_t const result = (*this.*instr->instr_executor)(addr, extra_cycles,  instr->op_in_acc);

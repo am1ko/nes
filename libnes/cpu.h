@@ -52,17 +52,17 @@ class Cpu
     void resultmode_mem(uint16_t addr, uint8_t result);
     void resultmode_reg_a(uint16_t addr, uint8_t result);
     // --- ADDRESSING MODES --------------------------------------------------------------------- //
-    uint16_t addrmode_imp();
-    uint16_t addrmode_imm();
-    uint16_t addrmode_ind();
-    uint16_t addrmode_zpg();
-    uint16_t addrmode_abs();
-    uint16_t addrmode_zpx();
-    uint16_t addrmode_zpy();
-    uint16_t addrmode_abx();
-    uint16_t addrmode_aby();
-    uint16_t addrmode_inx();
-    uint16_t addrmode_iny();
+    uint16_t addrmode_imp(uint8_t &extra_cycles);
+    uint16_t addrmode_imm(uint8_t &extra_cycles);
+    uint16_t addrmode_ind(uint8_t &extra_cycles);
+    uint16_t addrmode_zpg(uint8_t &extra_cycles);
+    uint16_t addrmode_abs(uint8_t &extra_cycles);
+    uint16_t addrmode_zpx(uint8_t &extra_cycles);
+    uint16_t addrmode_zpy(uint8_t &extra_cycles);
+    uint16_t addrmode_abx(uint8_t &extra_cycles);
+    uint16_t addrmode_aby(uint8_t &extra_cycles);
+    uint16_t addrmode_inx(uint8_t &extra_cycles);
+    uint16_t addrmode_iny(uint8_t &extra_cycles);
     // --- INSTRUCTIONS ------------------------------------------------------------------------- //
     uint16_t ADC(uint16_t operand_addr, uint8_t &extra_cycles, bool op_in_acc);
     uint16_t AND(uint16_t operand_addr, uint8_t &extra_cycles, bool op_in_acc);
@@ -136,7 +136,7 @@ public:
 
 struct CpuInstruction {
     uint16_t (Cpu::*instr_executor)(uint16_t, uint8_t&, bool);
-    uint16_t (Cpu::*addrmode_handler)();
+    uint16_t (Cpu::*addrmode_handler)(uint8_t&);
     uint8_t cycles;
     uint8_t bytes;
     uint8_t flags;

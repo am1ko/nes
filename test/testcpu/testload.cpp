@@ -269,3 +269,18 @@ TEST_F(LoadTest, LdyAbsoluteXIndexed) {
     EXPECT_EQ(ret, 4);
     EXPECT_EQ(REG_Y, 0x22U);
 }
+
+// ---------------------------------------------------------------------------------------------- //
+TEST_F(LoadTest, LdyIndirectPageBoundary) {
+    SET_REG_Y(0x34U);                           // index
+    EXPECT_MEM_READ_8(REG_PC, 0xB1U);           // instruction
+    EXPECT_MEM_READ_8(REG_PC+1, 0x97U);         // pointer to pointer to table
+    EXPECT_MEM_READ_16(0x0097U, 0xFFFFU);       // table base address
+    EXPECT_MEM_READ_8(0x0033U, 0x0BU);          // index the table using Y
+
+    int const ret = cpu.tick();
+
+    EXPECT_EQ(REG_A, 0x0BU);
+    EXPECT_EQ(ret, 6);
+    EXPECT_EQ(REG_PC, 0x8002U);
+}
