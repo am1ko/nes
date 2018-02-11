@@ -45,6 +45,19 @@ TEST_F(StoreTest, STXZeroPageYIndexed) {
 }
 
 // ---------------------------------------------------------------------------------------------- //
+TEST_F(StoreTest, STXZeroPageYIndexedWrap) {
+    SET_REG_X(0x22U);
+    SET_REG_Y(0x02U);
+    EXPECT_MEM_READ_8(0xC000U, 0x96U);
+    EXPECT_MEM_READ_8(REG_PC + 1, 0xFFU);
+    EXPECT_MEM_WRITE_8(0x01U, 0x22U);
+
+    unsigned const ret = cpu.tick();
+
+    EXPECT_EQ(ret, 4U);
+}
+
+// ---------------------------------------------------------------------------------------------- //
 TEST_F(StoreTest, STXZeroPageAbsolute) {
     SET_REG_X(0x33U);
     EXPECT_MEM_READ_8(0xC000U, 0x8EU);

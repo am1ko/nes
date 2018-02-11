@@ -53,14 +53,12 @@ uint16_t Cpu::addrmode_abs(uint8_t &extra_cycles) {
 
 // ---------------------------------------------------------------------------------------------- //
 uint16_t Cpu::addrmode_zpx(uint8_t &extra_cycles) {
-    // TODO(amiko): need to wrap at zero page boundary
-    return memory.read(context.PC++) + context.sregs[X];
+    return (memory.read(context.PC++) + context.sregs[X]) % 256U;
 }
 
 // ---------------------------------------------------------------------------------------------- //
 uint16_t Cpu::addrmode_zpy(uint8_t &extra_cycles) {
-    // TODO(amiko): need to wrap at zero page boundary
-    return memory.read(context.PC++) + context.sregs[Y];
+    return (memory.read(context.PC++) + context.sregs[Y]) % 256U;
 }
 
 // ---------------------------------------------------------------------------------------------- //
