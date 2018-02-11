@@ -2,6 +2,7 @@
 #include "memory.h"
 #ifdef DEBUG_MEM
 #include <iostream>
+#include <boost/format.hpp>
 #endif
 
 // ---------------------------------------------------------------------------------------------- //
@@ -23,9 +24,6 @@ Memory::~Memory() {
 // ---------------------------------------------------------------------------------------------- //
 uint8_t Memory::read(uint16_t addr) {
     uint8_t ret = 0U;
-#ifdef DEBUG_MEM
-    std::cout << "read from " << std::hex << addr;
-#endif
 
     if (addr <= 0x2000U) {
         // ram address
@@ -40,14 +38,12 @@ uint8_t Memory::read(uint16_t addr) {
 
         file.seekg(offset);
         file.get((char&)ret);
-
-#ifdef DEBUG_MEM
-        std::cout << " file offset " << offset;
-#endif
     }
 
 #ifdef DEBUG_MEM
-    std::cout << " return " << std::hex << static_cast<int>(ret) << std::endl;
+    std::cout << "RD[" << boost::format("0x%04X") % addr << "] <- ";
+    std::cout << boost::format("0x%02X") % static_cast<int>(ret);
+    std::cout << std::endl;
 #endif
 
     return ret;
@@ -65,7 +61,8 @@ void Memory::write(uint16_t addr, uint8_t value) {
     }
 
 #ifdef DEBUG_MEM
-    std::cout << "write " << std::hex << static_cast<int>(value) << " to " << std::hex
-              << addr << std::endl;
+    std::cout << "WR[" << boost::format("0x%04X") % addr << "] -> ";
+    std::cout << boost::format("0x%02X") % static_cast<int>(value);
+    std::cout << std::endl;
 #endif
 }
