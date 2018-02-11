@@ -284,3 +284,17 @@ TEST_F(LoadTest, LdyIndirectPageBoundary) {
     EXPECT_EQ(ret, 6);
     EXPECT_EQ(REG_PC, 0x8002U);
 }
+
+// ---------------------------------------------------------------------------------------------- //
+TEST_F(LoadTest, LDAAbsoluteYPageBoundary) {
+    SET_REG_Y(5U);
+    EXPECT_MEM_READ_8(REG_PC, 0xB9U);
+    EXPECT_MEM_READ_16(REG_PC+1, 0xFFFFU);
+    EXPECT_MEM_READ_8(0x0004U, 0x0BU);
+
+    int const ret = cpu.tick();
+
+    EXPECT_EQ(REG_A, 0x0BU);
+    EXPECT_EQ(ret, 5);
+    EXPECT_EQ(REG_PC, 0x8003U);
+}

@@ -126,6 +126,7 @@ class Cpu
     void    log(uint16_t pc, uint8_t len, uint8_t cycles);
     void    update_flags(uint16_t result, uint8_t mask);
     void    reset_registers();
+    uint8_t get_extra_cycles(uint16_t addr, uint8_t offset);
 public:
     CpuContext context;
     explicit Cpu(IMemory& memory);

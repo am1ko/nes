@@ -71,10 +71,28 @@ uint16_t Cpu::addrmode_abx(uint8_t &extra_cycles) {
 }
 
 // ---------------------------------------------------------------------------------------------- //
+uint8_t Cpu::get_extra_cycles(uint16_t addr, uint8_t offset)
+{
+    uint8_t const page_1 = addr / 256U;
+    uint8_t const page_2 = (addr + offset % 256) / 256U;
+
+    if (page_1 != page_2) {
+        return 1U;
+    }
+
+    return 0U;
+}
+
+
+// ---------------------------------------------------------------------------------------------- //
 // TODO(amiko): need to use Y with carry?
 uint16_t Cpu::addrmode_aby(uint8_t &extra_cycles) {
-    context.PC += 2U;
-    return (memory.read(context.PC - 2U) | (memory.read(context.PC - 1U) << 8)) + context.sregs[Y];
+    uint16_t const lsb = memory.read(context.PC++);
+    uint16_t const msb = memory.read(context.PC++);
+    uint16_t const addr = lsb | (msb << 8);
+
+    extra_cycles += get_extra_cycles(addr, context.sregs[Y]);
+    return addr + context.sregs[Y];
 }
 
 // ---------------------------------------------------------------------------------------------- //
@@ -89,16 +107,10 @@ uint16_t Cpu::addrmode_inx(uint8_t &extra_cycles) {
 uint16_t Cpu::addrmode_iny(uint8_t &extra_cycles) {
     uint16_t const addr_lsb = memory.read(context.PC++);
     uint16_t const addr_msb = (addr_lsb + 1U) % 256U;
-    uint16_t const base_addr = (memory.read(addr_lsb) | (memory.read(addr_msb) << 8));
+    uint16_t const addr = (memory.read(addr_lsb) | (memory.read(addr_msb) << 8));
 
-    uint8_t const page_1 = base_addr / 256U;
-    uint8_t const page_2 = (base_addr + context.sregs[Y] % 256) / 256U;
-
-    if (page_1 != page_2) {
-        extra_cycles++;
-    }
-
-    return base_addr + context.sregs[Y];
+    extra_cycles += get_extra_cycles(addr, context.sregs[Y]);
+    return addr + context.sregs[Y];
 }
 
 // ---------------------------------------------------------------------------------------------- //
