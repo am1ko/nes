@@ -257,6 +257,12 @@ uint16_t Cpu::SEI(uint16_t operand_addr, uint8_t &extra_cycles, bool op_in_acc) 
 }
 
 // ---------------------------------------------------------------------------------------------- //
+uint16_t Cpu::CLI(uint16_t operand_addr, uint8_t &extra_cycles, bool op_in_acc) {
+    context.P &= ~(F_I);
+    return 0U;
+}
+
+// ---------------------------------------------------------------------------------------------- //
 uint16_t Cpu::SED(uint16_t operand_addr, uint8_t &extra_cycles, bool op_in_acc) {
     context.P |= F_D;
     return 0U;

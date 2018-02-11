@@ -77,3 +77,25 @@ TEST_F(FlagInstrTest, ClearOverflow) {
     EXPECT_EQ(ret, 2U);
     EXPECT_EQ(OVERFLOWF, false);
 }
+
+// ---------------------------------------------------------------------------------------------- //
+TEST_F(FlagInstrTest, SetInterrupt) {
+    SET_REG_P(0x00U);
+    EXPECT_MEM_READ_8(0x0600U, 0x78U);
+
+    unsigned const ret = cpu.tick();
+
+    EXPECT_EQ(ret, 2U);
+    EXPECT_EQ(INTERRUPTF, true);
+}
+
+// ---------------------------------------------------------------------------------------------- //
+TEST_F(FlagInstrTest, ClearInterrupt) {
+    SET_INTERRUPTF(1);
+    EXPECT_MEM_READ_8(0x0600U, 0x58U);
+
+    unsigned const ret = cpu.tick();
+
+    EXPECT_EQ(ret, 2U);
+    EXPECT_EQ(INTERRUPTF, false);
+}

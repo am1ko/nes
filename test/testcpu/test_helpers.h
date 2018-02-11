@@ -20,6 +20,7 @@
 #define SET_REG_SP(val)                   cpu.context.SP = val
 #define SET_CARRYF(val)                   cpu.context.P |= ((uint8_t)val) << 0;
 #define SET_ZEROF(val)                    cpu.context.P |= ((uint8_t)val) << 1;
+#define SET_INTERRUPTF(val)               cpu.context.P |= ((uint8_t)val) << 2;
 #define SET_DECIMALF(val)                 cpu.context.P |= ((uint8_t)val) << 3;
 #define SET_OVERFLOWF(val)                cpu.context.P |= ((uint8_t)val) << 6;
 #define SET_NEGF(val)                     cpu.context.P |= ((uint8_t)val) << 7;

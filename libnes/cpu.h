@@ -79,7 +79,7 @@ class Cpu
     uint16_t BVS(uint16_t operand_addr, uint8_t &extra_cycles, bool op_in_acc);
     uint16_t CLC(uint16_t operand_addr, uint8_t &extra_cycles, bool op_in_acc);
     uint16_t CLD(uint16_t operand_addr, uint8_t &extra_cycles, bool op_in_acc);
-//  uint16_t CLI(uint16_t operand_addr, uint8_t &extra_cycles, bool op_in_acc);
+    uint16_t CLI(uint16_t operand_addr, uint8_t &extra_cycles, bool op_in_acc);
     uint16_t CLV(uint16_t operand_addr, uint8_t &extra_cycles, bool op_in_acc);
     uint16_t CMP(uint16_t operand_addr, uint8_t &extra_cycles, bool op_in_acc);
     uint16_t CPX(uint16_t operand_addr, uint8_t &extra_cycles, bool op_in_acc);
