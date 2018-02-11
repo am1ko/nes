@@ -17,7 +17,7 @@ public:
 // ---------------------------------------------------------------------------------------------- //
 void StdOutLogger::log(uint8_t const * instr, uint8_t bytes, uint16_t instr_addr, uint8_t cycles,
                        struct CpuContext const * const context) {
-    std::cout << boost::format("%-06X") % instr_addr;
+    std::cout << boost::format("%04X  ") % instr_addr;
 
     for (int i = 0; i < 3; i++) {
         if (bytes > i) {

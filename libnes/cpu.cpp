@@ -26,7 +26,18 @@ uint16_t Cpu::addrmode_imm(uint8_t &extra_cycles) {
 // ---------------------------------------------------------------------------------------------- //
 uint16_t Cpu::addrmode_ind(uint8_t &extra_cycles) {
     uint16_t const addr = addrmode_abs(extra_cycles);
-    return memory.read(addr) | (memory.read(addr+1) << 8);
+    uint8_t const lsb = memory.read(addr);
+    uint8_t msb;
+
+    // 6502 addressing bug on page boundary
+    if ((addr & 0xFFU) == 0xFFU) {
+        msb = memory.read(addr & 0xFF00U);
+    }
+    else {
+        msb = memory.read(addr+1);
+    }
+
+    return lsb | (msb << 8);
 }
 
 // ---------------------------------------------------------------------------------------------- //

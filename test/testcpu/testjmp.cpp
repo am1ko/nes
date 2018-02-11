@@ -46,3 +46,16 @@ TEST_F(JmpTest, Indirect) {
     EXPECT_EQ(ret, 5U);
     EXPECT_EQ(REG_PC, 0xABBAU);
 }
+
+// ---------------------------------------------------------------------------------------------- //
+TEST_F(JmpTest, IndirectBug) {
+    EXPECT_MEM_READ_8(0xC000U, 0x6CU);
+    EXPECT_MEM_READ_16(REG_PC + 1, 0xD0FFU);
+    EXPECT_MEM_READ_8(0xD0FFU, 0xBAU);
+    EXPECT_MEM_READ_8(0xD000U, 0xABU);
+
+    unsigned const ret = cpu.tick();
+
+    EXPECT_EQ(ret, 5U);
+    EXPECT_EQ(REG_PC, 0xABBAU);
+}
