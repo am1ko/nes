@@ -64,8 +64,12 @@ uint16_t Cpu::addrmode_zpy(uint8_t &extra_cycles) {
 // ---------------------------------------------------------------------------------------------- //
 // TODO(amiko): need to use X with carry?
 uint16_t Cpu::addrmode_abx(uint8_t &extra_cycles) {
-    context.PC += 2U;
-    return (memory.read(context.PC - 2U) | (memory.read(context.PC - 1) << 8)) + context.sregs[X];
+    uint16_t const lsb = memory.read(context.PC++);
+    uint16_t const msb = memory.read(context.PC++);
+    uint16_t const addr = lsb | (msb << 8);
+
+    extra_cycles += get_extra_cycles(addr, context.sregs[X]);
+    return addr + context.sregs[X];
 }
 
 // ---------------------------------------------------------------------------------------------- //
@@ -353,6 +357,7 @@ uint16_t Cpu::LDA(uint16_t operand_addr, uint8_t &extra_cycles, bool op_in_acc) 
 
 // ---------------------------------------------------------------------------------------------- //
 uint16_t Cpu::STA(uint16_t operand_addr, uint8_t &extra_cycles, bool op_in_acc) {
+    extra_cycles = 0U;
     return context.sregs[A];
 }
 
