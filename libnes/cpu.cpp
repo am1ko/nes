@@ -1,4 +1,4 @@
-#include "imemory.h"
+#include "iomemorymapped.h"
 #include "cpu.h"
 #include "instruction_set.h"
 
@@ -6,7 +6,7 @@
 #define RESET_VECTOR_LSB_ADDR    (0xFFFCU)
 
 // ---------------------------------------------------------------------------------------------- //
-Cpu::Cpu(IMemory& memory) : memory(memory), logger(0) {
+Cpu::Cpu(IOMemoryMapped& memory) : memory(memory), logger(0) {
     reset_registers();
     operand = 0U;
     acc_cached = context.sregs[A];

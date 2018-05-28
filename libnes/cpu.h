@@ -4,7 +4,7 @@
 #include <cstdbool>
 #include <cstdint>
 
-class IMemory;
+class IOMemoryMapped;
 
 // ---------------------------------------------------------------------------------------------- //
 // Status Register (SR, P) flags
@@ -43,7 +43,7 @@ class Cpu
 {
     static const struct CpuInstruction instruction_set[256];
     ICpuLogger * logger;
-    IMemory & memory;
+    IOMemoryMapped & memory;
     // --- CACHED VALUES ------------------------------------------------------------------------ //
     uint8_t operand;
     uint8_t acc_cached;
@@ -129,7 +129,7 @@ class Cpu
     uint8_t get_extra_cycles(uint16_t addr, uint8_t offset);
 public:
     CpuContext context;
-    explicit Cpu(IMemory& memory);
+    explicit Cpu(IOMemoryMapped& memory);
     void reset();
     unsigned tick();
     void set_logger(ICpuLogger * logger);

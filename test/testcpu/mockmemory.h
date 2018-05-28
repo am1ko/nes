@@ -2,9 +2,9 @@
 #define MOCKMEMORY_H
 
 #include "gmock/gmock.h"
-#include "imemory.h"
+#include "iomemorymapped.h"
 
-class MockMemory: public IMemory
+class MockMemory: public IOMemoryMapped
 {
 public:
     MOCK_METHOD1(read, uint8_t(uint16_t addr));

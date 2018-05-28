@@ -1,6 +1,6 @@
 #include <cstdint>
 
-class IMemory
+class IOMemoryMapped
 {
 public:
     virtual uint8_t read(uint16_t addr) = 0;

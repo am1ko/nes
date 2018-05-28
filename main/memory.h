@@ -1,8 +1,8 @@
-#include "imemory.h"
+#include "iomemorymapped.h"
 #include <string>
 #include <fstream>
 
-class Memory : public IMemory
+class Memory : public IOMemoryMapped
 {
     std::ifstream file;
 public:
