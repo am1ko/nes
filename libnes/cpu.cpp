@@ -2,11 +2,13 @@
 #include "cpu.h"
 #include "instruction_set.h"
 
-#define RESET_VECTOR_MSB_ADDR    (0xFFFDU)
-#define RESET_VECTOR_LSB_ADDR    (0xFFFCU)
+namespace {
+    const uint16_t RESET_VECTOR_MSB_ADDR = 0xFFFDU;
+    const uint16_t RESET_VECTOR_LSB_ADDR = 0xFFFCU;
+}
 
 // ---------------------------------------------------------------------------------------------- //
-Cpu::Cpu(IOMemoryMapped& memory) : memory(memory), logger(0) {
+Cpu::Cpu(IOMemoryMapped& bus) : bus(bus), logger(0) {
     reset_registers();
     operand = 0U;
     acc_cached = context.sregs[A];
@@ -26,15 +28,15 @@ uint16_t Cpu::addrmode_imm(uint8_t &extra_cycles) {
 // ---------------------------------------------------------------------------------------------- //
 uint16_t Cpu::addrmode_ind(uint8_t &extra_cycles) {
     uint16_t const addr = addrmode_abs(extra_cycles);
-    uint8_t const lsb = memory.read(addr);
+    uint8_t const lsb = bus.read(addr);
     uint8_t msb;
 
     // 6502 addressing bug on page boundary
     if ((addr & 0xFFU) == 0xFFU) {
-        msb = memory.read(addr & 0xFF00U);
+        msb = bus.read(addr & 0xFF00U);
     }
     else {
-        msb = memory.read(addr+1);
+        msb = bus.read(addr+1);
     }
 
     return lsb | (msb << 8);
@@ -42,30 +44,30 @@ uint16_t Cpu::addrmode_ind(uint8_t &extra_cycles) {
 
 // ---------------------------------------------------------------------------------------------- //
 uint16_t Cpu::addrmode_zpg(uint8_t &extra_cycles) {
-    return memory.read(context.PC++);
+    return bus.read(context.PC++);
 }
 
 // ---------------------------------------------------------------------------------------------- //
 uint16_t Cpu::addrmode_abs(uint8_t &extra_cycles) {
     context.PC += 2U;
-    return memory.read(context.PC - 2U) | (memory.read(context.PC - 1U) << 8);
+    return bus.read(context.PC - 2U) | (bus.read(context.PC - 1U) << 8);
 }
 
 // ---------------------------------------------------------------------------------------------- //
 uint16_t Cpu::addrmode_zpx(uint8_t &extra_cycles) {
-    return (memory.read(context.PC++) + context.sregs[X]) % 256U;
+    return (bus.read(context.PC++) + context.sregs[X]) % 256U;
 }
 
 // ---------------------------------------------------------------------------------------------- //
 uint16_t Cpu::addrmode_zpy(uint8_t &extra_cycles) {
-    return (memory.read(context.PC++) + context.sregs[Y]) % 256U;
+    return (bus.read(context.PC++) + context.sregs[Y]) % 256U;
 }
 
 // ---------------------------------------------------------------------------------------------- //
 // TODO(amiko): need to use X with carry?
 uint16_t Cpu::addrmode_abx(uint8_t &extra_cycles) {
-    uint16_t const lsb = memory.read(context.PC++);
-    uint16_t const msb = memory.read(context.PC++);
+    uint16_t const lsb = bus.read(context.PC++);
+    uint16_t const msb = bus.read(context.PC++);
     uint16_t const addr = lsb | (msb << 8);
 
     extra_cycles += get_extra_cycles(addr, context.sregs[X]);
@@ -89,8 +91,8 @@ uint8_t Cpu::get_extra_cycles(uint16_t addr, uint8_t offset)
 // ---------------------------------------------------------------------------------------------- //
 // TODO(amiko): need to use Y with carry?
 uint16_t Cpu::addrmode_aby(uint8_t &extra_cycles) {
-    uint16_t const lsb = memory.read(context.PC++);
-    uint16_t const msb = memory.read(context.PC++);
+    uint16_t const lsb = bus.read(context.PC++);
+    uint16_t const msb = bus.read(context.PC++);
     uint16_t const addr = lsb | (msb << 8);
 
     extra_cycles += get_extra_cycles(addr, context.sregs[Y]);
@@ -99,17 +101,17 @@ uint16_t Cpu::addrmode_aby(uint8_t &extra_cycles) {
 
 // ---------------------------------------------------------------------------------------------- //
 uint16_t Cpu::addrmode_inx(uint8_t &extra_cycles) {
-    uint16_t const addr_lsb = (memory.read(context.PC++) + context.sregs[X]) % 256U;
+    uint16_t const addr_lsb = (bus.read(context.PC++) + context.sregs[X]) % 256U;
     uint16_t const addr_msb = (addr_lsb + 1U) % 256U;
 
-    return memory.read(addr_lsb) | (memory.read(addr_msb) << 8);
+    return bus.read(addr_lsb) | (bus.read(addr_msb) << 8);
 }
 
 // ---------------------------------------------------------------------------------------------- //
 uint16_t Cpu::addrmode_iny(uint8_t &extra_cycles) {
-    uint16_t const addr_lsb = memory.read(context.PC++);
+    uint16_t const addr_lsb = bus.read(context.PC++);
     uint16_t const addr_msb = (addr_lsb + 1U) % 256U;
-    uint16_t const addr = (memory.read(addr_lsb) | (memory.read(addr_msb) << 8));
+    uint16_t const addr = (bus.read(addr_lsb) | (bus.read(addr_msb) << 8));
 
     extra_cycles += get_extra_cycles(addr, context.sregs[Y]);
     return addr + context.sregs[Y];
@@ -122,7 +124,7 @@ void Cpu::resultmode_none(uint16_t addr, uint8_t result) {
 
 // ---------------------------------------------------------------------------------------------- //
 void Cpu::resultmode_mem(uint16_t addr, uint8_t result) {
-    memory.write(addr, result);
+    bus.write(addr, result);
 }
 
 // ---------------------------------------------------------------------------------------------- //
@@ -132,25 +134,25 @@ void Cpu::resultmode_reg_a(uint16_t addr, uint8_t result) {
 
 // ---------------------------------------------------------------------------------------------- //
 uint16_t Cpu::ADC(uint16_t operand_addr, uint8_t &extra_cycles, bool op_in_acc) {
-    operand = memory.read(operand_addr);
+    operand = bus.read(operand_addr);
     return context.sregs[A] + operand + (context.P & F_C);
 }
 
 // ---------------------------------------------------------------------------------------------- //
 uint16_t Cpu::AND(uint16_t operand_addr, uint8_t &extra_cycles, bool op_in_acc) {
-    operand = memory.read(operand_addr);
+    operand = bus.read(operand_addr);
     return context.sregs[A] & operand;
 }
 
 // ---------------------------------------------------------------------------------------------- //
 uint16_t Cpu::ASL(uint16_t operand_addr, uint8_t &extra_cycles, bool op_in_acc) {
-    operand = op_in_acc ? context.sregs[A] : memory.read(operand_addr);
+    operand = op_in_acc ? context.sregs[A] : bus.read(operand_addr);
     return operand << 1;
 }
 
 // ---------------------------------------------------------------------------------------------- //
 uint16_t Cpu::LSR(uint16_t operand_addr, uint8_t &extra_cycles, bool op_in_acc) {
-    operand = op_in_acc ? context.sregs[A] : memory.read(operand_addr);
+    operand = op_in_acc ? context.sregs[A] : bus.read(operand_addr);
 
     uint16_t ret = (operand & 0x01U) << 8;
     ret |= (operand >> 1);
@@ -160,7 +162,7 @@ uint16_t Cpu::LSR(uint16_t operand_addr, uint8_t &extra_cycles, bool op_in_acc) 
 
 // ---------------------------------------------------------------------------------------------- //
 uint16_t Cpu::ROR(uint16_t operand_addr, uint8_t &extra_cycles, bool op_in_acc) {
-    operand = op_in_acc ? context.sregs[A] : memory.read(operand_addr);
+    operand = op_in_acc ? context.sregs[A] : bus.read(operand_addr);
 
     uint16_t ret = (operand & 0x01U) << 8;
     ret |= (operand >> 1);
@@ -171,7 +173,7 @@ uint16_t Cpu::ROR(uint16_t operand_addr, uint8_t &extra_cycles, bool op_in_acc) 
 
 // ---------------------------------------------------------------------------------------------- //
 uint16_t Cpu::ROL(uint16_t operand_addr, uint8_t &extra_cycles, bool op_in_acc) {
-    operand = op_in_acc ? context.sregs[A] : memory.read(operand_addr);
+    operand = op_in_acc ? context.sregs[A] : bus.read(operand_addr);
     return (operand << 1) | (context.P & F_C) ;
 }
 
@@ -188,53 +190,53 @@ uint16_t Cpu::JMP(uint16_t operand_addr, uint8_t &extra_cycles, bool op_in_acc) 
 
 // ---------------------------------------------------------------------------------------------- //
 uint16_t Cpu::LDX(uint16_t operand_addr, uint8_t &extra_cycles, bool op_in_acc) {
-    context.sregs[X] = memory.read(operand_addr);
+    context.sregs[X] = bus.read(operand_addr);
     return context.sregs[X];
 }
 
 // ---------------------------------------------------------------------------------------------- //
 uint16_t Cpu::LDY(uint16_t operand_addr, uint8_t &extra_cycles, bool op_in_acc) {
-    context.sregs[Y] = memory.read(operand_addr);
+    context.sregs[Y] = bus.read(operand_addr);
     return context.sregs[Y];
 }
 
 // ---------------------------------------------------------------------------------------------- //
 uint16_t Cpu::JSR(uint16_t operand_addr, uint8_t &extra_cycles, bool op_in_acc) {
     uint16_t const next_addr_minus_one = context.PC - 1U;
-    memory.write(0x100U + context.SP--, (next_addr_minus_one >> 8) & 0xFF);
-    memory.write(0x100U + context.SP--, next_addr_minus_one        & 0xFF);
+    bus.write(0x100U + context.SP--, (next_addr_minus_one >> 8) & 0xFF);
+    bus.write(0x100U + context.SP--, next_addr_minus_one        & 0xFF);
     context.PC = operand_addr;
     return 0U;
 }
 
 // ---------------------------------------------------------------------------------------------- //
 uint16_t Cpu::RTS(uint16_t operand_addr, uint8_t &extra_cycles, bool op_in_acc) {
-    context.PC =  memory.read(0x100U + ++context.SP) + 1U
-               + (memory.read(0x100U + ++context.SP) << 8);
+    context.PC =  bus.read(0x100U + ++context.SP) + 1U
+               + (bus.read(0x100U + ++context.SP) << 8);
     return 0U;
 }
 
 // ---------------------------------------------------------------------------------------------- //
 uint16_t Cpu::PHP(uint16_t operand_addr, uint8_t &extra_cycles, bool op_in_acc) {
-    memory.write(0x100U + context.SP--, (context.P | F_B));
+    bus.write(0x100U + context.SP--, (context.P | F_B));
     return 0U;
 }
 
 // ---------------------------------------------------------------------------------------------- //
 uint16_t Cpu::PLP(uint16_t operand_addr, uint8_t &extra_cycles, bool op_in_acc) {
-    context.P = memory.read(0x100U + ++context.SP);
+    context.P = bus.read(0x100U + ++context.SP);
     context.P &= ~(F_B);      // bit 4 is not a normal status flag, ignore it
     return 0U;
 }
 
 // ---------------------------------------------------------------------------------------------- //
 uint16_t Cpu::PLA(uint16_t operand_addr, uint8_t &extra_cycles, bool op_in_acc) {
-    return memory.read(0x100U + ++context.SP);
+    return bus.read(0x100U + ++context.SP);
 }
 
 // ---------------------------------------------------------------------------------------------- //
 uint16_t Cpu::PHA(uint16_t operand_addr, uint8_t &extra_cycles, bool op_in_acc) {
-    memory.write(0x100U + context.SP--, context.sregs[A]);
+    bus.write(0x100U + context.SP--, context.sregs[A]);
     return 0U;
 }
 
@@ -283,7 +285,7 @@ uint16_t Cpu::CLV(uint16_t operand_addr, uint8_t &extra_cycles, bool op_in_acc) 
 // ---------------------------------------------------------------------------------------------- //
 // TODO(amiko): check cpu cycle count with this instruction
 uint16_t Cpu::BCS(uint16_t operand_addr, uint8_t &extra_cycles, bool op_in_acc) {
-    int8_t const operand = (int8_t)memory.read(operand_addr);
+    int8_t const operand = (int8_t)bus.read(operand_addr);
     if (context.P & F_C) {
         branch(operand, extra_cycles);
     }
@@ -293,7 +295,7 @@ uint16_t Cpu::BCS(uint16_t operand_addr, uint8_t &extra_cycles, bool op_in_acc) 
 
 // ---------------------------------------------------------------------------------------------- //
 uint16_t Cpu::BCC(uint16_t operand_addr, uint8_t &extra_cycles, bool op_in_acc) {
-    int8_t const operand = (int8_t)memory.read(operand_addr);
+    int8_t const operand = (int8_t)bus.read(operand_addr);
     if (!(context.P & F_C)) {
         branch(operand, extra_cycles);
     }
@@ -303,7 +305,7 @@ uint16_t Cpu::BCC(uint16_t operand_addr, uint8_t &extra_cycles, bool op_in_acc) 
 
 // ---------------------------------------------------------------------------------------------- //
 uint16_t Cpu::BEQ(uint16_t operand_addr, uint8_t &extra_cycles, bool op_in_acc) {
-    int8_t const operand = (int8_t)memory.read(operand_addr);
+    int8_t const operand = (int8_t)bus.read(operand_addr);
     if (context.P & F_Z) {
         branch(operand, extra_cycles);
     }
@@ -312,7 +314,7 @@ uint16_t Cpu::BEQ(uint16_t operand_addr, uint8_t &extra_cycles, bool op_in_acc) 
 
 // ---------------------------------------------------------------------------------------------- //
 uint16_t Cpu::BNE(uint16_t operand_addr, uint8_t &extra_cycles, bool op_in_acc) {
-    int8_t const operand = (int8_t)memory.read(operand_addr);
+    int8_t const operand = (int8_t)bus.read(operand_addr);
     if (!(context.P & F_Z)) {
         branch(operand, extra_cycles);
     }
@@ -321,7 +323,7 @@ uint16_t Cpu::BNE(uint16_t operand_addr, uint8_t &extra_cycles, bool op_in_acc) 
 
 // ---------------------------------------------------------------------------------------------- //
 uint16_t Cpu::BVS(uint16_t operand_addr, uint8_t &extra_cycles, bool op_in_acc) {
-    int8_t const operand = (int8_t)memory.read(operand_addr);
+    int8_t const operand = (int8_t)bus.read(operand_addr);
     if (context.P & F_V) {
         branch(operand, extra_cycles);
     }
@@ -330,7 +332,7 @@ uint16_t Cpu::BVS(uint16_t operand_addr, uint8_t &extra_cycles, bool op_in_acc) 
 
 // ---------------------------------------------------------------------------------------------- //
 uint16_t Cpu::BVC(uint16_t operand_addr, uint8_t &extra_cycles, bool op_in_acc) {
-    int8_t const operand = (int8_t)memory.read(operand_addr);
+    int8_t const operand = (int8_t)bus.read(operand_addr);
     if (!(context.P & F_V)) {
         branch(operand, extra_cycles);
     }
@@ -339,7 +341,7 @@ uint16_t Cpu::BVC(uint16_t operand_addr, uint8_t &extra_cycles, bool op_in_acc) 
 
 // ---------------------------------------------------------------------------------------------- //
 uint16_t Cpu::BMI(uint16_t operand_addr, uint8_t &extra_cycles, bool op_in_acc) {
-    int8_t const operand = (int8_t)memory.read(operand_addr);
+    int8_t const operand = (int8_t)bus.read(operand_addr);
     if (context.P & F_N) {
         branch(operand, extra_cycles);
     }
@@ -348,7 +350,7 @@ uint16_t Cpu::BMI(uint16_t operand_addr, uint8_t &extra_cycles, bool op_in_acc) 
 
 // ---------------------------------------------------------------------------------------------- //
 uint16_t Cpu::BPL(uint16_t operand_addr, uint8_t &extra_cycles, bool op_in_acc) {
-    int8_t const operand = (int8_t)memory.read(operand_addr);
+    int8_t const operand = (int8_t)bus.read(operand_addr);
     if (!(context.P & F_N)) {
         branch(operand, extra_cycles);
     }
@@ -357,7 +359,7 @@ uint16_t Cpu::BPL(uint16_t operand_addr, uint8_t &extra_cycles, bool op_in_acc) 
 
 // ---------------------------------------------------------------------------------------------- //
 uint16_t Cpu::LDA(uint16_t operand_addr, uint8_t &extra_cycles, bool op_in_acc) {
-    operand = memory.read(operand_addr);
+    operand = bus.read(operand_addr);
     return operand;
 }
 
@@ -379,7 +381,7 @@ uint16_t Cpu::STY(uint16_t operand_addr, uint8_t &extra_cycles, bool op_in_acc) 
 
 // ---------------------------------------------------------------------------------------------- //
 uint16_t Cpu::BIT(uint16_t operand_addr, uint8_t &extra_cycles, bool op_in_acc) {
-    operand = memory.read(operand_addr);
+    operand = bus.read(operand_addr);
     uint16_t const ret =  context.sregs[A] & operand;
 
     context.P &= ~(F_N | F_V);
@@ -405,19 +407,19 @@ uint16_t Cpu::CPX(uint16_t operand_addr, uint8_t &extra_cycles, bool op_in_acc) 
 
 // ---------------------------------------------------------------------------------------------- //
 uint16_t Cpu::ORA(uint16_t operand_addr, uint8_t &extra_cycles, bool op_in_acc) {
-    operand = memory.read(operand_addr);
+    operand = bus.read(operand_addr);
     return context.sregs[A] | operand;
 }
 
 // ---------------------------------------------------------------------------------------------- //
 uint16_t Cpu::EOR(uint16_t operand_addr, uint8_t &extra_cycles, bool op_in_acc) {
-    operand = memory.read(operand_addr);
+    operand = bus.read(operand_addr);
     return context.sregs[A] ^ operand;
 }
 
 // ---------------------------------------------------------------------------------------------- //
 uint16_t Cpu::SBC(uint16_t operand_addr, uint8_t &extra_cycles, bool op_in_acc) {
-    operand = memory.read(operand_addr);
+    operand = bus.read(operand_addr);
     operand ^= 0xFFU;
     return context.sregs[A] + operand + (context.P & F_C); // <- same as ADC
 }
@@ -439,13 +441,13 @@ uint16_t Cpu::INX(uint16_t operand_addr, uint8_t &extra_cycles, bool op_in_acc) 
 
 // ---------------------------------------------------------------------------------------------- //
 uint16_t Cpu::INC(uint16_t operand_addr, uint8_t &extra_cycles, bool op_in_acc) {
-    operand = memory.read(operand_addr);
+    operand = bus.read(operand_addr);
     return (operand + 1U) % 256;
 }
 
 // ---------------------------------------------------------------------------------------------- //
 uint16_t Cpu::DEC(uint16_t operand_addr, uint8_t &extra_cycles, bool op_in_acc) {
-    operand = memory.read(operand_addr);
+    operand = bus.read(operand_addr);
     return operand-1U;
 }
 
@@ -492,9 +494,9 @@ uint16_t Cpu::TXS(uint16_t operand_addr, uint8_t &extra_cycles, bool op_in_acc) 
 
 // ---------------------------------------------------------------------------------------------- //
 uint16_t Cpu::RTI(uint16_t operand_addr, uint8_t &extra_cycles, bool op_in_acc) {
-    context.P =   memory.read(0x100U + ++context.SP);
-    context.PC =  memory.read(0x100U + ++context.SP)
-               + (memory.read(0x100U + ++context.SP) << 8);
+    context.P =   bus.read(0x100U + ++context.SP);
+    context.PC =  bus.read(0x100U + ++context.SP)
+               + (bus.read(0x100U + ++context.SP) << 8);
     return 0U;
 }
 
@@ -562,7 +564,7 @@ void Cpu::branch(int8_t op, uint8_t &extra_cycles) {
 
 // ---------------------------------------------------------------------------------------------- //
 uint8_t Cpu::compare(uint16_t operand_addr, uint8_t reg) {
-    operand = memory.read(operand_addr);
+    operand = bus.read(operand_addr);
     uint16_t const ret = reg - operand;
 
     if (ret < 256U) { context.P |= F_C; } else { context.P &= ~(F_C); }
@@ -587,8 +589,8 @@ void Cpu::set_logger(ICpuLogger * logger) {
 // ---------------------------------------------------------------------------------------------- //
 void Cpu::log(uint16_t pc, uint8_t len, uint8_t cycles) {
     if (logger) {
-        uint8_t instr_buf[3] = { memory.read(pc), 0U, 0U };
-        for (int i = 1; i < len; i++) { instr_buf[i] = memory.read(pc+i); }
+        uint8_t instr_buf[3] = { bus.read(pc), 0U, 0U };
+        for (int i = 1; i < len; i++) { instr_buf[i] = bus.read(pc+i); }
         logger->log(instr_buf, len, pc, cycles, &context);
     }
 }
@@ -596,7 +598,7 @@ void Cpu::log(uint16_t pc, uint8_t len, uint8_t cycles) {
 // ---------------------------------------------------------------------------------------------- //
 void Cpu::reset() {
     reset_registers();
-    context.PC = memory.read(RESET_VECTOR_LSB_ADDR) | (memory.read(RESET_VECTOR_MSB_ADDR) << 8);
+    context.PC = bus.read(RESET_VECTOR_LSB_ADDR) | (bus.read(RESET_VECTOR_MSB_ADDR) << 8);
 }
 
 // ---------------------------------------------------------------------------------------------- //
@@ -606,7 +608,7 @@ unsigned Cpu::tick() {
     acc_cached = context.sregs[A];
 
     // --- FETCH & DECODE INSTRUCTION ------------- //
-    struct CpuInstruction const * instr = &instruction_set[memory.read(context.PC++)];
+    struct CpuInstruction const * instr = &instruction_set[bus.read(context.PC++)];
 
     // --- LOG ------------------------------------ //
     log(pc, instr->bytes, instr->cycles);

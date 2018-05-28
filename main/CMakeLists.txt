@@ -1,6 +1,5 @@
 set(Main_SRCS
     main.cpp
-    memory.cpp
 )
 
 FIND_PACKAGE( Boost 1.40 COMPONENTS program_options REQUIRED )

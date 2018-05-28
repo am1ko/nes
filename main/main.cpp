@@ -2,7 +2,9 @@
 #include <iostream>
 #include <iomanip>
 #include <boost/format.hpp>
-#include "memory.h"
+#include "ram.h"
+#include "rom_ifstream.h"
+#include "bus.h"
 #include "cpu.h"
 
 static unsigned ppu_cycles;
@@ -43,8 +45,13 @@ int main(int argc, char **argv)
     std::string file = std::string(argv[1]);
 
     StdOutLogger logger;
-    Memory mem(file);
-    Cpu cpu(mem);
+
+    RAM ram;
+    ROM_ifstream rom(file);
+    RAM io_registers;   // TODO(amiko): placeholder type RAM
+
+    Bus bus(ram, rom, io_registers);
+    Cpu cpu(bus);
     cpu.set_logger(&logger);
 
     cpu.reset();
