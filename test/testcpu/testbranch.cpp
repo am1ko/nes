@@ -56,7 +56,7 @@ TEST_F(BranchTest, BCSNegative) {
     unsigned const ret = cpu.tick();
 
     EXPECT_EQ(ret, 3U);
-    EXPECT_EQ(REG_PC, 0xC0FFU);
+    EXPECT_EQ(REG_PC, 0xC101U);
 }
 
 // ---------------------------------------------------------------------------------------------- //

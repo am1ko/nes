@@ -554,12 +554,7 @@ void Cpu::update_flags(uint16_t result, uint8_t mask) {
 // ---------------------------------------------------------------------------------------------- //
 void Cpu::branch(int8_t op, uint8_t &extra_cycles) {
     extra_cycles++;
-    if (op >= 0) {
-        context.PC += op;
-    }
-    else{
-        context.PC += (op-2U);
-    }
+    context.PC += op;
 }
 
 // ---------------------------------------------------------------------------------------------- //
