@@ -41,3 +41,4 @@ include_directories("${source_dir}/googletest/include"
 
 add_subdirectory(testcpu)
 add_subdirectory(testbus)
+add_subdirectory(testppu)

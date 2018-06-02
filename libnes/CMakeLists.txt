@@ -1,15 +1,10 @@
 set(libnes_SRCS
-    cpu.h
     cpu.cpp
-    bus.h
     bus.cpp
-    ram.h
     ram.cpp
-    rom_ifstream.h
     rom_ifstream.cpp
-    memorymap.h
-    iomemorymapped.h
     io_registers.cpp
+    ppu.cpp
 )
 
 # Declare the library
