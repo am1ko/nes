@@ -7,6 +7,8 @@
 
 class ROM_ifstream : public IOMemoryMapped {
     std::ifstream file;
+    size_t file_size;
+    uint8_t num_prg_rom_banks;
 public:
     explicit ROM_ifstream(std::string& file);
     ~ROM_ifstream();

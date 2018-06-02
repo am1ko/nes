@@ -2,6 +2,13 @@
 #include "memorymap.h"
 #include <cassert>
 
+// #define DEBUG_MEM
+
+#ifdef DEBUG_MEM
+#include <iostream>
+#include <boost/format.hpp>
+#endif
+
 // ---------------------------------------------------------------------------------------------- //
 Bus::Bus(IOMemoryMapped& ram, IOMemoryMapped& rom, IOMemoryMapped& io_registers) :
     ram(ram), rom(rom), io_registers(io_registers) {
@@ -9,12 +16,13 @@ Bus::Bus(IOMemoryMapped& ram, IOMemoryMapped& rom, IOMemoryMapped& io_registers)
 
 // ---------------------------------------------------------------------------------------------- //
 uint8_t Bus::read(uint16_t addr) {
+    uint8_t const ret = get_bus_device(addr).read(addr);
 #ifdef DEBUG_MEM
     std::cout << "RD[" << boost::format("0x%04X") % addr << "] <- ";
     std::cout << boost::format("0x%02X") % static_cast<int>(ret);
     std::cout << std::endl;
 #endif
-    return get_bus_device(addr).read(addr);
+    return ret;
 }
 
 // ---------------------------------------------------------------------------------------------- //
