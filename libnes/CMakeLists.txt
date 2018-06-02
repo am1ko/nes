@@ -9,6 +9,7 @@ set(libnes_SRCS
     rom_ifstream.cpp
     memorymap.h
     iomemorymapped.h
+    io_registers.cpp
 )
 
 # Declare the library

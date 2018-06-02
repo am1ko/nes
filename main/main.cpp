@@ -4,6 +4,7 @@
 #include <boost/format.hpp>
 #include "ram.h"
 #include "rom_ifstream.h"
+#include "io_registers.h"
 #include "bus.h"
 #include "cpu.h"
 
@@ -48,7 +49,7 @@ int main(int argc, char **argv)
 
     RAM ram;
     ROM_ifstream rom(file);
-    RAM io_registers;   // TODO(amiko): placeholder type RAM
+    IO_Registers io_registers;
 
     Bus bus(ram, rom, io_registers);
     Cpu cpu(bus);
