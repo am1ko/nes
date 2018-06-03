@@ -3,6 +3,7 @@
 
 #include <cstdbool>
 #include <cstdint>
+#include "cpu_interrupt.h"
 
 class IOMemoryMapped;
 
@@ -39,11 +40,12 @@ public:
 };
 
 // ---------------------------------------------------------------------------------------------- //
-class Cpu
+class Cpu : public CpuInterrupt
 {
     static const struct CpuInstruction instruction_set[256];
     ICpuLogger * logger;
     IOMemoryMapped & bus;
+    uint8_t interrupt_flags;
     // --- CACHED VALUES ------------------------------------------------------------------------ //
     uint8_t operand;
     uint8_t acc_cached;
@@ -128,12 +130,14 @@ class Cpu
     void    reset_registers();
     static
     uint8_t get_extra_cycles(uint16_t addr, uint8_t offset);
+    void    handle_interrupts(uint8_t &extra_cycles);
 public:
     CpuContext context;
     explicit Cpu(IOMemoryMapped& bus);
     void reset();
     unsigned tick();
     void set_logger(ICpuLogger * logger);
+    void set_interrupt_pending(enum InterruptSource source);
 };
 
 struct CpuInstruction {

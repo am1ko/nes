@@ -3,6 +3,8 @@
 #include "instruction_set.h"
 
 namespace {
+    const uint16_t NMI_VECTOR_MSB_ADDR   = 0xFFFBU;
+    const uint16_t NMI_VECTOR_LSB_ADDR   = 0xFFFAU;
     const uint16_t RESET_VECTOR_MSB_ADDR = 0xFFFDU;
     const uint16_t RESET_VECTOR_LSB_ADDR = 0xFFFCU;
 }
@@ -365,7 +367,7 @@ uint16_t Cpu::LDA(uint16_t operand_addr, uint8_t &extra_cycles, bool op_in_acc) 
 
 // ---------------------------------------------------------------------------------------------- //
 uint16_t Cpu::STA(uint16_t operand_addr, uint8_t &extra_cycles, bool op_in_acc) {
-    extra_cycles = 0U;
+    extra_cycles = 0U;  // TODO(amiko): get rid of this
     return context.sregs[A];
 }
 
@@ -568,6 +570,18 @@ uint8_t Cpu::compare(uint16_t operand_addr, uint8_t reg) {
 }
 
 // ---------------------------------------------------------------------------------------------- //
+void Cpu::handle_interrupts(uint8_t &extra_cycles) {
+    if (interrupt_flags) {
+        interrupt_flags = 0U;
+        bus.write(0x100U + context.SP--, (context.PC >> 8) & 0xFF);
+        bus.write(0x100U + context.SP--, context.PC        & 0xFF);
+        bus.write(0x100U + context.SP--, context.P);
+        context.PC = bus.read(NMI_VECTOR_LSB_ADDR) | (bus.read(NMI_VECTOR_MSB_ADDR) << 8);
+        extra_cycles += 7U;
+    }
+}
+
+// ---------------------------------------------------------------------------------------------- //
 void Cpu::reset_registers() {
     context.P = (1U << 5) | F_I;
     context.SP = 0xFDU;
@@ -591,33 +605,43 @@ void Cpu::log(uint16_t pc, uint8_t len, uint8_t cycles) {
 }
 
 // ---------------------------------------------------------------------------------------------- //
+void Cpu::set_interrupt_pending(enum InterruptSource source) {
+    interrupt_flags |= 1 << source;
+}
+
+// ---------------------------------------------------------------------------------------------- //
 void Cpu::reset() {
+    interrupt_flags = 0U;
     reset_registers();
     context.PC = bus.read(RESET_VECTOR_LSB_ADDR) | (bus.read(RESET_VECTOR_MSB_ADDR) << 8);
 }
 
 // ---------------------------------------------------------------------------------------------- //
 unsigned Cpu::tick() {
-    uint16_t const pc = context.PC;
     uint8_t extra_cycles = 0U;
+
+    // --- CHECK FOR INTERRUPTS ----------------------------------------------------------------- //
+    handle_interrupts(extra_cycles);
+
+    uint16_t const pc = context.PC;
     acc_cached = context.sregs[A];
 
-    // --- FETCH & DECODE INSTRUCTION ------------- //
+    // --- FETCH & DECODE INSTRUCTION ----------------------------------------------------------- //
     struct CpuInstruction const * instr = &instruction_set[bus.read(context.PC++)];
 
-    // --- LOG ------------------------------------ //
+    // --- LOG ---------------------------------------------------------------------------------- //
     log(pc, instr->bytes, instr->cycles);
 
-    // --- FETCH OPERAND ADDRESS ------------------ //
+    // --- FETCH OPERAND ADDRESS ---------------------------------------------------------------- //
     uint16_t const addr = (*this.*instr->addrmode_handler)(extra_cycles);
 
     // --- EXECUTE -------------------------------- //
     uint16_t const result = (*this.*instr->instr_executor)(addr, extra_cycles,  instr->op_in_acc);
 
-    // --- UPDATE CPU STATE ----------------------- //
+    // --- UPDATE CPU STATE --------------------------------------------------------------------- //
     update_flags(result, instr->flags);
 
-    // --- STORE RESULT --------------------------- //
+    // --- STORE RESULT ------------------------------------------------------------------------- //
     (*this.*instr->result_handler)(addr, result % 256U);
 
     return instr->cycles + extra_cycles;
