@@ -588,6 +588,7 @@ void Cpu::handle_interrupts(uint8_t &extra_cycles) {
                 interrupt_vector_msb = NMI_VECTOR_MSB_ADDR;
             }
             else if (interrupt_flags & (1 << CpuInterrupt::IRQ)) {
+                if (context.P & F_I) goto exit;     // IRQs disabled -> ignore
                 interrupt_vector_lsb = IRQ_VECTOR_LSB_ADDR;
                 interrupt_vector_msb = IRQ_VECTOR_MSB_ADDR;
             }
@@ -598,7 +599,9 @@ void Cpu::handle_interrupts(uint8_t &extra_cycles) {
         }
 
         extra_cycles += 7U;
+        context.P |= F_I;
         context.PC = bus.read(interrupt_vector_lsb) | (bus.read(interrupt_vector_msb) << 8);
+exit:
         interrupt_flags = 0U;
     }
 }
@@ -610,7 +613,7 @@ void Cpu::clear_pending_interrupts() {
 
 // ---------------------------------------------------------------------------------------------- //
 void Cpu::reset_registers() {
-    context.P = (1U << 5) | F_I;
+    context.P = (1U << 5);
     context.SP = 0xFDU;
     context.sregs[A] = 0U;
     context.sregs[X] = 0U;

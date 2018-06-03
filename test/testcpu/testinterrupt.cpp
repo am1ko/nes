@@ -38,6 +38,7 @@ TEST_F(InterruptTest, RESETInterrupt) {
     int ret = cpu.tick();
 
     EXPECT_EQ(ret, 2U + 7U);       // <-- 7 extra cycles for interrupt latency
+    EXPECT_EQ(INTERRUPTF, true);   // <-- Further interrupts disabled
     EXPECT_EQ(REG_PC, 0x8001U);
 }
 
@@ -48,6 +49,7 @@ TEST_F(InterruptTest, NMIInterrupt) {
     uint8_t  const INITIAL_P = F_C;
 
     SET_REG_SP(INITIAL_SP);
+    SET_REG_P(INITIAL_P);
     SET_REG_PC(INITIAL_PC);
 
     EXPECT_MEM_WRITE_8(0x100U + INITIAL_SP, INITIAL_PC >> 8);       // <-- Push MSB of PC to stack
@@ -89,6 +91,34 @@ TEST_F(InterruptTest, NMIInterruptStatusRegisterWritten) {
     (void)cpu.tick();
 
     EXPECT_EQ(CARRYF, true);       // <-- P unaffected (carry flag was cleared in interrupt)
+    EXPECT_EQ(INTERRUPTF, false);
+}
+
+// ---------------------------------------------------------------------------------------------- //
+TEST_F(InterruptTest, IRQInterrupt) {
+    EXPECT_MEM_READ_16(INTERRUPT_VECTOR_IRQ, 0x8000U);            // <-- Read interrupt vector
+    EXPECT_MEM_READ_8(0x8000U, NOP);                              // <-- First instruction
+
+    cpu.set_interrupt_pending(CpuInterrupt::IRQ);
+    int ret = cpu.tick();
+
+
+    EXPECT_EQ(INTERRUPTF, true);   // <-- Further interrupts disabled
+    EXPECT_EQ(ret, 2U + 7U);       // <-- 7 extra cycles for interrupt latency
+    EXPECT_EQ(REG_PC, 0x8001U);
+}
+
+// ---------------------------------------------------------------------------------------------- //
+TEST_F(InterruptTest, IRQInterruptMasked) {
+    EXPECT_MEM_READ_8(0xC000U, NOP);
+
+    SET_REG_P(F_I);         // <-- interrupts disabled
+
+    cpu.set_interrupt_pending(CpuInterrupt::IRQ);
+    int ret = cpu.tick();
+
+    EXPECT_EQ(ret, 2U);
+    EXPECT_EQ(REG_PC, 0xC001U);
 }
 
 // ---------------------------------------------------------------------------------------------- //
