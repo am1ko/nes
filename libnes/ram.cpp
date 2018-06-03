@@ -3,8 +3,9 @@
 #include <cstring>
 #include <cassert>
 
-RAM::RAM() {
-    (void)std::memset(ram, 0U, sizeof(ram));
+RAM::RAM(uint8_t * const ram, size_t size) : ram(ram), size(size) {
+    assert(size == MemoryMap::RAM_MIRROR_START);
+    (void)std::memset(ram, 0U, size);
 }
 
 RAM::~RAM() {

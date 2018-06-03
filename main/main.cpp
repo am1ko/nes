@@ -39,6 +39,8 @@ void StdOutLogger::log(uint8_t const * instr, uint8_t bytes, uint16_t instr_addr
     % static_cast<int>(context->SP) % (ppu_cycles);
 }
 
+static uint8_t cpu_ram[0x800];
+
 // ---------------------------------------------------------------------------------------------- //
 int main(int argc, char **argv)
 {
@@ -47,7 +49,7 @@ int main(int argc, char **argv)
 
     StdOutLogger logger;
 
-    RAM ram;
+    RAM ram(cpu_ram, sizeof(cpu_ram));
     ROM_ifstream rom(file);
     IO_Registers io_registers;
 
