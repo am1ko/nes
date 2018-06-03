@@ -131,6 +131,7 @@ class Cpu : public CpuInterrupt
     static
     uint8_t get_extra_cycles(uint16_t addr, uint8_t offset);
     void    handle_interrupts(uint8_t &extra_cycles);
+    void    clear_pending_interrupts();
 public:
     CpuContext context;
     explicit Cpu(IOMemoryMapped& bus);

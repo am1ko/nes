@@ -16,10 +16,10 @@ AndTest::~AndTest() {};
 // ---------------------------------------------------------------------------------------------- //
 void AndTest::SetUp() {
     // Suppress "uninteresting mock function call" warnings with these expectations
-    EXPECT_CALL(memory, read(0xFFFCU)).WillOnce(Return(0xABU));
-    EXPECT_CALL(memory, read(0xFFFDU)).WillOnce(Return(0xBAU));
+    EXPECT_MEM_READ_16(0xFFFCU, 0x7FFU);
+    EXPECT_MEM_READ_8(0x7FFU, 0xEAU);
     cpu.reset();
-    SET_REG_PC(0x0800U);
+    (void)cpu.tick();
     SET_REG_P(0x00U);
 };
 

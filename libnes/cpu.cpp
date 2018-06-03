@@ -3,10 +3,12 @@
 #include "instruction_set.h"
 
 namespace {
-    const uint16_t NMI_VECTOR_MSB_ADDR   = 0xFFFBU;
     const uint16_t NMI_VECTOR_LSB_ADDR   = 0xFFFAU;
-    const uint16_t RESET_VECTOR_MSB_ADDR = 0xFFFDU;
+    const uint16_t NMI_VECTOR_MSB_ADDR   = 0xFFFBU;
     const uint16_t RESET_VECTOR_LSB_ADDR = 0xFFFCU;
+    const uint16_t RESET_VECTOR_MSB_ADDR = 0xFFFDU;
+    const uint16_t IRQ_VECTOR_LSB_ADDR   = 0xFFFEU;
+    const uint16_t IRQ_VECTOR_MSB_ADDR   = 0xFFFFU;
 }
 
 // ---------------------------------------------------------------------------------------------- //
@@ -572,13 +574,38 @@ uint8_t Cpu::compare(uint16_t operand_addr, uint8_t reg) {
 // ---------------------------------------------------------------------------------------------- //
 void Cpu::handle_interrupts(uint8_t &extra_cycles) {
     if (interrupt_flags) {
-        interrupt_flags = 0U;
-        bus.write(0x100U + context.SP--, (context.PC >> 8) & 0xFF);
-        bus.write(0x100U + context.SP--, context.PC        & 0xFF);
-        bus.write(0x100U + context.SP--, context.P);
-        context.PC = bus.read(NMI_VECTOR_LSB_ADDR) | (bus.read(NMI_VECTOR_MSB_ADDR) << 8);
+        uint16_t interrupt_vector_msb = 0U;
+        uint16_t interrupt_vector_lsb = 0U;
+
+        if (interrupt_flags & (1 << CpuInterrupt::RESET)) {
+            interrupt_vector_lsb = RESET_VECTOR_LSB_ADDR;
+            interrupt_vector_msb = RESET_VECTOR_MSB_ADDR;
+            reset_registers();
+        }
+        else {
+            if (interrupt_flags & (1 << CpuInterrupt::NMI)) {
+                interrupt_vector_lsb = NMI_VECTOR_LSB_ADDR;
+                interrupt_vector_msb = NMI_VECTOR_MSB_ADDR;
+            }
+            else if (interrupt_flags & (1 << CpuInterrupt::IRQ)) {
+                interrupt_vector_lsb = IRQ_VECTOR_LSB_ADDR;
+                interrupt_vector_msb = IRQ_VECTOR_MSB_ADDR;
+            }
+
+            bus.write(0x100U + context.SP--, (context.PC >> 8) & 0xFF);
+            bus.write(0x100U + context.SP--, context.PC        & 0xFF);
+            bus.write(0x100U + context.SP--, context.P);
+        }
+
         extra_cycles += 7U;
+        context.PC = bus.read(interrupt_vector_lsb) | (bus.read(interrupt_vector_msb) << 8);
+        interrupt_flags = 0U;
     }
+}
+
+// ---------------------------------------------------------------------------------------------- //
+void Cpu::clear_pending_interrupts() {
+    interrupt_flags = 0U;
 }
 
 // ---------------------------------------------------------------------------------------------- //
@@ -611,9 +638,8 @@ void Cpu::set_interrupt_pending(enum InterruptSource source) {
 
 // ---------------------------------------------------------------------------------------------- //
 void Cpu::reset() {
-    interrupt_flags = 0U;
-    reset_registers();
-    context.PC = bus.read(RESET_VECTOR_LSB_ADDR) | (bus.read(RESET_VECTOR_MSB_ADDR) << 8);
+    clear_pending_interrupts();
+    set_interrupt_pending(CpuInterrupt::RESET);
 }
 
 // ---------------------------------------------------------------------------------------------- //

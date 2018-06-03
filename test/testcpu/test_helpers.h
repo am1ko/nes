@@ -1,6 +1,12 @@
 #ifndef TEST_HELPERS_H
 #define TEST_HELPERS_H
 
+#define RESET_CPU(starting_addr)          EXPECT_MEM_READ_16(0xFFFCU, starting_addr-1); \
+                                          EXPECT_MEM_READ_8(starting_addr-1, 0xEAU); \
+                                          cpu.reset(); \
+                                          (void)cpu.tick(); \
+                                          SET_REG_P(0x00U)
+
 #define EXPECT_MEM_READ_8(addr, val)      EXPECT_CALL(memory, read(addr)).WillOnce(Return(val))
 #define EXPECT_MEM_READ_16(addr, val)     EXPECT_CALL(memory, read(addr)).WillOnce(Return(val & 0xFFU)); \
                                           EXPECT_CALL(memory, read(addr+1)).WillOnce(Return((val >> 8) & 0xFFU))

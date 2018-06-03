@@ -15,12 +15,7 @@ EorTest::~EorTest() {};
 
 // ---------------------------------------------------------------------------------------------- //
 void EorTest::SetUp() {
-    // Suppress "uninteresting mock function call" warnings with these expectations
-    EXPECT_CALL(memory, read(0xFFFCU)).WillOnce(Return(0xABU));
-    EXPECT_CALL(memory, read(0xFFFDU)).WillOnce(Return(0xBAU));
-    cpu.reset();
-    SET_REG_PC(0x0800U);
-    SET_REG_P(0x00U);
+    RESET_CPU(0x0800U);
 };
 
 // ---------------------------------------------------------------------------------------------- //

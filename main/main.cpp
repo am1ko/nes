@@ -59,7 +59,7 @@ int main(int argc, char **argv)
 
     cpu.reset();
 
-    // cpu.context.PC = 0xC000U;
+    cpu.context.PC = 0xC000U;
 
     unsigned ret = 0U;
     unsigned instructions = 0U;

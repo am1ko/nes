@@ -16,11 +16,7 @@ RorTest::~RorTest() {};
 
 // ---------------------------------------------------------------------------------------------- //
 void RorTest::SetUp() {
-    // Suppress "uninteresting mock function call" warnings with this expectation
-    EXPECT_MEM_READ_16(0xFFFCU, 0xABBAU);
-    cpu.reset();
-    SET_REG_PC(0x0800U);
-    SET_REG_P(0x00U);
+    RESET_CPU(0x0800U);
 };
 
 // ---------------------------------------------------------------------------------------------- //

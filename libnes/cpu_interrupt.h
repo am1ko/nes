@@ -2,8 +2,6 @@
 #ifndef CPU_INTERRUPT_H
 #define CPU_INTERRUPT_H
 
-#include <cstdint>
-
 class CpuInterrupt
 {
 public:
