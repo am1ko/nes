@@ -8,7 +8,7 @@ using ::testing::Exactly;
 using ::testing::_;
 
 // ---------------------------------------------------------------------------------------------- //
-PpuTest::PpuTest() : ppu(cpu_interrupt) {
+PpuTest::PpuTest() : ppu() {
 }
 
 // ---------------------------------------------------------------------------------------------- //
@@ -71,6 +71,7 @@ TEST_F(PpuTest, VBlankTriggersNmiInterrupt) {
     EXPECT_CALL(cpu_interrupt, set_interrupt_pending(CpuInterrupt::InterruptSource::NMI));
 
     ppu.reset();
+    ppu.set_interrupt_handler(&cpu_interrupt);
     for (int scan_line = 0; scan_line < 241; scan_line++) {
         for (int tick = 0; tick < 341; tick++) {
             ppu.tick();

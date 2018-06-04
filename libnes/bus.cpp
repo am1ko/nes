@@ -10,8 +10,8 @@
 #endif
 
 // ---------------------------------------------------------------------------------------------- //
-Bus::Bus(IOMemoryMapped& ram, IOMemoryMapped& rom, IOMemoryMapped& io_registers) :
-    ram(ram), rom(rom), io_registers(io_registers) {
+Bus::Bus(IOMemoryMapped& ram, IOMemoryMapped& rom, IOMemoryMapped& ppu) :
+    ram(ram), rom(rom), ppu(ppu) {
 }
 
 // ---------------------------------------------------------------------------------------------- //
@@ -44,8 +44,8 @@ IOMemoryMapped & Bus::get_bus_device(uint16_t addr) {
     else if ((addr >= MemoryMap::ROM_START) && (addr <= MemoryMap::ROM_END)) {
         return rom;
     }
-    else if ((addr >= MemoryMap::IO_REGISTERS_START) && (addr <= MemoryMap::IO_REGISTERS_END)) {
-        return io_registers;
+    else if ((addr >= 0x2000U) && (addr <= 0x2006U)) {
+        return ppu;
     }
 
     assert(false);

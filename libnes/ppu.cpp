@@ -1,7 +1,8 @@
 #include "ppu.h"
 #include <cstring>
 
-Ppu::Ppu(CpuInterrupt& cpu_irq) : cpu_irq(cpu_irq) {
+Ppu::Ppu() {
+    cpu_irq = NULL;
 }
 
 // ---------------------------------------------------------------------------------------------- //
@@ -15,11 +16,18 @@ void Ppu::reset() {
 void Ppu::process_cycle() {
     if ((scan_line == 241U) && (cycle == 1U)) {
         context.PPUSTATUS |= 0x80U;
-        cpu_irq.set_interrupt_pending(CpuInterrupt::InterruptSource::NMI);
+        if (cpu_irq) {
+            cpu_irq->set_interrupt_pending(CpuInterrupt::InterruptSource::NMI);
+        }
     }
     else if ((scan_line == (SCAN_LINES_PER_FRAME - 1U)) && (cycle == 1U)) {
         context.PPUSTATUS &= ~0x80U;
     }
+}
+
+// ---------------------------------------------------------------------------------------------- //
+void Ppu::set_interrupt_handler(CpuInterrupt* cpu_irq) {
+    this->cpu_irq = cpu_irq;
 }
 
 // ---------------------------------------------------------------------------------------------- //

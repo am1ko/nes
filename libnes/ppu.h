@@ -8,7 +8,7 @@ class Ppu : public IOMemoryMapped
 {
     unsigned scan_line;
     unsigned cycle;
-    CpuInterrupt& cpu_irq;
+    CpuInterrupt * cpu_irq;
 
     void process_cycle();
     void advance_cycle();
@@ -37,7 +37,8 @@ public:
 
     Context context;
 
-    Ppu(CpuInterrupt& cpu_irq);
+    Ppu();
+    void set_interrupt_handler(CpuInterrupt* cpu_irq);
     void reset();
     void tick();
     uint8_t read(uint16_t addr);
