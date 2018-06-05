@@ -7,7 +7,7 @@ Ppu::Ppu() {
 
 // ---------------------------------------------------------------------------------------------- //
 void Ppu::reset() {
-    (void)std::memset(&context, 0U, sizeof(context));
+    (void)std::memset(&registers, 0U, sizeof(registers));
     scan_line = 0U;
     cycle = 0U;
 }
@@ -15,13 +15,13 @@ void Ppu::reset() {
 // ---------------------------------------------------------------------------------------------- //
 void Ppu::process_cycle() {
     if ((scan_line == 241U) && (cycle == 1U)) {
-        context.PPUSTATUS |= 0x80U;
+        registers.PPUSTATUS |= 0x80U;
         if (cpu_irq) {
             cpu_irq->set_interrupt_pending(CpuInterrupt::InterruptSource::NMI);
         }
     }
     else if ((scan_line == (SCAN_LINES_PER_FRAME - 1U)) && (cycle == 1U)) {
-        context.PPUSTATUS &= ~0x80U;
+        registers.PPUSTATUS &= ~0x80U;
     }
 }
 

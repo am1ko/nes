@@ -18,13 +18,13 @@ PpuTest::~PpuTest() {};
 TEST_F(PpuTest, ResetState) {
     ppu.reset();
 
-    EXPECT_EQ(ppu.context.PPUCTRL,   0x00U);
-    EXPECT_EQ(ppu.context.PPUMASK,   0x00U);
-    EXPECT_EQ(ppu.context.PPUSTATUS, 0x00U);
-    EXPECT_EQ(ppu.context.OAMADDR,   0x00U);
-    EXPECT_EQ(ppu.context.PPUSCROLL, 0x00U);
-    EXPECT_EQ(ppu.context.PPUADDR,   0x00U);
-    EXPECT_EQ(ppu.context.PPUDATA,   0x00U);
+    EXPECT_EQ(ppu.registers.PPUCTRL,   0x00U);
+    EXPECT_EQ(ppu.registers.PPUMASK,   0x00U);
+    EXPECT_EQ(ppu.registers.PPUSTATUS, 0x00U);
+    EXPECT_EQ(ppu.registers.OAMADDR,   0x00U);
+    EXPECT_EQ(ppu.registers.PPUSCROLL, 0x00U);
+    EXPECT_EQ(ppu.registers.PPUADDR,   0x00U);
+    EXPECT_EQ(ppu.registers.PPUDATA,   0x00U);
 }
 
 // ---------------------------------------------------------------------------------------------- //

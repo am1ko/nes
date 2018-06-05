@@ -14,7 +14,7 @@ class Ppu : public IOMemoryMapped
     void advance_cycle();
 
 public:
-    struct Context {
+    struct Registers {
         uint8_t PPUCTRL;
         uint8_t PPUMASK;
         uint8_t PPUSTATUS;
@@ -35,7 +35,7 @@ public:
     static const uint16_t ADDR_PPUADDR   = 0x2005U;
     static const uint16_t ADDR_PPUDATA   = 0x2006U;
 
-    Context context;
+    Registers registers;
 
     Ppu();
     void set_interrupt_handler(CpuInterrupt* cpu_irq);
