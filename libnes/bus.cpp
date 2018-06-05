@@ -44,8 +44,11 @@ IOMemoryMapped & Bus::get_bus_device(uint16_t addr) {
     else if ((addr >= MemoryMap::ROM_START) && (addr <= MemoryMap::ROM_END)) {
         return rom;
     }
-    else if ((addr >= 0x2000U) && (addr <= 0x2006U)) {
+    else if ((addr >= 0x2000U) && (addr <= 0x2006U) || (addr == 0x4014)) {
         return ppu;
+    }
+    else if ((addr >= MemoryMap::ROM_START) && (addr <= MemoryMap::ROM_END)) {
+        return rom;
     }
 
     assert(false);
