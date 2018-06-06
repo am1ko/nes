@@ -2,7 +2,7 @@
 #include "memorymap.h"
 #include <cassert>
 
-// #define DEBUG_MEM
+#define DEBUG_MEM
 
 #ifdef DEBUG_MEM
 #include <iostream>
@@ -51,5 +51,5 @@ IOMemoryMapped & Bus::get_bus_device(uint16_t addr) {
         return rom;
     }
 
-    assert(false);
+    return ppu;
 }
