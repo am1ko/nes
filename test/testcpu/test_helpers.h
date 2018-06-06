@@ -8,8 +8,8 @@
                                           SET_REG_P(0x00U)
 
 #define EXPECT_MEM_READ_8(addr, val)      EXPECT_CALL(memory, read(addr)).WillOnce(Return(val))
-#define EXPECT_MEM_READ_16(addr, val)     EXPECT_CALL(memory, read(addr)).WillOnce(Return(val & 0xFFU)); \
-                                          EXPECT_CALL(memory, read(addr+1)).WillOnce(Return((val >> 8) & 0xFFU))
+#define EXPECT_MEM_READ_16(addr, val)     EXPECT_CALL(memory, read(addr)).WillOnce(Return((val) & 0xFFU)); \
+                                          EXPECT_CALL(memory, read(addr+1)).WillOnce(Return(((val) >> 8) & 0xFFU))
 #define EXPECT_MEM_WRITE_8(addr, val)     EXPECT_CALL(memory, write(addr, val))
 
 #define REG_PC                            cpu.context.PC

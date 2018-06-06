@@ -79,7 +79,7 @@ TEST_F(StoreTest, STAZeroPage) {
     EXPECT_MEM_READ_8(REG_PC+1, 0x0BU);
     EXPECT_MEM_WRITE_8(0x000BU, 0x33U);
 
-    int const ret = cpu.tick();
+    unsigned const ret = cpu.tick();
 
     EXPECT_EQ(ret, 3U);
 }
@@ -92,7 +92,7 @@ TEST_F(StoreTest, STAZeroPageX) {
     EXPECT_MEM_READ_8(REG_PC+1, 0x0BU);
     EXPECT_MEM_WRITE_8(0x001BU, 0x33U);
 
-    int const ret = cpu.tick();
+    unsigned const ret = cpu.tick();
 
     EXPECT_EQ(ret, 4U);
 }
@@ -104,7 +104,7 @@ TEST_F(StoreTest, STAAbsolute) {
     EXPECT_MEM_READ_16(REG_PC+1, 0x0B0BU);
     EXPECT_MEM_WRITE_8(0x0B0BU, 0x33U);
 
-    int const ret = cpu.tick();
+    unsigned const ret = cpu.tick();
 
     EXPECT_EQ(ret, 4U);
 }
@@ -117,7 +117,7 @@ TEST_F(StoreTest, STAAbsoluteX) {
     EXPECT_MEM_READ_16(REG_PC+1, 0x0B0BU);
     EXPECT_MEM_WRITE_8(0x0B0CU, 0x33U);
 
-    int const ret = cpu.tick();
+    unsigned const ret = cpu.tick();
 
     EXPECT_EQ(ret, 5U);
 }
@@ -130,7 +130,7 @@ TEST_F(StoreTest, STAAbsoluteY) {
     EXPECT_MEM_READ_16(REG_PC+1, 0x0B0BU);
     EXPECT_MEM_WRITE_8(0x0B0CU, 0x33U);
 
-    int const ret = cpu.tick();
+    unsigned const ret = cpu.tick();
 
     EXPECT_EQ(ret, 5U);
 }
@@ -144,7 +144,7 @@ TEST_F(StoreTest, STAIndirectX) {
     EXPECT_MEM_READ_16(0x0BU + REG_X, 0xAAAAU);
     EXPECT_MEM_WRITE_8(0xAAAAU, 0x33U);
 
-    int const ret = cpu.tick();
+    unsigned const ret = cpu.tick();
 
     EXPECT_EQ(ret, 6U);
 }
@@ -158,7 +158,7 @@ TEST_F(StoreTest, STAIndirectY) {
     EXPECT_MEM_READ_16(0x0BU, 0xAABBU);
     EXPECT_MEM_WRITE_8(0x00AABBU + REG_Y, 0x33U);
 
-    int const ret = cpu.tick();
+    unsigned const ret = cpu.tick();
 
     EXPECT_EQ(ret, 6U);
 }
@@ -170,7 +170,7 @@ TEST_F(StoreTest, STYZeroPage) {
     EXPECT_MEM_READ_8(REG_PC+1, 0x0BU);
     EXPECT_MEM_WRITE_8(0x000BU, 0x33U);
 
-    int const ret = cpu.tick();
+    unsigned const ret = cpu.tick();
 
     EXPECT_EQ(ret, 3U);
 }
@@ -183,7 +183,7 @@ TEST_F(StoreTest, STYZeroPageX) {
     EXPECT_MEM_READ_8(REG_PC+1, 0x0BU);
     EXPECT_MEM_WRITE_8(0x001BU, 0x33U);
 
-    int const ret = cpu.tick();
+    unsigned const ret = cpu.tick();
 
     EXPECT_EQ(ret, 4U);
 }
@@ -195,7 +195,7 @@ TEST_F(StoreTest, STYAbsolute) {
     EXPECT_MEM_READ_16(REG_PC+1, 0x0B0BU);
     EXPECT_MEM_WRITE_8(0x0B0BU, 0x33U);
 
-    int const ret = cpu.tick();
+    unsigned const ret = cpu.tick();
 
     EXPECT_EQ(ret, 4U);
 }

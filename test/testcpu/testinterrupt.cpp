@@ -35,7 +35,7 @@ TEST_F(InterruptTest, RESETInterrupt) {
     EXPECT_MEM_READ_8(0x8000U, NOP);                                // <-- First instruction
 
     cpu.set_interrupt_pending(CpuInterrupt::RESET);
-    int ret = cpu.tick();
+    unsigned const ret = cpu.tick();
 
     EXPECT_EQ(ret, 2U + 7U);       // <-- 7 extra cycles for interrupt latency
     EXPECT_EQ(INTERRUPTF, true);   // <-- Further interrupts disabled
@@ -61,7 +61,7 @@ TEST_F(InterruptTest, NMIInterrupt) {
     EXPECT_MEM_READ_16(0x100U + INITIAL_SP-1, INITIAL_PC);          // <-- Pop PC from stack
 
     cpu.set_interrupt_pending(CpuInterrupt::NMI);
-    int ret = cpu.tick();
+    unsigned const ret = cpu.tick();
 
     EXPECT_EQ(ret, 6U + 7U);       // <-- 7 extra cycles for interrupt latency
     EXPECT_EQ(REG_PC, INITIAL_PC); // <-- PC unaffected
@@ -100,7 +100,7 @@ TEST_F(InterruptTest, IRQInterrupt) {
     EXPECT_MEM_READ_8(0x8000U, NOP);                              // <-- First instruction
 
     cpu.set_interrupt_pending(CpuInterrupt::IRQ);
-    int ret = cpu.tick();
+    unsigned const ret = cpu.tick();
 
 
     EXPECT_EQ(INTERRUPTF, true);   // <-- Further interrupts disabled
@@ -115,7 +115,7 @@ TEST_F(InterruptTest, IRQInterruptMasked) {
     SET_REG_P(F_I);         // <-- interrupts disabled
 
     cpu.set_interrupt_pending(CpuInterrupt::IRQ);
-    int ret = cpu.tick();
+    unsigned const ret = cpu.tick();
 
     EXPECT_EQ(ret, 2U);
     EXPECT_EQ(REG_PC, 0xC001U);
@@ -129,7 +129,7 @@ TEST_F(InterruptTest, RTI) {
     EXPECT_MEM_READ_8(0x01F1U, 0xAAU);
     EXPECT_MEM_READ_16(0x01F2U, 0xC5F5U);
 
-    int const ret = cpu.tick();
+    unsigned const ret = cpu.tick();
 
     EXPECT_EQ(ret, 6U);
     EXPECT_EQ(REG_P, 0xAAU);

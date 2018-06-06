@@ -28,7 +28,7 @@ TEST_F(BitTest, BitZeroFlagSet) {
     EXPECT_MEM_READ_8(REG_PC+1, 0x0AU);
     EXPECT_MEM_READ_8(0x000AU, 0x01U);
 
-    int const ret = cpu.tick();
+    unsigned const ret = cpu.tick();
 
     EXPECT_EQ(ret, 3U);
     EXPECT_EQ(ZEROF, true);
@@ -41,7 +41,7 @@ TEST_F(BitTest, BitAllFlagsSet) {
     EXPECT_MEM_READ_8(REG_PC+1, 0x0AU);
     EXPECT_MEM_READ_8(0x000AU, 0xC0U);
 
-    int const ret = cpu.tick();
+    unsigned const ret = cpu.tick();
 
     EXPECT_EQ(ret, 3U);
     EXPECT_EQ(OVERFLOWF, true);
@@ -57,7 +57,7 @@ TEST_F(BitTest, BitAllFlagsCleared) {
     EXPECT_MEM_READ_8(REG_PC+1, 0x0AU);
     EXPECT_MEM_READ_8(0x000AU, 0x02U);
 
-    int const ret = cpu.tick();
+    unsigned const ret = cpu.tick();
 
     EXPECT_EQ(ret, 3U);
     EXPECT_EQ(OVERFLOWF, false);
@@ -72,7 +72,7 @@ TEST_F(BitTest, BitAllFlagsSetAbsolute) {
     EXPECT_MEM_READ_16(REG_PC+1, 0x0A0AU);
     EXPECT_MEM_READ_8(0x0A0AU, 0xC0U);
 
-    int const ret = cpu.tick();
+    unsigned const ret = cpu.tick();
 
     EXPECT_EQ(ret, 4U);
     EXPECT_EQ(OVERFLOWF, true);
@@ -88,7 +88,7 @@ TEST_F(BitTest, NesLog) {
     EXPECT_MEM_READ_8(REG_PC+1, 0x01U);
     EXPECT_MEM_READ_8(0x01U, 0xFFU);
 
-    int const ret = cpu.tick();
+    unsigned const ret = cpu.tick();
 
     EXPECT_EQ(ret, 3U);
     EXPECT_EQ(REG_P, 0xE4U);    // NV !Z

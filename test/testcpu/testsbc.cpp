@@ -46,7 +46,7 @@ TEST_F(SbcTest, SbcImmediateCarryFlagSet) {
     SET_REG_P(0x01U);  // <- need to set carry to convert 1's complement to 2's complement
     SET_REG_A(0x40U);
 
-    int const ret = cpu.tick();
+    unsigned const ret = cpu.tick();
 
     EXPECT_EQ(REG_A,  0x3BU);
     EXPECT_EQ(REG_PC, 0x0602U);
@@ -62,7 +62,7 @@ TEST_F(SbcTest, SbcImmediateCarryFlagSet2) {
     SET_REG_P(0x01U);
     SET_REG_A(0x70U);
 
-    int const ret = cpu.tick();
+    unsigned const ret = cpu.tick();
 
     EXPECT_EQ(REG_A,  0x6EU);
     EXPECT_EQ(REG_PC, 0x0602U);
@@ -167,7 +167,7 @@ TEST_F(SbcTest, SbcZeroPage) {
     SET_REG_A(0x70U);
     SET_REG_P(0x01U);
 
-    int const ret = cpu.tick();
+    unsigned const ret = cpu.tick();
 
     EXPECT_EQ(REG_A, 0x6EU);
     EXPECT_EQ(REG_PC, 0x0602U);
@@ -183,7 +183,7 @@ TEST_F(SbcTest, SbcZeroPageXIndexed) {
     SET_REG_X(0x02U);
     SET_REG_P(0x01U);
 
-    int const ret = cpu.tick();
+    unsigned const ret = cpu.tick();
 
     EXPECT_EQ(REG_A, 0x6EU);
     EXPECT_EQ(REG_PC, 0x0602U);
@@ -199,7 +199,7 @@ TEST_F(SbcTest, SbcAbsolute) {
     SET_REG_A(0x70U);
     SET_REG_P(0x01U);
 
-    int const ret = cpu.tick();
+    unsigned const ret = cpu.tick();
 
     EXPECT_EQ(REG_A, 0x6EU);
     EXPECT_EQ(REG_PC, 0x0703U);
@@ -215,7 +215,7 @@ TEST_F(SbcTest, SbcAbsoluteXIndexed) {
     SET_REG_A(0x70U);
     SET_REG_P(0x01U);
 
-    int const ret = cpu.tick();
+    unsigned const ret = cpu.tick();
 
     EXPECT_EQ(REG_A, 0x6EU);
     EXPECT_EQ(REG_PC, 0x0603U);
@@ -231,7 +231,7 @@ TEST_F(SbcTest, SbcAbsoluteYIndexed) {
     SET_REG_A(0x70U);
     SET_REG_P(0x01U);
 
-    int const ret = cpu.tick();
+    unsigned const ret = cpu.tick();
 
     EXPECT_EQ(REG_A, 0x6EU);
     EXPECT_EQ(REG_PC, 0x0603U);
@@ -248,7 +248,7 @@ TEST_F(SbcTest, SbcIndexedIndirect) {
     SET_REG_A(0x70U);
     SET_REG_P(0x01U);
 
-    int const ret = cpu.tick();
+    unsigned const ret = cpu.tick();
 
     EXPECT_EQ(REG_A, 0x6EU);
     EXPECT_EQ(REG_PC, 0x0602U);
@@ -265,7 +265,7 @@ TEST_F(SbcTest, SbcIndirectIndexed) {
     SET_REG_A(0x70U);
     SET_REG_P(0x01U);
 
-    int const ret = cpu.tick();
+    unsigned const ret = cpu.tick();
 
     EXPECT_EQ(REG_A, 0x6EU);
     EXPECT_EQ(REG_PC, 0x0602U);

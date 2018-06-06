@@ -30,7 +30,7 @@ TEST_F(NopTest, AdvancePc) {
     SET_REG_X(2U);
     SET_REG_Y(3U);
 
-    int const ret = cpu.tick();
+    unsigned const ret = cpu.tick();
 
     EXPECT_EQ(ret, 2U);
     EXPECT_EQ(REG_PC, 0x8001U);

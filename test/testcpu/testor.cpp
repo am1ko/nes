@@ -28,7 +28,7 @@ TEST_F(OrTest, OrImmediate) {
         EXPECT_MEM_READ_8(REG_PC + 1, 0xA5U);
         SET_REG_A(0xAAU);
 
-        int const ret = cpu.tick();
+        unsigned const ret = cpu.tick();
 
         EXPECT_EQ(REG_A, 0xAFU);
         EXPECT_EQ(REG_PC, 0x0802U);
@@ -104,7 +104,7 @@ TEST_F(OrTest, OrZeroPage) {
     EXPECT_CALL(memory, read(0x000AU)).WillOnce(Return(0x11U));     // parameter value
     SET_REG_A(0x22U);
 
-    int const ret = cpu.tick();
+    unsigned const ret = cpu.tick();
 
     EXPECT_EQ(REG_A, 0x33U);
     EXPECT_EQ(REG_PC, 0x0802U);
@@ -119,7 +119,7 @@ TEST_F(OrTest, OrZeroPageXIndexed) {
     SET_REG_A(0x00U);
     SET_REG_X(0x03U);
 
-    int const ret = cpu.tick();
+    unsigned const ret = cpu.tick();
 
     EXPECT_EQ(REG_A, 0xC3U);
     EXPECT_EQ(REG_PC, 0x0802U);
@@ -134,7 +134,7 @@ TEST_F(OrTest, OrAbsolute) {
     EXPECT_CALL(memory, read(0xABBA)).WillOnce(Return(0x10U));      // parameter value
     SET_REG_A(0x01U);
 
-    int const ret = cpu.tick();
+    unsigned const ret = cpu.tick();
 
     EXPECT_EQ(REG_A, 0x11U);
     EXPECT_EQ(REG_PC, 0x0803U);
@@ -150,7 +150,7 @@ TEST_F(OrTest, OrAbsoluteXIndexed) {
     SET_REG_A(0x00U);
     SET_REG_X(0x03U);
 
-    int const ret = cpu.tick();
+    unsigned const ret = cpu.tick();
 
     EXPECT_EQ(REG_A, 0x10U);
     EXPECT_EQ(cpu.context.PC, 0x0803U);
@@ -166,7 +166,7 @@ TEST_F(OrTest, OrAbsoluteYIndexed) {
     SET_REG_A(0x00U);
     SET_REG_Y(0x04U);
 
-    int const ret = cpu.tick();
+    unsigned const ret = cpu.tick();
 
     EXPECT_EQ(REG_A, 0x21U);
     EXPECT_EQ(REG_PC, 0x0803U);
@@ -182,7 +182,7 @@ TEST_F(OrTest, OrIndexedIndirect) {
     SET_REG_A(0x00U);
     SET_REG_X(0x05U);
 
-    int const ret = cpu.tick();
+    unsigned const ret = cpu.tick();
 
     EXPECT_EQ(REG_A, 0x20U);
     EXPECT_EQ(REG_PC, 0x0802U);
@@ -198,7 +198,7 @@ TEST_F(OrTest, OrIndirectIndexed) {
     SET_REG_A(0x00U);
     SET_REG_Y(0x04U);
 
-    int const ret = cpu.tick();
+    unsigned const ret = cpu.tick();
 
     EXPECT_EQ(REG_A, 0x20U);
     EXPECT_EQ(REG_PC, 0x0802U);

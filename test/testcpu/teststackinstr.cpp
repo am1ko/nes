@@ -28,7 +28,7 @@ TEST_F(StackInstrTest, PHP) {
     EXPECT_MEM_READ_8(0x8000U, 0x08U);
     EXPECT_MEM_WRITE_8(0x01FFU, 0xD0U);     // <-- note: bit 4 (BREAK) flag set by PHP
 
-    int const ret = cpu.tick();
+    unsigned const ret = cpu.tick();
 
     EXPECT_EQ(ret, 3U);
     EXPECT_EQ(REG_PC, 0x8001U);
@@ -42,7 +42,7 @@ TEST_F(StackInstrTest, PLP) {
     EXPECT_MEM_READ_8(0x8000U, 0x28U);
     EXPECT_MEM_READ_8(0x01FFU, 0x14U);
 
-    int const ret = cpu.tick();
+    unsigned const ret = cpu.tick();
 
     EXPECT_EQ(ret, 4U);
     EXPECT_EQ(REG_PC, 0x8001U);
@@ -58,7 +58,7 @@ TEST_F(StackInstrTest, PLA) {
     EXPECT_MEM_READ_8(0x8000U, 0x68U);
     EXPECT_MEM_READ_8(0x01FFU, 0xC0U);
 
-    int const ret = cpu.tick();
+    unsigned const ret = cpu.tick();
 
     EXPECT_EQ(ret, 4U);
     EXPECT_EQ(REG_PC, 0x8001U);
@@ -75,7 +75,7 @@ TEST_F(StackInstrTest, PLAZeroFlag) {
     EXPECT_MEM_READ_8(0x8000U, 0x68U);
     EXPECT_MEM_READ_8(0x01FFU, 0x00U);
 
-    int const ret = cpu.tick();
+    (void)cpu.tick();
 
     EXPECT_EQ(ZEROF, true);
 }
@@ -87,7 +87,7 @@ TEST_F(StackInstrTest, PHA) {
     EXPECT_MEM_READ_8(REG_PC, 0x48U);
     EXPECT_MEM_WRITE_8(0x01FFU, 0xC0U);
 
-    int const ret = cpu.tick();
+    unsigned const ret = cpu.tick();
 
     EXPECT_EQ(ret, 3U);
     EXPECT_EQ(REG_PC, 0x8001U);

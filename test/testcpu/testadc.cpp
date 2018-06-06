@@ -31,7 +31,7 @@ TEST_F(AdcTest, AdcImmediate) {
     EXPECT_MEM_READ_8(REG_PC+1, 0x05U);
     SET_REG_A(0x80U);
 
-    int const ret = cpu.tick();
+    unsigned const ret = cpu.tick();
 
     EXPECT_EQ(ret, 2U);
     EXPECT_EQ(REG_A,  0x85U);
@@ -206,7 +206,7 @@ TEST_F(AdcTest, AdcZeroPage) {
     EXPECT_MEM_READ_8(0x000AU, 0x02U);
     SET_REG_A(0x70U);
 
-    int const ret = cpu.tick();
+    unsigned const ret = cpu.tick();
 
     EXPECT_EQ(ret, 3U);
     EXPECT_EQ(REG_A, 0x72U);
@@ -221,7 +221,7 @@ TEST_F(AdcTest, AdcZeroPageXIndexed) {
     SET_REG_A(0x70U);
     SET_REG_X(0x02U);
 
-    int const ret = cpu.tick();
+    unsigned const ret = cpu.tick();
 
     EXPECT_EQ(ret, 4U);
     EXPECT_EQ(REG_A, 0x73U);
@@ -236,7 +236,7 @@ TEST_F(AdcTest, AdcAbsolute) {
     EXPECT_MEM_READ_8(0xABBAU, 0x10U);
     SET_REG_A(0x21U);
 
-    int const ret = cpu.tick();
+    unsigned const ret = cpu.tick();
 
     EXPECT_EQ(ret, 4U);
     EXPECT_EQ(REG_A, 0x31U);
@@ -251,7 +251,7 @@ TEST_F(AdcTest, AdcAbsoluteXIndexed) {
     EXPECT_MEM_READ_8(0xABBAU + REG_X, 0x10U);
     SET_REG_A(0x21U);
 
-    int const ret = cpu.tick();
+    unsigned const ret = cpu.tick();
 
     EXPECT_EQ(ret, 4U);
     EXPECT_EQ(REG_A, 0x31U);
@@ -266,7 +266,7 @@ TEST_F(AdcTest, AdcAbsoluteYIndexed) {
     EXPECT_MEM_READ_8(0xABBAU + REG_Y, 0x10U);
     SET_REG_A(0x21U);
 
-    int const ret = cpu.tick();
+    unsigned const ret = cpu.tick();
 
     EXPECT_EQ(ret, 4U);
     EXPECT_EQ(REG_A, 0x31U);
@@ -282,7 +282,7 @@ TEST_F(AdcTest, AdcIndexedIndirect) {
     EXPECT_MEM_READ_8(0x1111U, 0x20U);             // parameter value
     SET_REG_A(0x21U);
 
-    int const ret = cpu.tick();
+    unsigned const ret = cpu.tick();
 
     EXPECT_EQ(ret, 6U);
     EXPECT_EQ(REG_A, 0x41U);
@@ -315,7 +315,7 @@ TEST_F(AdcTest, AdcIndirectIndexed) {
     EXPECT_MEM_READ_8(0x1111U + REG_Y, 0x20U);  // parameter value
     SET_REG_A(0x21U);
 
-    int const ret = cpu.tick();
+    unsigned const ret = cpu.tick();
 
     EXPECT_EQ(ret, 5U);
     EXPECT_EQ(REG_A, 0x41U);

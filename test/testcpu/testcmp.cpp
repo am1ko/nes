@@ -29,7 +29,7 @@ TEST_F(CmpTest, CmpImmediate) {
     EXPECT_MEM_READ_8(REG_PC, 0xC9U);
     EXPECT_MEM_READ_8(REG_PC + 1U, 0x6FU);
 
-    int const ret = cpu.tick();
+    unsigned const ret = cpu.tick();
 
     EXPECT_EQ(ret, 2U);
     EXPECT_EQ(REG_PC, 0x8002U);
@@ -43,7 +43,7 @@ TEST_F(CmpTest, CmpImmediateCarryFlagCleared) {
     EXPECT_MEM_READ_8(REG_PC, 0xC9U);
     EXPECT_MEM_READ_8(REG_PC + 1U, 0x41U);
 
-    int const ret = cpu.tick();
+    unsigned const ret = cpu.tick();
 
     EXPECT_EQ(ret, 2U);
     EXPECT_EQ(REG_PC, 0x8002U);
@@ -58,7 +58,7 @@ TEST_F(CmpTest, CmpZeroPage) {
     EXPECT_MEM_READ_8(REG_PC + 1U, 0x10U);
     EXPECT_MEM_READ_8(0x10U, 0x6FU);
 
-    int const ret = cpu.tick();
+    unsigned const ret = cpu.tick();
 
     EXPECT_EQ(ret, 3U);
     EXPECT_EQ(REG_PC, 0x8002U);
@@ -74,7 +74,7 @@ TEST_F(CmpTest, CmpZeroPageX) {
     EXPECT_MEM_READ_8(REG_PC + 1U, 0x10U);
     EXPECT_MEM_READ_8(0x10U + REG_X, 0x6FU);
 
-    int const ret = cpu.tick();
+    unsigned const ret = cpu.tick();
 
     EXPECT_EQ(ret, 4U);
     EXPECT_EQ(REG_PC, 0x8002U);
@@ -89,7 +89,7 @@ TEST_F(CmpTest, CmpAbsolute) {
     EXPECT_MEM_READ_16(REG_PC + 1U, 0x0700U);
     EXPECT_MEM_READ_8(0x0700U, 0x6FU);
 
-    int const ret = cpu.tick();
+    unsigned const ret = cpu.tick();
 
     EXPECT_EQ(ret, 4U);
     EXPECT_EQ(REG_PC, 0x8003U);
@@ -105,7 +105,7 @@ TEST_F(CmpTest, CmpAbsoluteX) {
     EXPECT_MEM_READ_16(REG_PC + 1U, 0x0700U);
     EXPECT_MEM_READ_8(0x0700U + REG_X, 0x6FU);
 
-    int const ret = cpu.tick();
+    unsigned const ret = cpu.tick();
 
     EXPECT_EQ(ret, 4U);
     EXPECT_EQ(REG_PC, 0x8003U);
@@ -121,7 +121,7 @@ TEST_F(CmpTest, CmpAbsoluteY) {
     EXPECT_MEM_READ_16(REG_PC + 1U, 0x0700U);
     EXPECT_MEM_READ_8(0x0700U + REG_Y, 0x6FU);
 
-    int const ret = cpu.tick();
+    unsigned const ret = cpu.tick();
 
     EXPECT_EQ(ret, 4U);
     EXPECT_EQ(REG_PC, 0x8003U);
@@ -138,7 +138,7 @@ TEST_F(CmpTest, CmpIndirectX) {
     EXPECT_MEM_READ_16(0x07U + REG_X, 0x1111U);
     EXPECT_MEM_READ_8(0x1111U, 0x6FU);
 
-    int const ret = cpu.tick();
+    unsigned const ret = cpu.tick();
 
     EXPECT_EQ(ret, 6U);
     EXPECT_EQ(REG_PC, 0x8002U);
@@ -155,7 +155,7 @@ TEST_F(CmpTest, CmpIndirectY) {
     EXPECT_MEM_READ_16(0x07U, 0x1133U);
     EXPECT_MEM_READ_8(0x1133U + REG_Y, 0x6FU);
 
-    int const ret = cpu.tick();
+    unsigned const ret = cpu.tick();
 
     EXPECT_EQ(ret, 5U);
     EXPECT_EQ(REG_PC, 0x8002U);
@@ -169,7 +169,7 @@ TEST_F(CmpTest, CpyImmediate) {
     EXPECT_MEM_READ_8(REG_PC, 0xC0U);
     EXPECT_MEM_READ_8(REG_PC + 1U, 0x6FU);
 
-    int const ret = cpu.tick();
+    unsigned const ret = cpu.tick();
 
     EXPECT_EQ(ret, 2U);
     EXPECT_EQ(REG_PC, 0x8002U);
@@ -184,7 +184,7 @@ TEST_F(CmpTest, CpyZeroPage) {
     EXPECT_MEM_READ_8(REG_PC + 1U, 0x11U);
     EXPECT_MEM_READ_8(0x11U, 0x6FU);
 
-    int const ret = cpu.tick();
+    unsigned const ret = cpu.tick();
 
     EXPECT_EQ(ret, 3U);
     EXPECT_EQ(REG_PC, 0x8002U);
@@ -199,7 +199,7 @@ TEST_F(CmpTest, CpyAbsolute) {
     EXPECT_MEM_READ_16(REG_PC + 1U, 0x1111U);
     EXPECT_MEM_READ_8(0x1111U, 0x6FU);
 
-    int const ret = cpu.tick();
+    unsigned const ret = cpu.tick();
 
     EXPECT_EQ(ret, 4U);
     EXPECT_EQ(REG_PC, 0x8003U);
@@ -213,7 +213,7 @@ TEST_F(CmpTest, CpxImmediate) {
     EXPECT_MEM_READ_8(REG_PC, 0xE0U);
     EXPECT_MEM_READ_8(REG_PC + 1U, 0x6FU);
 
-    int const ret = cpu.tick();
+    unsigned const ret = cpu.tick();
 
     EXPECT_EQ(ret, 2U);
     EXPECT_EQ(REG_PC, 0x8002U);
@@ -228,7 +228,7 @@ TEST_F(CmpTest, CpxZeroPage) {
     EXPECT_MEM_READ_8(REG_PC + 1U, 0x11U);
     EXPECT_MEM_READ_8(0x11U, 0x6FU);
 
-    int const ret = cpu.tick();
+    unsigned const ret = cpu.tick();
 
     EXPECT_EQ(ret, 3U);
     EXPECT_EQ(REG_PC, 0x8002U);
@@ -243,7 +243,7 @@ TEST_F(CmpTest, CpxAbsolute) {
     EXPECT_MEM_READ_16(REG_PC + 1U, 0x1111U);
     EXPECT_MEM_READ_8(0x1111U, 0x6FU);
 
-    int const ret = cpu.tick();
+    unsigned const ret = cpu.tick();
 
     EXPECT_EQ(ret, 4U);
     EXPECT_EQ(REG_PC, 0x8003U);

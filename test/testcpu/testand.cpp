@@ -33,7 +33,7 @@ TEST_F(AndTest, AndImmediate) {
         EXPECT_MEM_READ_8(REG_PC + 1, 0xA5U);
         SET_REG_A(0xAAU);
 
-        int const ret = cpu.tick();
+        unsigned const ret = cpu.tick();
 
         EXPECT_EQ(ret, 2U);
         EXPECT_EQ(REG_A, 0xA0U);
@@ -109,7 +109,7 @@ TEST_F(AndTest, AndZeroPage) {
     EXPECT_CALL(memory, read(0x000AU)).WillOnce(Return(0x33U));     // parameter value
     SET_REG_A(0x77U);
 
-    int const ret = cpu.tick();
+    unsigned const ret = cpu.tick();
 
     EXPECT_EQ(ret, 3U);
     EXPECT_EQ(REG_A, 0x33U);
@@ -124,7 +124,7 @@ TEST_F(AndTest, AndZeroPageXIndexed) {
     SET_REG_A(0xFFU);
     SET_REG_X(0x03U);
 
-    int const ret = cpu.tick();
+    unsigned const ret = cpu.tick();
 
     EXPECT_EQ(ret, 4U);
     EXPECT_EQ(REG_A, 0xC3U);
@@ -139,7 +139,7 @@ TEST_F(AndTest, AndAbsolute) {
     EXPECT_CALL(memory, read(0xABBA)).WillOnce(Return(0x10U));      // parameter value
     SET_REG_A(0x31U);
 
-    int const ret = cpu.tick();
+    unsigned const ret = cpu.tick();
 
     EXPECT_EQ(ret, 4U);
     EXPECT_EQ(REG_A, 0x10U);
@@ -155,7 +155,7 @@ TEST_F(AndTest, AndAbsoluteXIndexed) {
     SET_REG_A(0x31U);
     SET_REG_X(0x03U);
 
-    int const ret = cpu.tick();
+    unsigned const ret = cpu.tick();
 
     EXPECT_EQ(ret, 4U);
     EXPECT_EQ(REG_A, 0x10U);
@@ -171,7 +171,7 @@ TEST_F(AndTest, AndAbsoluteYIndexed) {
     SET_REG_A(0x21U);
     SET_REG_Y(0x04U);
 
-    int const ret = cpu.tick();
+    unsigned const ret = cpu.tick();
 
     EXPECT_EQ(ret, 4U);
     EXPECT_EQ(REG_A, 0x21U);
@@ -187,7 +187,7 @@ TEST_F(AndTest, AndIndexedIndirect) {
     SET_REG_A(0x21U);
     SET_REG_X(0x05U);
 
-    int const ret = cpu.tick();
+    unsigned const ret = cpu.tick();
 
     EXPECT_EQ(ret, 6U);
     EXPECT_EQ(REG_A, 0x20U);
@@ -203,7 +203,7 @@ TEST_F(AndTest, AndIndirectIndexed) {
     SET_REG_A(0x21U);
     SET_REG_Y(0x04U);
 
-    int const ret = cpu.tick();
+    unsigned const ret = cpu.tick();
 
     EXPECT_EQ(ret, 5U);
     EXPECT_EQ(REG_A, 0x20U);

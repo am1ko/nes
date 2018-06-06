@@ -26,7 +26,7 @@ TEST_F(TransferTest, TayNegative) {
     SET_REG_A(0x80U);
     SET_REG_Y(0x00U);
 
-    int const ret = cpu.tick();
+    unsigned const ret = cpu.tick();
 
     EXPECT_EQ(REG_Y,  0x80U);
     EXPECT_EQ(NEGF, true);
@@ -40,7 +40,7 @@ TEST_F(TransferTest, TayZero) {
     SET_REG_A(0x00U);
     SET_REG_Y(0xFFU);
 
-    int const ret = cpu.tick();
+    unsigned const ret = cpu.tick();
 
     EXPECT_EQ(REG_Y,  0x00U);
     EXPECT_EQ(NEGF, false);
@@ -54,7 +54,7 @@ TEST_F(TransferTest, TyaZero) {
     SET_REG_A(0x80U);
     SET_REG_Y(0x00U);
 
-    int const ret = cpu.tick();
+    unsigned const ret = cpu.tick();
 
     EXPECT_EQ(REG_A,  0x00U);
     EXPECT_EQ(NEGF, false);
@@ -68,7 +68,7 @@ TEST_F(TransferTest, TyaNegative) {
     SET_REG_A(0x00U);
     SET_REG_Y(0xFFU);
 
-    int const ret = cpu.tick();
+    unsigned const ret = cpu.tick();
 
     EXPECT_EQ(REG_A,  0xFFU);
     EXPECT_EQ(NEGF, true);
@@ -82,7 +82,7 @@ TEST_F(TransferTest, TaxNegative) {
     SET_REG_A(0x80U);
     SET_REG_X(0x00U);
 
-    int const ret = cpu.tick();
+    unsigned const ret = cpu.tick();
 
     EXPECT_EQ(REG_X,  0x80U);
     EXPECT_EQ(NEGF, true);
@@ -96,7 +96,7 @@ TEST_F(TransferTest, TaxZero) {
     SET_REG_A(0x00U);
     SET_REG_X(0xFFU);
 
-    int const ret = cpu.tick();
+    unsigned const ret = cpu.tick();
 
     EXPECT_EQ(REG_X,  0x00U);
     EXPECT_EQ(NEGF, false);
@@ -110,7 +110,7 @@ TEST_F(TransferTest, TxaNegative) {
     SET_REG_A(0x00U);
     SET_REG_X(0xFFU);
 
-    int const ret = cpu.tick();
+    unsigned const ret = cpu.tick();
 
     EXPECT_EQ(REG_A,  0xFFU);
     EXPECT_EQ(NEGF, true);
@@ -124,7 +124,7 @@ TEST_F(TransferTest, TxaZero) {
     SET_REG_A(0x80U);
     SET_REG_X(0x00U);
 
-    int const ret = cpu.tick();
+    unsigned const ret = cpu.tick();
 
     EXPECT_EQ(REG_A,  0x00U);
     EXPECT_EQ(NEGF, false);
@@ -138,7 +138,7 @@ TEST_F(TransferTest, TsxNegative) {
     SET_REG_X(0x00U);
     SET_REG_SP(0xFFU);
 
-    int const ret = cpu.tick();
+    unsigned const ret = cpu.tick();
 
     EXPECT_EQ(REG_X,  0xFFU);
     EXPECT_EQ(NEGF, true);
@@ -152,7 +152,7 @@ TEST_F(TransferTest, TsxZero) {
     SET_REG_X(0x80U);
     SET_REG_SP(0x00U);
 
-    int const ret = cpu.tick();
+    unsigned const ret = cpu.tick();
 
     EXPECT_EQ(REG_X,  0x00U);
     EXPECT_EQ(NEGF, false);
@@ -166,7 +166,7 @@ TEST_F(TransferTest, TxsNegative) {
     SET_REG_X(0x80U);
     SET_REG_SP(0x00U);
 
-    int const ret = cpu.tick();
+    unsigned const ret = cpu.tick();
 
     EXPECT_EQ(REG_SP,  0x80U);
     EXPECT_EQ(NEGF, false);
@@ -180,7 +180,7 @@ TEST_F(TransferTest, TxsZero) {
     SET_REG_X(0x00U);
     SET_REG_SP(0xFFU);
 
-    int const ret = cpu.tick();
+    unsigned const ret = cpu.tick();
 
     EXPECT_EQ(REG_SP,  0x00U);
     EXPECT_EQ(NEGF, false);
