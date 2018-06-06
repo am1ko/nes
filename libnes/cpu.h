@@ -43,8 +43,8 @@ public:
 class Cpu : public CpuInterrupt
 {
     static const struct CpuInstruction instruction_set[256];
-    ICpuLogger * logger;
     IOMemoryMapped & bus;
+    ICpuLogger * logger;
     uint8_t interrupt_flags;
     // --- CACHED VALUES ------------------------------------------------------------------------ //
     uint8_t operand;

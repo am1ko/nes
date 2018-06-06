@@ -212,8 +212,9 @@ uint16_t Cpu::JSR(uint16_t operand_addr, uint8_t &extra_cycles, bool op_in_acc) 
 
 // ---------------------------------------------------------------------------------------------- //
 uint16_t Cpu::RTS(uint16_t operand_addr, uint8_t &extra_cycles, bool op_in_acc) {
-    context.PC =  bus.read(0x100U + ++context.SP) + 1U
-               + (bus.read(0x100U + ++context.SP) << 8);
+    uint16_t const lsb = bus.read(0x100U + ++context.SP) + 1U;
+    uint16_t const msb = bus.read(0x100U + ++context.SP) << 8;
+    context.PC = msb + lsb;
     return 0U;
 }
 
@@ -496,8 +497,9 @@ uint16_t Cpu::TXS(uint16_t operand_addr, uint8_t &extra_cycles, bool op_in_acc) 
 // ---------------------------------------------------------------------------------------------- //
 uint16_t Cpu::RTI(uint16_t operand_addr, uint8_t &extra_cycles, bool op_in_acc) {
     context.P =   bus.read(0x100U + ++context.SP);
-    context.PC =  bus.read(0x100U + ++context.SP)
-               + (bus.read(0x100U + ++context.SP) << 8);
+    uint16_t const lsb = bus.read(0x100U + ++context.SP);
+    uint16_t const msb = bus.read(0x100U + ++context.SP) << 8;
+    context.PC = lsb | msb;
     return 0U;
 }
 

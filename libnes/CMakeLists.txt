@@ -7,6 +7,8 @@ set(libnes_SRCS
     ppu.cpp
 )
 
+set( CMAKE_CXX_FLAGS "-Wall -Werror" )
+
 # Declare the library
 add_library(libnes STATIC
     ${libnes_SRCS}
