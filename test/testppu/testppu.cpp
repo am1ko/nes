@@ -8,7 +8,7 @@ using ::testing::Exactly;
 using ::testing::_;
 
 // ---------------------------------------------------------------------------------------------- //
-PpuTest::PpuTest() : ppu(cpu_interrupt) {
+PpuTest::PpuTest() {
 }
 
 // ---------------------------------------------------------------------------------------------- //
@@ -93,8 +93,6 @@ TEST_F(PpuTest, VBlankSetAfterPostRenderLineReadClears) {
 
 // ---------------------------------------------------------------------------------------------- //
 TEST_F(PpuTest, VBlankTriggersNmiInterrupt) {
-    EXPECT_CALL(cpu_interrupt, set_interrupt_pending(CpuInterrupt::InterruptSource::NMI));
-
     ppu.reset();
     for (int scan_line = 0; scan_line < 241; scan_line++) {
         for (int tick = 0; tick < 341; tick++) {
@@ -102,9 +100,11 @@ TEST_F(PpuTest, VBlankTriggersNmiInterrupt) {
         }
     }
     // scan line 241 tick 0
-    ppu.tick();
+    bool ret = ppu.tick();
+    EXPECT_EQ(ret, false);
     // scan line 241 tick 1 => VBLANK starts here
-    ppu.tick();
+    ret = ppu.tick();
+    EXPECT_EQ(ret, true);
 }
 
 // ---------------------------------------------------------------------------------------------- //

@@ -1,9 +1,6 @@
 #include "ppu.h"
 #include <cstring>
 
-Ppu::Ppu(CpuInterrupt& cpu_irq) : cpu_irq(cpu_irq) {
-}
-
 // ---------------------------------------------------------------------------------------------- //
 void Ppu::reset() {
     (void)std::memset(&registers, 0U, sizeof(registers));
@@ -12,14 +9,16 @@ void Ppu::reset() {
 }
 
 // ---------------------------------------------------------------------------------------------- //
-void Ppu::process_cycle() {
+bool Ppu::process_cycle() {
+    bool ret = false;
     if ((scan_line == 241U) && (cycle == 1U)) {
         registers.PPUSTATUS |= 0x80U;
-        cpu_irq.set_interrupt_pending(CpuInterrupt::InterruptSource::NMI);
+        ret = true;
     }
     else if ((scan_line == (SCAN_LINES_PER_FRAME - 1U)) && (cycle == 1U)) {
         registers.PPUSTATUS &= ~0x80U;
     }
+    return ret;
 }
 
 // ---------------------------------------------------------------------------------------------- //
@@ -34,9 +33,10 @@ void Ppu::advance_cycle() {
 }
 
 // ---------------------------------------------------------------------------------------------- //
-void Ppu::tick() {
-    process_cycle();
+bool Ppu::tick() {
+    bool const vblank_irq = process_cycle();
     advance_cycle();
+    return vblank_irq;
 }
 
 // ---------------------------------------------------------------------------------------------- //

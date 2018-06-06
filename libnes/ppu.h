@@ -8,9 +8,8 @@ class Ppu : public IOMemoryMapped
 {
     unsigned scan_line;
     unsigned cycle;
-    CpuInterrupt& cpu_irq;
 
-    void process_cycle();
+    bool process_cycle();
     void advance_cycle();
 
 public:
@@ -37,9 +36,8 @@ public:
 
     Registers registers;
 
-    Ppu(CpuInterrupt& cpu_irq);
     void reset();
-    void tick();
+    bool tick();
     uint8_t read(uint16_t addr);
     void write(uint16_t addr, uint8_t value);
 };
