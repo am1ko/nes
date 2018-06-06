@@ -7,6 +7,7 @@
 #include "io_registers.h"
 #include "bus.h"
 #include "cpu.h"
+#include "ppu.h"
 
 static unsigned ppu_cycles;
 
@@ -52,12 +53,14 @@ int main(int argc, char **argv)
     RAM ram(cpu_ram, sizeof(cpu_ram));
     ROM_ifstream rom(file);
     IO_Registers io_registers;
+    Ppu ppu;
 
-    Bus bus(ram, rom, io_registers, io_registers);
+    Bus bus(ram, rom, ppu, io_registers);
     Cpu cpu(bus);
     cpu.set_logger(&logger);
 
     cpu.reset();
+    ppu.reset();
 
     cpu.context.PC = 0xC000U;
 
@@ -66,6 +69,12 @@ int main(int argc, char **argv)
     do {
         ret = cpu.tick();
         ppu_cycles = (ppu_cycles + ret*3U) % 341U;
+
+        for (unsigned i = 0U; i < ret*3U; i++) {
+            bool const irq = ppu.tick();
+            if (irq) {cpu.set_interrupt_pending(CpuInterrupt::InterruptSource::NMI);}
+        }
+
         instructions++;
     } while(ret != 0U);
 
