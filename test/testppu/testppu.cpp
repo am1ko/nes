@@ -40,7 +40,9 @@ TEST_F(PpuTest, VBlankFalseDuringVisibleFrame) {
 
     // first tick of line 241 must still not enable VBLANK
     ppu.tick();
+
     EXPECT_EQ(VBLANKF, false);
+    EXPECT_EQ(ppu.read(Ppu::ADDR_PPUSTATUS) & 0x80U, 0x00U);
 }
 
 // ---------------------------------------------------------------------------------------------- //
@@ -63,6 +65,29 @@ TEST_F(PpuTest, VBlankSetAfterPostRenderLine) {
     for (int tick = 2; tick < 341; tick++) {
         ppu.tick();
         EXPECT_EQ(VBLANKF, true);
+    }
+}
+
+// ---------------------------------------------------------------------------------------------- //
+TEST_F(PpuTest, VBlankSetAfterPostRenderLineReadClears) {
+    ppu.reset();
+
+    for (int scan_line = 0; scan_line < 241; scan_line++) {
+        for (int tick = 0; tick < 341; tick++) {
+            ppu.tick();
+        }
+    }
+    // scan line 241 tick 0
+    ppu.tick();
+
+    // scan line 241 tick 1 => VBLANK starts here
+    ppu.tick();
+    EXPECT_EQ(ppu.read(Ppu::ADDR_PPUSTATUS) & 0x80U, 0x80U);
+
+    // rest of scan line 241
+    for (int tick = 2; tick < 341; tick++) {
+        ppu.tick();
+        EXPECT_EQ(ppu.read(Ppu::ADDR_PPUSTATUS) & 0x80U, 0x00U);
     }
 }
 

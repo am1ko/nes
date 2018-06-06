@@ -49,6 +49,11 @@ void Ppu::tick() {
 
 // ---------------------------------------------------------------------------------------------- //
 uint8_t Ppu::read(uint16_t addr) {
+    if (addr == ADDR_PPUSTATUS) {
+        uint8_t const ret = registers.PPUSTATUS;
+        registers.PPUSTATUS &= ~0x80U;
+        return ret;
+    }
     return 0U;
 }
 
