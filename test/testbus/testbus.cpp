@@ -7,7 +7,7 @@ using ::testing::Exactly;
 using ::testing::_;
 
 // ---------------------------------------------------------------------------------------------- //
-BusTest::BusTest() : bus(mock_ram, mock_rom, mock_io_registers) {
+BusTest::BusTest() : bus(mock_ram, mock_rom, mock_ppu, mock_apu) {
 }
 
 // ---------------------------------------------------------------------------------------------- //
@@ -36,10 +36,10 @@ TEST_F(BusTest, ReadRAMEnd) {
 }
 
 // ---------------------------------------------------------------------------------------------- //
-TEST_F(BusTest, ReadIO_RegsStart) {
-    uint16_t const addr = MemoryMap::IO_REGISTERS_START;
+TEST_F(BusTest, ReadPPU_RegsStart) {
+    uint16_t const addr = MemoryMap::PPU_START;
     uint8_t const val = 0x11U;
-    EXPECT_CALL(mock_io_registers, read(addr)).WillOnce(Return(val));
+    EXPECT_CALL(mock_ppu, read(addr)).WillOnce(Return(val));
 
     uint8_t const ret = bus.read(addr);
 
@@ -47,10 +47,10 @@ TEST_F(BusTest, ReadIO_RegsStart) {
 }
 
 // ---------------------------------------------------------------------------------------------- //
-TEST_F(BusTest, ReadIO_RegsEnd) {
-    uint16_t const addr = MemoryMap::IO_REGISTERS_END;
+TEST_F(BusTest, ReadPPU_RegsEnd) {
+    uint16_t const addr = 0x2007U;
     uint8_t const val = 0x22U;
-    EXPECT_CALL(mock_io_registers, read(addr)).WillOnce(Return(val));
+    EXPECT_CALL(mock_ppu, read(addr)).WillOnce(Return(val));
 
     uint8_t const ret = bus.read(addr);
 

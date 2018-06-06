@@ -12,5 +12,6 @@ protected:
     Bus bus;
     MockMemory mock_ram;
     MockMemory mock_rom;
-    MockMemory mock_io_registers;
+    MockMemory mock_ppu;
+    MockMemory mock_apu;
 };

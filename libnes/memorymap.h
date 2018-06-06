@@ -8,6 +8,8 @@ namespace MemoryMap{
     const uint16_t RAM_MIRROR_START     = 0x0800U;
     const uint16_t RAM_END              = 0x1FFFU;
     const uint16_t IO_REGISTERS_START   = 0x2000U;
+    const uint16_t PPU_START            = 0x2000U;
+    const uint16_t PPU_END              = 0x3FFFU;
     const uint16_t IO_REGISTERS_END     = 0x401FU;
     const uint16_t EXPANSION_ROM_START  = 0x4020U;
     const uint16_t EXPANSION_ROM_END    = 0x5FFFU;

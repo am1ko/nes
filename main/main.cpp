@@ -53,7 +53,7 @@ int main(int argc, char **argv)
     ROM_ifstream rom(file);
     IO_Registers io_registers;
 
-    Bus bus(ram, rom, io_registers);
+    Bus bus(ram, rom, io_registers, io_registers);
     Cpu cpu(bus);
     cpu.set_logger(&logger);
 
