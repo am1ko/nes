@@ -41,6 +41,7 @@ void StdOutLogger::log(uint8_t const * instr, uint8_t bytes, uint16_t instr_addr
 }
 
 static uint8_t cpu_ram[0x800];
+static uint8_t rom_storage[2*ROM_BANK_SIZE];
 
 // ---------------------------------------------------------------------------------------------- //
 int main(int argc, char **argv)
@@ -51,7 +52,7 @@ int main(int argc, char **argv)
     StdOutLogger logger;
 
     RAM ram(cpu_ram, sizeof(cpu_ram));
-    ROM_ifstream rom(file);
+    ROM_ifstream rom(file, rom_storage, sizeof(rom_storage));
     IO_Registers io_registers;
     Ppu ppu;
 
@@ -72,7 +73,9 @@ int main(int argc, char **argv)
 
         for (unsigned i = 0U; i < ret*3U; i++) {
             bool const irq = ppu.tick();
-            if (irq) {cpu.set_interrupt_pending(CpuInterrupt::InterruptSource::NMI);}
+            if (irq) {
+                cpu.set_interrupt_pending(CpuInterrupt::InterruptSource::NMI);
+            }
         }
 
         instructions++;
