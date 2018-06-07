@@ -12,11 +12,11 @@ void Ppu::reset() {
 bool Ppu::process_cycle() {
     bool ret = false;
     if ((scan_line == 241U) && (cycle == 1U)) {
-        registers.PPUSTATUS |= 0x80U;
+        registers.PPUSTATUS |= FLAG_PPUSTATUS_V;
         if (registers.PPUCTRL & FLAG_PPUCTRL_V) {ret = true;}  // <-- generate NMI interrupt
     }
     else if ((scan_line == (SCAN_LINES_PER_FRAME - 1U)) && (cycle == 1U)) {
-        registers.PPUSTATUS &= ~0x80U;
+        registers.PPUSTATUS &= ~FLAG_PPUSTATUS_V;
     }
     return ret;
 }
@@ -43,7 +43,7 @@ bool Ppu::tick() {
 uint8_t Ppu::read(uint16_t addr) {
     if (addr == ADDR_PPUSTATUS) {
         uint8_t const ret = registers.PPUSTATUS;
-        registers.PPUSTATUS &= ~0x80U;
+        registers.PPUSTATUS &= ~FLAG_PPUSTATUS_V;
         return ret;
     }
     return 0U;
