@@ -13,7 +13,7 @@ bool Ppu::process_cycle() {
     bool ret = false;
     if ((scan_line == 241U) && (cycle == 1U)) {
         registers.PPUSTATUS |= 0x80U;
-        ret = true;
+        if (registers.PPUCTRL & FLAG_PPUCTRL_V) {ret = true;}  // <-- generate NMI interrupt
     }
     else if ((scan_line == (SCAN_LINES_PER_FRAME - 1U)) && (cycle == 1U)) {
         registers.PPUSTATUS &= ~0x80U;
@@ -51,4 +51,9 @@ uint8_t Ppu::read(uint16_t addr) {
 
 // ---------------------------------------------------------------------------------------------- //
 void Ppu::write(uint16_t addr, uint8_t value) {
+    switch (addr) {
+        case ADDR_PPUCTRL:
+            registers.PPUCTRL = value;
+        break;
+    }
 }

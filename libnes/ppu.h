@@ -12,7 +12,6 @@ class Ppu : public IOMemoryMapped
     bool process_cycle();
     void advance_cycle();
 
-public:
     struct Registers {
         uint8_t PPUCTRL;
         uint8_t PPUMASK;
@@ -23,6 +22,7 @@ public:
         uint8_t PPUDATA;
     };
 
+public:
     static const uint16_t SCAN_LINES_PER_FRAME = 262U;
     static const uint16_t CYCLES_PER_SCAN_LINE = 341U;
 
@@ -33,6 +33,14 @@ public:
     static const uint16_t ADDR_PPUSCROLL = 0x2004U;
     static const uint16_t ADDR_PPUADDR   = 0x2005U;
     static const uint16_t ADDR_PPUDATA   = 0x2006U;
+
+    static const uint8_t FLAG_PPUCTRL_V  = (1U << 7);
+    static const uint8_t FLAG_PPUCTRL_P  = (1U << 6);
+    static const uint8_t FLAG_PPUCTRL_H  = (1U << 5);
+    static const uint8_t FLAG_PPUCTRL_B  = (1U << 4);
+    static const uint8_t FLAG_PPUCTRL_S  = (1U << 3);
+    static const uint8_t FLAG_PPUCTRL_I  = (1U << 2);
+    static const uint8_t FLAG_PPUCTRL_N  = (1U << 0);
 
     Registers registers;
 
