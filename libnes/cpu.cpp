@@ -12,7 +12,8 @@ namespace {
 }
 
 // ---------------------------------------------------------------------------------------------- //
-Cpu::Cpu(IOMemoryMapped& bus) : bus(bus), logger(0) {
+Cpu::Cpu(IOMemoryMapped& bus) : bus(bus), logger(0), interrupt_flags(0), operand(0U),
+                                acc_cached(0U), context{0} {
 }
 
 // ---------------------------------------------------------------------------------------------- //
