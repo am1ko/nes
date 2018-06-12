@@ -9,6 +9,7 @@ class Ppu : public IOMemoryMapped
     unsigned scan_line;
     unsigned cycle;
 
+
     bool process_cycle();
     void advance_cycle();
 
@@ -47,6 +48,8 @@ public:
     static const uint8_t FLAG_PPUSTATUS_O = (1U << 5);
 
     Registers registers;
+
+    Ppu(IOMemoryMapped& bus);
 
     void reset();
     bool tick();

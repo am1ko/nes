@@ -5,6 +5,7 @@ set(libnes_SRCS
     rom_ifstream.cpp
     io_registers.cpp
     ppu.cpp
+    bus_ppu.cpp
 )
 
 set( CMAKE_CXX_FLAGS "-Wall -Werror" )

@@ -1,14 +1,13 @@
 #include "testppu.h"
 #include "ppu.h"
 #include "test_helpers.h"
-#include "cpu_interrupt.h"
 
 using ::testing::Return;
 using ::testing::Exactly;
 using ::testing::_;
 
 // ---------------------------------------------------------------------------------------------- //
-PpuTest::PpuTest() {
+PpuTest::PpuTest() : ppu(bus){
 }
 
 // ---------------------------------------------------------------------------------------------- //

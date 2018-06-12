@@ -8,6 +8,7 @@
 #include "bus.h"
 #include "cpu.h"
 #include "ppu.h"
+#include "bus_ppu.h"
 
 static unsigned ppu_cycles;
 
@@ -41,6 +42,7 @@ void StdOutLogger::log(uint8_t const * instr, uint8_t bytes, uint16_t instr_addr
 }
 
 static uint8_t cpu_ram[0x800];
+static uint8_t ppu_ram[0x800];
 static uint8_t rom_storage[2*ROM_BANK_SIZE];
 
 // ---------------------------------------------------------------------------------------------- //
@@ -52,10 +54,11 @@ int main(int argc, char **argv)
     StdOutLogger logger;
 
     RAM ram(cpu_ram, sizeof(cpu_ram));
+    RAM vram(ppu_ram, sizeof(ppu_ram));
     ROM_ifstream rom(file, rom_storage, sizeof(rom_storage));
     IO_Registers io_registers;
-    Ppu ppu;
-
+    BusPpu ppu_bus(vram, rom);
+    Ppu ppu(ppu_bus);
     Bus bus(ram, rom, ppu, io_registers);
     Cpu cpu(bus);
     cpu.set_logger(&logger);

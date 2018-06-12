@@ -1,6 +1,10 @@
 #include "ppu.h"
 #include <cstring>
 
+Ppu::Ppu(IOMemoryMapped& bus) {
+
+}
+
 // ---------------------------------------------------------------------------------------------- //
 void Ppu::reset() {
     (void)std::memset(&registers, 0U, sizeof(registers));
