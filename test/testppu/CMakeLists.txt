@@ -13,3 +13,5 @@ TARGET_LINK_LIBRARIES(
 
 add_test(NAME testppu
          COMMAND testppu)
+add_test(NAME testppuvram
+         COMMAND testppu)

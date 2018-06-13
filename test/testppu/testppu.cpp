@@ -8,6 +8,7 @@ using ::testing::_;
 
 // ---------------------------------------------------------------------------------------------- //
 PpuTest::PpuTest() : ppu(bus){
+    ppu.reset();
 }
 
 // ---------------------------------------------------------------------------------------------- //
@@ -15,7 +16,6 @@ PpuTest::~PpuTest() {};
 
 // ---------------------------------------------------------------------------------------------- //
 TEST_F(PpuTest, ResetState) {
-    ppu.reset();
 
     EXPECT_EQ(ppu.registers.PPUCTRL,   0x00U);
     EXPECT_EQ(ppu.registers.PPUMASK,   0x00U);
@@ -28,8 +28,6 @@ TEST_F(PpuTest, ResetState) {
 
 // ---------------------------------------------------------------------------------------------- //
 TEST_F(PpuTest, VBlankFalseDuringVisibleFrame) {
-    ppu.reset();
-
     for (int scan_line = 0; scan_line < 241; scan_line++) {
         for (int tick = 0; tick < 341; tick++) {
             ppu.tick();
@@ -46,8 +44,6 @@ TEST_F(PpuTest, VBlankFalseDuringVisibleFrame) {
 
 // ---------------------------------------------------------------------------------------------- //
 TEST_F(PpuTest, VBlankSetAfterPostRenderLine) {
-    ppu.reset();
-
     for (int scan_line = 0; scan_line < 241; scan_line++) {
         for (int tick = 0; tick < 341; tick++) {
             ppu.tick();
@@ -69,8 +65,6 @@ TEST_F(PpuTest, VBlankSetAfterPostRenderLine) {
 
 // ---------------------------------------------------------------------------------------------- //
 TEST_F(PpuTest, VBlankSetAfterPostRenderLineReadClears) {
-    ppu.reset();
-
     for (int scan_line = 0; scan_line < 241; scan_line++) {
         for (int tick = 0; tick < 341; tick++) {
             ppu.tick();
@@ -92,7 +86,6 @@ TEST_F(PpuTest, VBlankSetAfterPostRenderLineReadClears) {
 
 // ---------------------------------------------------------------------------------------------- //
 TEST_F(PpuTest, VBlankTriggersNmiInterruptWhenEnabled) {
-    ppu.reset();
     ppu.write(Ppu::ADDR_PPUCTRL, Ppu::FLAG_PPUCTRL_V); // <-- enable NMI interrupt generation
     for (int scan_line = 0; scan_line < 241; scan_line++) {
         for (int tick = 0; tick < 341; tick++) {
@@ -111,7 +104,6 @@ TEST_F(PpuTest, VBlankTriggersNmiInterruptWhenEnabled) {
 
 // ---------------------------------------------------------------------------------------------- //
 TEST_F(PpuTest, VBlankDoesNotTriggerNmiInterruptWhenDisabled) {
-    ppu.reset();
     ppu.write(Ppu::ADDR_PPUCTRL, 0x00U); // <-- disable NMI interrupt generation
     for (int scan_line = 0; scan_line < 241; scan_line++) {
         for (int tick = 0; tick < 341; tick++) {
@@ -130,8 +122,6 @@ TEST_F(PpuTest, VBlankDoesNotTriggerNmiInterruptWhenDisabled) {
 
 // ---------------------------------------------------------------------------------------------- //
 TEST_F(PpuTest, VBlankOn) {
-    ppu.reset();
-
     for (int scan_line = 0; scan_line < 242; scan_line++) {
         for (int tick = 0; tick < 341; tick++) {
             ppu.tick();
@@ -148,8 +138,6 @@ TEST_F(PpuTest, VBlankOn) {
 
 // ---------------------------------------------------------------------------------------------- //
 TEST_F(PpuTest, VblankEndsOnPreRenderLine) {
-    ppu.reset();
-
     for (int scan_line = 0; scan_line < 261; scan_line++) {
         for (int tick = 0; tick < 341; tick++) {
             ppu.tick();
@@ -167,8 +155,6 @@ TEST_F(PpuTest, VblankEndsOnPreRenderLine) {
 
 // ---------------------------------------------------------------------------------------------- //
 TEST_F(PpuTest, VblankOffForPreRenderLine) {
-    ppu.reset();
-
     for (int scan_line = 0; scan_line < 261; scan_line++) {
         for (int tick = 0; tick < 341; tick++) {
             ppu.tick();

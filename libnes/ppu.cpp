@@ -1,7 +1,9 @@
 #include "ppu.h"
 #include <cstring>
 
-Ppu::Ppu(IOMemoryMapped& bus) {
+
+Ppu::Ppu(IOMemoryMapped& bus) : bus(bus), scan_line(0), cycle(0), vram_address(0),
+                                ppuaddr_state(WAITING_FOR_MSB) {
 
 }
 
@@ -45,12 +47,19 @@ bool Ppu::tick() {
 
 // ---------------------------------------------------------------------------------------------- //
 uint8_t Ppu::read(uint16_t addr) {
-    if (addr == ADDR_PPUSTATUS) {
-        uint8_t const ret = registers.PPUSTATUS;
-        registers.PPUSTATUS &= ~FLAG_PPUSTATUS_V;
-        return ret;
+    uint8_t ret;
+
+    switch (addr) {
+        case ADDR_PPUSTATUS:
+            ret = registers.PPUSTATUS;
+            registers.PPUSTATUS &= ~FLAG_PPUSTATUS_V;
+        break;
+        case ADDR_PPUDATA:
+            ret = bus.read(vram_address);
+        break;
     }
-    return 0U;
+
+    return ret;
 }
 
 // ---------------------------------------------------------------------------------------------- //
@@ -58,6 +67,19 @@ void Ppu::write(uint16_t addr, uint8_t value) {
     switch (addr) {
         case ADDR_PPUCTRL:
             registers.PPUCTRL = value;
+        break;
+        case ADDR_PPUDATA:
+            bus.write(vram_address, value);
+        break;
+        case ADDR_PPUADDR:
+            if (ppuaddr_state == WAITING_FOR_MSB) {
+                vram_address = (value << 8);
+                ppuaddr_state = WAITING_FOR_LSB;
+            }
+            else {
+                vram_address += value;
+                ppuaddr_state = WAITING_FOR_MSB;
+            }
         break;
     }
 }
