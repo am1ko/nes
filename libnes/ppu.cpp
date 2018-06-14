@@ -1,10 +1,8 @@
 #include "ppu.h"
 #include <cstring>
 
-
-Ppu::Ppu(IOMemoryMapped& bus) : bus(bus), scan_line(0), cycle(0), vram_address(0),
-                                ppuaddr_state(WAITING_FOR_MSB) {
-
+// ---------------------------------------------------------------------------------------------- //
+Ppu::Ppu(IOMemoryMapped& bus) : bus(bus) {
 }
 
 // ---------------------------------------------------------------------------------------------- //
@@ -56,6 +54,7 @@ uint8_t Ppu::read(uint16_t addr) {
         break;
         case ADDR_PPUDATA:
             ret = bus.read(vram_address);
+            vram_address += get_address_increment();;
         break;
     }
 
@@ -70,6 +69,7 @@ void Ppu::write(uint16_t addr, uint8_t value) {
         break;
         case ADDR_PPUDATA:
             bus.write(vram_address, value);
+            vram_address += get_address_increment();;
         break;
         case ADDR_PPUADDR:
             if (ppuaddr_state == WAITING_FOR_MSB) {
@@ -82,4 +82,9 @@ void Ppu::write(uint16_t addr, uint8_t value) {
             }
         break;
     }
+}
+
+// ---------------------------------------------------------------------------------------------- //
+uint8_t Ppu::get_address_increment() const {
+    return (registers.PPUCTRL & FLAG_PPUCTRL_I) ? 32U : 1U;
 }

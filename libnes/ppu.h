@@ -8,16 +8,15 @@ class Ppu : public IOMemoryMapped
 {
     IOMemoryMapped& bus;
 
-    unsigned scan_line;
-    unsigned cycle;
-    uint16_t vram_address;
-
+    unsigned scan_line = 0U;
+    unsigned cycle = 0U;
+    uint16_t vram_address = 0U;
 
     enum PPUADDR_state {
         WAITING_FOR_MSB,
         WAITING_FOR_LSB
     };
-    enum PPUADDR_state ppuaddr_state;
+    enum PPUADDR_state ppuaddr_state = WAITING_FOR_MSB;
 
     struct Registers {
         uint8_t PPUCTRL;
@@ -31,6 +30,7 @@ class Ppu : public IOMemoryMapped
 
     bool process_cycle();
     void advance_cycle();
+    uint8_t get_address_increment() const;
 
 public:
     static const uint16_t SCAN_LINES_PER_FRAME = 262U;
@@ -57,9 +57,9 @@ public:
     static const uint8_t FLAG_PPUSTATUS_S = (1U << 6);
     static const uint8_t FLAG_PPUSTATUS_O = (1U << 5);
 
-    Registers registers;
+    Registers registers = {0};
 
-    Ppu(IOMemoryMapped& bus);
+    explicit Ppu(IOMemoryMapped& bus);
 
     void reset();
     bool tick();
