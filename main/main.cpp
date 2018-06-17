@@ -12,6 +12,9 @@
 #include "ppu.h"
 #include "bus_ppu.h"
 
+#include "SDL2/SDL.h"
+#undef main   // deal with #define main SDL_main from within SDL.h
+
 static unsigned ppu_cycles;
 
 // ---------------------------------------------------------------------------------------------- //
@@ -61,9 +64,13 @@ static void debug_draw(void) {
     for (unsigned row = 0; row < 30; row++) {
         std::cout << "[ ";
         for (unsigned col = 0; col < 32; col++) {
-            // std::cout << " " <<  (int)ppu_ram[row*30 + col] << " ";
-            std::cout << boost::format("%02X ") % static_cast<int>(ppu_ram_storage[row*32 + col]);
-            // std::cout << boost::format("%02X ") % static_cast<int>(vram.read(row*32 + col));
+            uint8_t const data = ppu_ram_storage[row*32 + col];
+            if (data != 0x24U) {
+                std::cout << boost::format("%02X ") % static_cast<int>(data);
+            }
+            else {
+                std::cout << "   ";
+            }
         }
         std::cout << " ]" << std::endl;
     }
@@ -75,6 +82,12 @@ static void debug_draw(void) {
 // ---------------------------------------------------------------------------------------------- //
 int main(int argc, char **argv)
 {
+    SDL_Init(SDL_INIT_VIDEO);
+
+    SDL_Window * window = SDL_CreateWindow("NES emulator",
+        SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 256, 240, 0);
+
+    // ------------------------------------------------------------------------------------------ //
     assert(argc == 2);
     std::string file = std::string(argv[1]);
 
@@ -114,12 +127,26 @@ int main(int argc, char **argv)
     cpu.reset();
     ppu.reset();
 
-    cpu.context.PC = 0xC000U;
-
     unsigned ret = 0U;
     unsigned instructions = 0U;
-    do {
-        ret = cpu.tick();
+
+    // ------------------------------------------------------------------------------------------ //
+
+    bool quit = false;
+
+    while (!quit)
+    {
+        SDL_Event event;
+
+        while (SDL_PollEvent(&event)) {
+            switch (event.type) {
+                case SDL_QUIT:
+                    quit = true;
+                break;
+            }
+        }
+
+        ret = cpu.tick(); if (ret == 0) {break;}
         ppu_cycles = (ppu_cycles + ret*3U) % 341U;
 
         for (unsigned i = 0U; i < ret*3U; i++) {
@@ -131,10 +158,13 @@ int main(int argc, char **argv)
         }
 
         instructions++;
-    } while(ret != 0U);
+    }
 
     std::cout << "Unknown instruction" << std::endl;
     std::cout << std::dec << instructions - 1 <<  " instructions executed" << std::endl;
+
+    SDL_DestroyWindow(window);
+    SDL_Quit();
 
     return 0;
 }
