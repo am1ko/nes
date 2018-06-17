@@ -9,6 +9,8 @@ BusPpu::BusPpu(IOMemoryMapped& vram, IOMemoryMapped& chr_rom) :
 
 // ---------------------------------------------------------------------------------------------- //
 uint8_t BusPpu::read(uint16_t addr) {
+    (void)vram;
+    (void)chr_rom;
     return 0U;
 }
 

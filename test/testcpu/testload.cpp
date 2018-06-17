@@ -173,7 +173,7 @@ TEST_F(LoadTest, LDAImmediateZeroFlag) {
     EXPECT_MEM_READ_8(REG_PC, 0xA9U);
     EXPECT_MEM_READ_8(REG_PC+1, 0x00U);
 
-    (int)cpu.tick();
+    (void)cpu.tick();
 
     EXPECT_EQ(REG_A, 0x00U);
     EXPECT_EQ(ZEROF, true);
