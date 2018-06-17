@@ -46,6 +46,24 @@ static uint8_t ppu_ram[0x800];
 static uint8_t rom_storage[2*ROM_BANK_SIZE];
 
 // ---------------------------------------------------------------------------------------------- //
+static void debug_draw(void) {
+    std::cout << "-----------------------------------------------------------------------------------"
+    "-----------------" << std::endl;
+    for (unsigned row = 0; row < 30; row++) {
+        std::cout << "[ ";
+        for (unsigned col = 0; col < 32; col++) {
+            // std::cout << " " <<  (int)ppu_ram[row*30 + col] << " ";
+            std::cout << boost::format("%02X ") % static_cast<int>(ppu_ram[row*32 + col]);
+            // std::cout << boost::format("%02X ") % static_cast<int>(vram.read(row*32 + col));
+        }
+        std::cout << " ]" << std::endl;
+    }
+    std::cout << "-----------------------------------------------------------------------------------"
+    "-----------------" << std::endl;
+    std::system("clear");
+}
+
+// ---------------------------------------------------------------------------------------------- //
 int main(int argc, char **argv)
 {
     assert(argc == 2);
@@ -61,7 +79,7 @@ int main(int argc, char **argv)
     Ppu ppu(ppu_bus);
     Bus bus(ram, rom, ppu, io_registers);
     Cpu cpu(bus);
-    cpu.set_logger(&logger);
+    // cpu.set_logger(&logger);
 
     cpu.reset();
     ppu.reset();
@@ -78,6 +96,7 @@ int main(int argc, char **argv)
             bool const irq = ppu.tick();
             if (irq) {
                 cpu.set_interrupt_pending(CpuInterrupt::InterruptSource::NMI);
+                debug_draw();
             }
         }
 

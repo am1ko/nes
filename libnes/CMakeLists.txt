@@ -15,6 +15,8 @@ add_library(libnes STATIC
     ${libnes_SRCS}
 )
 
+INCLUDE_DIRECTORIES( ${Boost_INCLUDE_DIR} )
+
 # Specify here the include directories exported
 # by this library
 target_include_directories(libnes PUBLIC
