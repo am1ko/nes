@@ -1,13 +1,16 @@
 #ifndef PPU_H
 #define PPU_H
 
+#include <array>
 #include "cpu_interrupt.h"
 #include "iomemorymapped.h"
+#include "renderer.h"
 
 class Ppu : public IOMemoryMapped
 {
     IOMemoryMapped& bus;
     IOMemoryMapped& oam;
+    Renderer& renderer;
 
     unsigned scan_line = 0U;
     unsigned cycle = 0U;
@@ -31,6 +34,13 @@ class Ppu : public IOMemoryMapped
     bool process_cycle();
     void advance_cycle();
     uint8_t get_address_increment() const;
+
+    void load_tile(uint16_t ptable_addr, uint8_t tile_index, std::array<uint8_t, 8>& msb,
+                   std::array<uint8_t, 8>& lsb);
+    void draw_tile(uint8_t palette_index, uint8_t x_pos, uint8_t y_pos, bool flip_vertical,
+                    bool flip_horizontal,
+                    std::array<uint8_t, 8>& tile_msb, std::array<uint8_t, 8>& tile_lsb);
+    void render();
 
 public:
     static const uint16_t SCAN_LINES_PER_FRAME = 262U;
@@ -59,7 +69,7 @@ public:
 
     Registers registers = {0};
 
-    Ppu(IOMemoryMapped& bus, IOMemoryMapped& oam);
+    Ppu(IOMemoryMapped& bus, IOMemoryMapped& oam, Renderer& renderer);
 
     void reset();
     bool tick();
