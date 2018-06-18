@@ -8,7 +8,11 @@ set(libnes_SRCS
     bus_ppu.cpp
 )
 
+if (WIN32)
+set( CMAKE_CXX_FLAGS "/Za" )
+else()
 set( CMAKE_CXX_FLAGS "-Wall -Werror" )
+endif()
 
 # Declare the library
 add_library(libnes STATIC

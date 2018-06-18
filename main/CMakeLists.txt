@@ -2,9 +2,13 @@ set(Main_SRCS
     main.cpp
 )
 
+if (WIN32)
+set( CMAKE_CXX_FLAGS "/Za /EHsc" )
+else()
 set( CMAKE_CXX_FLAGS "-Wall -Werror" )
+endif()
 
-FIND_PACKAGE( Boost 1.40 COMPONENTS program_options REQUIRED )
+FIND_PACKAGE( Boost )
 INCLUDE_DIRECTORIES( ${Boost_INCLUDE_DIR} )
 
 add_executable(testApp
