@@ -7,7 +7,7 @@ using ::testing::Exactly;
 using ::testing::_;
 
 // ---------------------------------------------------------------------------------------------- //
-BusTest::BusTest() : bus(mock_ram, mock_rom, mock_ppu, mock_apu) {
+BusTest::BusTest() : bus(mock_ram, mock_rom_lower, mock_rom_upper, mock_ppu, mock_apu) {
 }
 
 // ---------------------------------------------------------------------------------------------- //
@@ -61,7 +61,7 @@ TEST_F(BusTest, ReadPPU_RegsEnd) {
 TEST_F(BusTest, ReadROMStart) {
     uint16_t const addr = MemoryMap::ROM_START;
     uint8_t const val = 0x33U;
-    EXPECT_CALL(mock_rom, read(addr)).WillOnce(Return(val));
+    EXPECT_CALL(mock_rom_lower, read(0x00U)).WillOnce(Return(val));
 
     uint8_t const ret = bus.read(addr);
 
@@ -72,7 +72,7 @@ TEST_F(BusTest, ReadROMStart) {
 TEST_F(BusTest, ReadROMEnd) {
     uint16_t const addr = MemoryMap::ROM_END;
     uint8_t const val = 0x44U;
-    EXPECT_CALL(mock_rom, read(addr)).WillOnce(Return(val));
+    EXPECT_CALL(mock_rom_upper, read(0x3FFF)).WillOnce(Return(val));
 
     uint8_t const ret = bus.read(addr);
 

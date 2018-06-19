@@ -1,11 +1,10 @@
 set(libnes_SRCS
     cpu.cpp
     bus.cpp
-    ram.cpp
-    rom_ifstream.cpp
-    io_registers.cpp
     ppu.cpp
     bus_ppu.cpp
+    ines_parser_ifstream.cpp
+    io_registers.cpp
 )
 
 if (WIN32)

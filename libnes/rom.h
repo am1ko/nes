@@ -1,44 +1,43 @@
-#ifndef RAM_H
-#define RAM_H
+#ifndef ROM_H
+#define ROM_H
 
 #include <array>
 #include <cstdint>
 #include "iomemorymapped.h"
 
 template <std::size_t N>
-class RAM : public IOMemoryMapped {
-    std::array<uint8_t, N>& ram;
+class ROM : public IOMemoryMapped {
+    std::array<uint8_t, N>& rom;
 public:
-    RAM(std::array<uint8_t, N>& ram);
-    ~RAM();
+    ROM(std::array<uint8_t, N>& rom);
+    ~ROM();
     uint8_t read(uint16_t addr);
     void write(uint16_t addr, uint8_t value);
 };
 
 // ---------------------------------------------------------------------------------------------- //
 template <std::size_t N>
-RAM<N>::RAM(std::array<uint8_t, N>& ram) : ram(ram) {
+ROM<N>::ROM(std::array<uint8_t, N>& rom) : rom(rom) {
 
 }
 
 // ---------------------------------------------------------------------------------------------- //
 template <std::size_t N>
-RAM<N>::~RAM() {
+ROM<N>::~ROM() {
 
 }
 
 // ---------------------------------------------------------------------------------------------- //
 template <std::size_t N>
-uint8_t RAM<N>::read(uint16_t addr) {
-    assert(addr < ram.size());
-    return ram[addr];
+uint8_t ROM<N>::read(uint16_t addr) {
+    assert(addr < rom.size());
+    return rom[addr];
 }
 
 // ---------------------------------------------------------------------------------------------- //
 template <std::size_t N>
-void RAM<N>::write(uint16_t addr, uint8_t value) {
-    assert(addr < ram.size());
-    ram[addr] = value;
+void ROM<N>::write(uint16_t addr, uint8_t value) {
+    assert(false);
 }
 
 #endif

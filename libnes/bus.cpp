@@ -10,13 +10,15 @@
 #endif
 
 // ---------------------------------------------------------------------------------------------- //
-Bus::Bus(IOMemoryMapped& ram, IOMemoryMapped& rom, IOMemoryMapped& ppu, IOMemoryMapped& apu) :
-    ram(ram), rom(rom), ppu(ppu), apu(apu) {
+Bus::Bus(IOMemoryMapped& ram, IOMemoryMapped& prg_rom_lower,IOMemoryMapped& prg_rom_upper,
+         IOMemoryMapped& ppu, IOMemoryMapped& apu) :
+    ram(ram), prg_rom_lower(prg_rom_lower), prg_rom_upper(prg_rom_upper),ppu(ppu), apu(apu) {
 }
 
 // ---------------------------------------------------------------------------------------------- //
 uint8_t Bus::read(uint16_t addr) {
-    uint8_t const ret = get_bus_device(addr).read(addr);
+    uint16_t offset = 0U;
+    uint8_t const ret = get_bus_device(addr, offset).read(addr - offset);
 #ifdef DEBUG_MEM
     std::cout << "RD[" << boost::format("0x%04X") % addr << "] <- ";
     std::cout << boost::format("0x%02X") % static_cast<int>(ret);
@@ -27,7 +29,8 @@ uint8_t Bus::read(uint16_t addr) {
 
 // ---------------------------------------------------------------------------------------------- //
 void Bus::write(uint16_t addr, uint8_t value) {
-    get_bus_device(addr).write(addr, value);
+    uint16_t offset = 0U;
+    get_bus_device(addr, offset).write(addr - offset, value);
 #ifdef DEBUG_MEM
     std::cout << "WR[" << boost::format("0x%04X") % addr << "] -> ";
     std::cout << boost::format("0x%02X") % static_cast<int>(value);
@@ -37,14 +40,21 @@ void Bus::write(uint16_t addr, uint8_t value) {
 }
 
 // ---------------------------------------------------------------------------------------------- //
-IOMemoryMapped & Bus::get_bus_device(uint16_t addr) {
+IOMemoryMapped & Bus::get_bus_device(uint16_t addr, uint16_t & offset) {
     if ((addr >= MemoryMap::RAM_START) && (addr <= MemoryMap::RAM_END)) {
+        offset = MemoryMap::RAM_START;
         return ram;
     }
-    else if ((addr >= MemoryMap::ROM_START) && (addr <= MemoryMap::ROM_END)) {
-        return rom;
+    else if ((addr >= MemoryMap::ROM_LOWER_BANK_START) and (addr <= MemoryMap::ROM_LOWER_BANK_END)){
+        offset = MemoryMap::ROM_LOWER_BANK_START;
+        return prg_rom_lower;
     }
-    else if ((addr >= MemoryMap::PPU_START) && (addr <= MemoryMap::PPU_END)) {
+    else if ((addr >= MemoryMap::ROM_UPPER_BANK_START) and (addr <= MemoryMap::ROM_UPPER_BANK_END)){
+        offset = MemoryMap::ROM_UPPER_BANK_START;
+        return prg_rom_upper;
+    }
+    else if ((addr >= MemoryMap::PPU_START) and (addr <= MemoryMap::PPU_END)) {
+        offset = 0U;
         return ppu;
     }
     else {

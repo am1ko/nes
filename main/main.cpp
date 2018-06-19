@@ -1,9 +1,11 @@
+#include <array>
 #include <cassert>
 #include <iostream>
 #include <iomanip>
 #include <boost/format.hpp>
 #include "ram.h"
-#include "rom_ifstream.h"
+#include "rom.h"
+#include "ines_parser_ifstream.h"
 #include "io_registers.h"
 #include "bus.h"
 #include "cpu.h"
@@ -41,9 +43,14 @@ void StdOutLogger::log(uint8_t const * instr, uint8_t bytes, uint16_t instr_addr
     % static_cast<int>(context->SP) % (ppu_cycles);
 }
 
-static uint8_t cpu_ram[0x800];
-static uint8_t ppu_ram[0x800];
-static uint8_t rom_storage[2*ROM_BANK_SIZE];
+static constexpr std::size_t CPU_RAM_SIZE = (2*1024);
+static constexpr std::size_t PPU_RAM_SIZE = (2*1024);
+
+static std::array<uint8_t, CPU_RAM_SIZE> cpu_ram_storage;
+static std::array<uint8_t, PPU_RAM_SIZE> ppu_ram_storage;
+static std::array<uint8_t, CHR_ROM_SIZE> chr_rom_storage;
+static std::array<uint8_t, PRG_ROM_SIZE> prg_rom_storage_lower;
+static std::array<uint8_t, PRG_ROM_SIZE> prg_rom_storage_upper;
 
 // ---------------------------------------------------------------------------------------------- //
 static void debug_draw(void) {
@@ -53,7 +60,7 @@ static void debug_draw(void) {
         std::cout << "[ ";
         for (unsigned col = 0; col < 32; col++) {
             // std::cout << " " <<  (int)ppu_ram[row*30 + col] << " ";
-            std::cout << boost::format("%02X ") % static_cast<int>(ppu_ram[row*32 + col]);
+            std::cout << boost::format("%02X ") % static_cast<int>(ppu_ram_storage[row*32 + col]);
             // std::cout << boost::format("%02X ") % static_cast<int>(vram.read(row*32 + col));
         }
         std::cout << " ]" << std::endl;
@@ -71,13 +78,27 @@ int main(int argc, char **argv)
 
     StdOutLogger logger;
 
-    RAM ram(cpu_ram, sizeof(cpu_ram));
-    RAM vram(ppu_ram, sizeof(ppu_ram));
-    ROM_ifstream rom(file, rom_storage, sizeof(rom_storage));
+    ROM <PRG_ROM_SIZE> prg_rom_lower(prg_rom_storage_lower);
+    ROM <PRG_ROM_SIZE> prg_rom_upper(prg_rom_storage_upper);
+    ROM <CHR_ROM_SIZE> chr_rom(chr_rom_storage);
+    RAM <CPU_RAM_SIZE> cpu_ram(cpu_ram_storage);
+    RAM <PPU_RAM_SIZE> ppu_ram(ppu_ram_storage);
+
+    {
+        INES_parser_ifstream ines_parser(file);
+
+        assert(ines_parser.num_prg_rom_banks < 3);
+        assert(ines_parser.num_chr_rom_banks == 1);
+
+        ines_parser.write_chr_rom(0U, chr_rom_storage);
+        ines_parser.write_prg_rom(0U, prg_rom_storage_lower);
+        ines_parser.write_prg_rom(1U, prg_rom_storage_upper);
+    }
+
     IO_Registers io_registers;
-    BusPpu ppu_bus(vram, rom);
+    BusPpu ppu_bus(ppu_ram, chr_rom);
     Ppu ppu(ppu_bus);
-    Bus bus(ram, rom, ppu, io_registers);
+    Bus bus(cpu_ram, prg_rom_lower, prg_rom_upper, ppu, io_registers);
     Cpu cpu(bus);
     // cpu.set_logger(&logger);
 
