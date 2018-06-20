@@ -2,7 +2,8 @@
 #include <cstring>
 
 // ---------------------------------------------------------------------------------------------- //
-Ppu::Ppu(IOMemoryMapped& bus, IOMemoryMapped& oam) : bus(bus), oam(oam) {
+Ppu::Ppu(IOMemoryMapped& bus, IOMemoryMapped& oam, Renderer& renderer) :
+                                                            bus(bus), oam(oam), renderer(renderer) {
 }
 
 // ---------------------------------------------------------------------------------------------- //
@@ -17,7 +18,10 @@ bool Ppu::process_cycle() {
     bool ret = false;
     if ((scan_line == 241U) && (cycle == 1U)) {
         registers.PPUSTATUS |= FLAG_PPUSTATUS_V;
-        if (registers.PPUCTRL & FLAG_PPUCTRL_V) {ret = true;}  // <-- generate NMI interrupt
+        if (registers.PPUCTRL & FLAG_PPUCTRL_V) {
+            ret = true;   // <-- generate NMI interrupt
+            renderer.draw_pixel(0, 0, 0);
+        }
     }
     else if ((scan_line == (SCAN_LINES_PER_FRAME - 1U)) && (cycle == 1U)) {
         registers.PPUSTATUS &= ~FLAG_PPUSTATUS_V;

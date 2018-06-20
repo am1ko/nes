@@ -11,11 +11,19 @@
 #include "cpu.h"
 #include "ppu.h"
 #include "bus_ppu.h"
+#include "renderer.h"
 
 #include "SDL2/SDL.h"
 #undef main   // deal with #define main SDL_main from within SDL.h
 
 static unsigned ppu_cycles;
+
+// ---------------------------------------------------------------------------------------------- //
+struct SDL_Renderer : public Renderer {
+    void draw_pixel(uint16_t x, uint16_t y, uint8_t color) {
+
+    }
+};
 
 // ---------------------------------------------------------------------------------------------- //
 class StdOutLogger : public ICpuLogger {
@@ -117,9 +125,10 @@ int main(int argc, char **argv)
         }
     }
 
+    SDL_Renderer renderer;
     IO_Registers io_registers;
     BusPpu ppu_bus(ppu_ram, chr_rom);
-    Ppu ppu(ppu_bus, oam);
+    Ppu ppu(ppu_bus, oam, renderer);
     Bus bus(cpu_ram, prg_rom_lower, prg_rom_upper, ppu, io_registers);
     Cpu cpu(bus);
     // cpu.set_logger(&logger);
@@ -153,7 +162,7 @@ int main(int argc, char **argv)
             bool const irq = ppu.tick();
             if (irq) {
                 cpu.set_interrupt_pending(CpuInterrupt::InterruptSource::NMI);
-                debug_draw();
+                //debug_draw();
             }
         }
 

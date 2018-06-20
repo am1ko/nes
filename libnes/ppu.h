@@ -3,11 +3,13 @@
 
 #include "cpu_interrupt.h"
 #include "iomemorymapped.h"
+#include "renderer.h"
 
 class Ppu : public IOMemoryMapped
 {
     IOMemoryMapped& bus;
     IOMemoryMapped& oam;
+    Renderer& renderer;
 
     unsigned scan_line = 0U;
     unsigned cycle = 0U;
@@ -59,7 +61,7 @@ public:
 
     Registers registers = {0};
 
-    Ppu(IOMemoryMapped& bus, IOMemoryMapped& oam);
+    Ppu(IOMemoryMapped& bus, IOMemoryMapped& oam, Renderer& renderer);
 
     void reset();
     bool tick();

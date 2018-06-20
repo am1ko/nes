@@ -7,7 +7,7 @@ using ::testing::Exactly;
 using ::testing::_;
 
 // ---------------------------------------------------------------------------------------------- //
-PpuVramTest::PpuVramTest() : ppu(bus, oam) {
+PpuVramTest::PpuVramTest() : ppu(bus, oam, renderer) {
     ppu.reset();
 }
 
