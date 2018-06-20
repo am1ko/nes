@@ -92,7 +92,13 @@ int main(int argc, char **argv)
 
         ines_parser.write_chr_rom(0U, chr_rom_storage);
         ines_parser.write_prg_rom(0U, prg_rom_storage_lower);
-        ines_parser.write_prg_rom(1U, prg_rom_storage_upper);
+
+        if (ines_parser.num_prg_rom_banks == 2) {
+            ines_parser.write_prg_rom(1U, prg_rom_storage_upper);
+        }
+        else {
+            ines_parser.write_prg_rom(0U, prg_rom_storage_upper);
+        }
     }
 
     IO_Registers io_registers;

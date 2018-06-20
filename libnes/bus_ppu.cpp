@@ -37,7 +37,7 @@ void BusPpu::write(uint16_t addr, uint8_t value) {
     std::cout << boost::format("0x%02X") % static_cast<int>(value);
     std::cout << std::endl;
 #endif
-    if (addr >= 0x2000U and addr < 0x3000U) {
+    if (addr >= 0x2000U and addr < 0x2800U) {
         vram.write(addr - 0x2000U, value);
     }
 
