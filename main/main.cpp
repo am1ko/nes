@@ -19,9 +19,19 @@
 static unsigned ppu_cycles;
 
 // ---------------------------------------------------------------------------------------------- //
-struct SDL_Renderer : public Renderer {
-    void draw_pixel(uint16_t x, uint16_t y, uint8_t color) {
+struct NES_SDL_Renderer : public Renderer {
+    SDL_Renderer * sdl_renderer;
+    NES_SDL_Renderer(SDL_Renderer * renderer) : sdl_renderer(renderer) {}
 
+    void draw_pixel(uint16_t x, uint16_t y, uint8_t color) {
+        assert(color < 4);
+
+        SDL_SetRenderDrawColor(sdl_renderer, color*64, 0, 0, 255);
+        SDL_RenderDrawPoint(sdl_renderer, x, y);
+    }
+
+    void flush() {
+        SDL_RenderPresent(sdl_renderer);
     }
 };
 
@@ -92,8 +102,14 @@ int main(int argc, char **argv)
 {
     SDL_Init(SDL_INIT_VIDEO);
 
-    SDL_Window * window = SDL_CreateWindow("NES emulator",
-        SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 256, 240, 0);
+    SDL_Window * window;
+    SDL_Renderer * sdl_renderer;
+
+    (void)SDL_CreateWindowAndRenderer(256, 240, 0, &window, &sdl_renderer);
+
+    SDL_RenderClear(sdl_renderer);
+
+
 
     // ------------------------------------------------------------------------------------------ //
     assert(argc == 2);
@@ -125,7 +141,7 @@ int main(int argc, char **argv)
         }
     }
 
-    SDL_Renderer renderer;
+    NES_SDL_Renderer renderer(sdl_renderer);
     IO_Registers io_registers;
     BusPpu ppu_bus(ppu_ram, chr_rom);
     Ppu ppu(ppu_bus, oam, renderer);
@@ -162,7 +178,8 @@ int main(int argc, char **argv)
             bool const irq = ppu.tick();
             if (irq) {
                 cpu.set_interrupt_pending(CpuInterrupt::InterruptSource::NMI);
-                //debug_draw();
+                (void)debug_draw;
+                // debug_draw();
             }
         }
 
@@ -172,6 +189,7 @@ int main(int argc, char **argv)
     std::cout << "Unknown instruction" << std::endl;
     std::cout << std::dec << instructions - 1 <<  " instructions executed" << std::endl;
 
+    SDL_DestroyRenderer(sdl_renderer);
     SDL_DestroyWindow(window);
     SDL_Quit();
 

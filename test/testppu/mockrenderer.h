@@ -7,6 +7,7 @@
 struct MockRenderer: public Renderer
 {
     MOCK_METHOD3(draw_pixel, void(uint16_t x, uint16_t y, uint8_t color));
+    MOCK_METHOD0(flush, void());
 };
 
 #endif
