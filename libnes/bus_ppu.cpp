@@ -10,7 +10,8 @@
 #endif
 
 // ---------------------------------------------------------------------------------------------- //
-BusPpu::BusPpu(IOMemoryMapped& vram, IOMemoryMapped & chr_rom) : vram(vram), chr_rom(chr_rom) {
+BusPpu::BusPpu(IOMemoryMapped& vram, IOMemoryMapped& pal_ram, IOMemoryMapped & chr_rom)
+        : vram(vram), pal_ram(pal_ram), chr_rom(chr_rom) {
 }
 
 // ---------------------------------------------------------------------------------------------- //
@@ -24,9 +25,13 @@ uint8_t BusPpu::read(uint16_t addr) {
     if (addr < 0x2000U) {
         ret = chr_rom.read(addr);
     }
-    if (addr >= 0x2000U and addr < 0x3000U) {
+    else if (addr >= 0x2000U and addr < 0x3000U) {
         ret = vram.read(addr - 0x2000U);
     }
+    else if ((addr >= 0x3F00U) and (addr < 0x3F20U)) {
+        ret = pal_ram.read(addr - 0x3F00U);
+    }
+
     return ret;
 }
 
@@ -39,6 +44,9 @@ void BusPpu::write(uint16_t addr, uint8_t value) {
 #endif
     if (addr >= 0x2000U and addr < 0x2800U) {
         vram.write(addr - 0x2000U, value);
+    }
+    else if ((addr >= 0x3F00) and (addr < 0x3F11)) {
+        pal_ram.write(addr - 0x3F00U, value);
     }
 
 }

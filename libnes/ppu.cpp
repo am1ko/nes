@@ -1,5 +1,6 @@
 #include "ppu.h"
 #include <cstring>
+#include <cassert>
 
 // ---------------------------------------------------------------------------------------------- //
 Ppu::Ppu(IOMemoryMapped& bus, IOMemoryMapped& oam, Renderer& renderer) :
@@ -29,20 +30,59 @@ bool Ppu::process_cycle() {
                     uint8_t low_bits[8];
                     uint8_t high_bits[8];
 
-                    for (unsigned b = 0U; b < 8U; b++) {
-                        low_bits[b]  = bus.read(nt_byte*16 + b);
-                        high_bits[b] = bus.read(nt_byte*16 + 8 + b);
+                    // About palette:
+                    // There is a 64-byte (8 x 8 byte) attribute table after each nametable
+                    //    - 1 byte in attribute table corresponds to 4 x 4 tile area
+                    //    - each byte is split into 2 bit regions for each 2 x 2 tile corner
+                    unsigned const palette_x = col / 4U;
+                    unsigned const palette_y = row / 4U;
+                    assert(palette_x < 8);
+                    assert(palette_y < 8);
+                    // TODO(amiko): need to check which NT in use here
+                    uint8_t const at_byte = bus.read(0x23C0 + palette_y*8 + palette_x);
+
+                    uint8_t const top_left_color = at_byte & 0x03U;
+                    uint8_t const top_right_color = (at_byte & 0x0CU) >> 2;
+                    uint8_t const bottom_left_color = (at_byte & 0x30U) >> 4;
+                    uint8_t const bottom_right_color = (at_byte & 0xC0U) >> 6;
+
+                    uint8_t const x_odd = (col/2U) % 2U;
+                    uint8_t const y_odd = (row/2U) % 2U;
+
+                    uint8_t palette_selection;
+
+                    if (x_odd and y_odd) {
+                        palette_selection = top_left_color;
+                    }
+                    else if (x_odd and !y_odd) {
+                        palette_selection = bottom_left_color;
+                    }
+                    else if (!x_odd and y_odd) {
+                        palette_selection = top_right_color;
+                    }
+                    else if (!x_odd and !y_odd) {
+                        palette_selection = bottom_right_color;
                     }
 
+                    for (unsigned b = 0U; b < 8U; b++) {
+                        // Read the CHR
+                        // TODO(amiko): need to check which CHR ROM in use here
+                        low_bits[b]  = bus.read(0x1000 + nt_byte*16 + b);
+                        high_bits[b] = bus.read(0x1000 + nt_byte*16 + 8 + b);
+                    }
 
+                    // Render 1 CHR
                     for (unsigned y = 0U; y < 8U; y++) {
                         for (unsigned x = 0U; x < 8U; x++) {
                             uint8_t const lsb = (low_bits[y] & (1 << x)) >> x;
                             uint8_t const msb = (high_bits[y] & (1 << x)) >> x;
+                            uint8_t const palette_index = lsb | (msb << 1);
 
                             renderer.draw_pixel(col*8 + 7 - x,
                                                 row*8 + y,
-                                                lsb | (msb << 1));
+                                                bus.read(0x3F00U
+                                                        + palette_selection*4
+                                                        + palette_index));
                         }
                     }
 

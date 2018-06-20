@@ -7,10 +7,11 @@
 class BusPpu : public IOMemoryMapped
 {
     IOMemoryMapped & vram;
+    IOMemoryMapped & pal_ram;
     IOMemoryMapped & chr_rom;
 public:
 // ---------------------------------------------------------------------------------------------- //
-    BusPpu(IOMemoryMapped& vram, IOMemoryMapped & chr_rom);
+    BusPpu(IOMemoryMapped& vram, IOMemoryMapped& pal_ram, IOMemoryMapped & chr_rom);
     uint8_t read(uint16_t addr);
     void write(uint16_t addr, uint8_t value);
 };
