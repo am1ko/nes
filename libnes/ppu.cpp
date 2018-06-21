@@ -39,8 +39,9 @@ bool Ppu::process_cycle() {
                     unsigned const palette_y = row / 4U;
                     assert(palette_x < 8);
                     assert(palette_y < 8);
-                    // TODO(amiko): need to check which NT in use here
-                    uint8_t const at_byte = bus.read(0x23C0 + palette_y*8 + palette_x);
+
+                    uint16_t const at_base_addr = nt_base_addr + 0x3C0U;
+                    uint8_t const at_byte = bus.read(at_base_addr + palette_y*8 + palette_x);
 
                     uint8_t const top_left_color = at_byte & 0x03U;
                     uint8_t const top_right_color = (at_byte & 0x0CU) >> 2;
@@ -52,19 +53,20 @@ bool Ppu::process_cycle() {
 
                     uint8_t palette_selection;
 
-                    if (x_odd and y_odd) {
+                    if (!x_odd and !y_odd) {
                         palette_selection = top_left_color;
                     }
-                    else if (x_odd and !y_odd) {
+                    else if (!x_odd and y_odd) {
                         palette_selection = bottom_left_color;
                     }
-                    else if (!x_odd and y_odd) {
+                    else if (x_odd and !y_odd) {
                         palette_selection = top_right_color;
                     }
-                    else if (!x_odd and !y_odd) {
+                    else if (x_odd and y_odd) {
                         palette_selection = bottom_right_color;
                     }
 
+                    // --- PROBABLY CORRECT --- //
                     for (unsigned b = 0U; b < 8U; b++) {
                         // Read the CHR
                         uint16_t const chr_rom_base_addr =
@@ -79,6 +81,8 @@ bool Ppu::process_cycle() {
                             uint8_t const lsb = (low_bits[y] & (1 << x)) >> x;
                             uint8_t const msb = (high_bits[y] & (1 << x)) >> x;
                             uint8_t const palette_index = lsb | (msb << 1);
+                            assert(palette_index < 4);
+                            assert(palette_selection < 4);
 
                             renderer.draw_pixel(col*8 + 7 - x,
                                                 row*8 + y,
