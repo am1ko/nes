@@ -25,7 +25,7 @@ uint8_t BusPpu::read(uint16_t addr) {
     if (addr < 0x2000U) {
         ret = chr_rom.read(addr);
     }
-    else if (addr >= 0x2000U and addr < 0x3000U) {
+    else if (addr >= 0x2000U and addr < 0x2800U) {
         ret = vram.read(addr - 0x2000U);
     }
     else if ((addr >= 0x3F00U) and (addr < 0x3F20U)) {
@@ -45,7 +45,7 @@ void BusPpu::write(uint16_t addr, uint8_t value) {
     if (addr >= 0x2000U and addr < 0x2800U) {
         vram.write(addr - 0x2000U, value);
     }
-    else if ((addr >= 0x3F00) and (addr < 0x3F11)) {
+    else if ((addr >= 0x3F00) and (addr < 0x3F20)) {
         pal_ram.write(addr - 0x3F00U, value);
     }
 
