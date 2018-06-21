@@ -26,7 +26,8 @@ bool Ppu::process_cycle() {
             for (unsigned row = 0U; row < 30U; row++) {
                 for (unsigned col = 0U; col < 32U; col++) {
                     // 8x8 bits per nametable byte
-                    uint8_t const nt_byte = bus.read(0x2000 + row*32 + col);
+                    uint16_t const nt_base_addr = 0x2000U + (registers.PPUCTRL & 0x03U) * 0x400U;
+                    uint8_t const nt_byte = bus.read(nt_base_addr + row*32 + col);
                     uint8_t low_bits[8];
                     uint8_t high_bits[8];
 
@@ -66,9 +67,10 @@ bool Ppu::process_cycle() {
 
                     for (unsigned b = 0U; b < 8U; b++) {
                         // Read the CHR
-                        // TODO(amiko): need to check which CHR ROM in use here
-                        low_bits[b]  = bus.read(0x1000 + nt_byte*16 + b);
-                        high_bits[b] = bus.read(0x1000 + nt_byte*16 + 8 + b);
+                        uint16_t const chr_rom_base_addr =
+                                    ((registers.PPUCTRL & FLAG_PPUCTRL_B) >> 4)*0x1000U;
+                        low_bits[b]  = bus.read(chr_rom_base_addr + nt_byte*16 + b);
+                        high_bits[b] = bus.read(chr_rom_base_addr + nt_byte*16 + 8 + b);
                     }
 
                     // Render 1 CHR
