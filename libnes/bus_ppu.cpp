@@ -10,6 +10,14 @@
 #endif
 
 // ---------------------------------------------------------------------------------------------- //
+static uint16_t convert_palette_ram_addr(uint16_t addr) {
+    if ((addr == 0x3F10U) or (addr == 0x3F14U) or (addr == 0x3F18U) or (addr == 0x3F1CU)) {
+        addr -= 0x10U;
+    }
+    return addr;
+}
+
+// ---------------------------------------------------------------------------------------------- //
 BusPpu::BusPpu(IOMemoryMapped& vram, IOMemoryMapped& pal_ram, IOMemoryMapped & chr_rom)
         : vram(vram), pal_ram(pal_ram), chr_rom(chr_rom) {
 }
@@ -29,7 +37,7 @@ uint8_t BusPpu::read(uint16_t addr) {
         ret = vram.read(addr - 0x2000U);
     }
     else if ((addr >= 0x3F00U) and (addr < 0x3F20U)) {
-        ret = pal_ram.read(addr - 0x3F00U);
+        ret = pal_ram.read(convert_palette_ram_addr(addr) - 0x3F00U);
     }
 
     return ret;
@@ -46,7 +54,7 @@ void BusPpu::write(uint16_t addr, uint8_t value) {
         vram.write(addr - 0x2000U, value);
     }
     else if ((addr >= 0x3F00) and (addr < 0x3F20)) {
-        pal_ram.write(addr - 0x3F00U, value);
+        pal_ram.write(convert_palette_ram_addr(addr) - 0x3F00U, value);
     }
 
 }

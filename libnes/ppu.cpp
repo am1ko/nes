@@ -66,7 +66,6 @@ bool Ppu::process_cycle() {
                         palette_selection = bottom_right_color;
                     }
 
-                    // --- PROBABLY CORRECT --- //
                     for (unsigned b = 0U; b < 8U; b++) {
                         // Read the CHR
                         uint16_t const chr_rom_base_addr =
@@ -84,11 +83,17 @@ bool Ppu::process_cycle() {
                             assert(palette_index < 4);
                             assert(palette_selection < 4);
 
+                            uint16_t palette_addr = 0x3F00U + palette_selection * 4 + palette_index;
+
+                            if ((palette_addr == 0x3F04U) or (palette_addr == 0x3F08U) or (palette_addr == 0x3F0CU)) {
+                                palette_addr = 0x3F00U;
+                            }
+
+                            uint8_t const pixel_color = bus.read(palette_addr);
+
                             renderer.draw_pixel(col*8 + 7 - x,
                                                 row*8 + y,
-                                                bus.read(0x3F00U
-                                                        + palette_selection*4
-                                                        + palette_index));
+                                                pixel_color);
                         }
                     }
 
