@@ -45,12 +45,14 @@ void StdOutLogger::log(uint8_t const * instr, uint8_t bytes, uint16_t instr_addr
 
 static constexpr std::size_t CPU_RAM_SIZE = (2*1024);
 static constexpr std::size_t PPU_RAM_SIZE = (2*1024);
+static constexpr std::size_t OAM_SIZE     = (256);
 
 static std::array<uint8_t, CPU_RAM_SIZE> cpu_ram_storage;
 static std::array<uint8_t, PPU_RAM_SIZE> ppu_ram_storage;
 static std::array<uint8_t, CHR_ROM_SIZE> chr_rom_storage;
 static std::array<uint8_t, PRG_ROM_SIZE> prg_rom_storage_lower;
 static std::array<uint8_t, PRG_ROM_SIZE> prg_rom_storage_upper;
+static std::array<uint8_t, OAM_SIZE>     oam_storage;
 
 // ---------------------------------------------------------------------------------------------- //
 static void debug_draw(void) {
@@ -83,6 +85,7 @@ int main(int argc, char **argv)
     ROM <CHR_ROM_SIZE> chr_rom(chr_rom_storage);
     RAM <CPU_RAM_SIZE> cpu_ram(cpu_ram_storage);
     RAM <PPU_RAM_SIZE> ppu_ram(ppu_ram_storage);
+    RAM <OAM_SIZE>     oam(oam_storage);
 
     {
         INES_parser_ifstream ines_parser(file);
@@ -103,7 +106,7 @@ int main(int argc, char **argv)
 
     IO_Registers io_registers;
     BusPpu ppu_bus(ppu_ram, chr_rom);
-    Ppu ppu(ppu_bus);
+    Ppu ppu(ppu_bus, oam);
     Bus bus(cpu_ram, prg_rom_lower, prg_rom_upper, ppu, io_registers);
     Cpu cpu(bus);
     // cpu.set_logger(&logger);

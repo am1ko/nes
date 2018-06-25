@@ -12,4 +12,5 @@ protected:
 
     Ppu ppu;
     MockMemory bus;
+    MockMemory oam;
 };

@@ -7,10 +7,10 @@
 class Ppu : public IOMemoryMapped
 {
     IOMemoryMapped& bus;
+    IOMemoryMapped& oam;
 
     unsigned scan_line = 0U;
     unsigned cycle = 0U;
-    uint16_t vram_address = 0U;
 
     enum PPUADDR_state {
         WAITING_FOR_MSB,
@@ -24,7 +24,7 @@ class Ppu : public IOMemoryMapped
         uint8_t PPUSTATUS;
         uint8_t OAMADDR;
         uint8_t PPUSCROLL;
-        uint8_t PPUADDR;
+        uint16_t PPUADDR;
         uint8_t PPUDATA;
     };
 
@@ -59,7 +59,7 @@ public:
 
     Registers registers = {0};
 
-    explicit Ppu(IOMemoryMapped& bus);
+    Ppu(IOMemoryMapped& bus, IOMemoryMapped& oam);
 
     void reset();
     bool tick();

@@ -2,7 +2,7 @@
 #include <cstring>
 
 // ---------------------------------------------------------------------------------------------- //
-Ppu::Ppu(IOMemoryMapped& bus) : bus(bus) {
+Ppu::Ppu(IOMemoryMapped& bus, IOMemoryMapped& oam) : bus(bus), oam(oam) {
 }
 
 // ---------------------------------------------------------------------------------------------- //
@@ -48,13 +48,16 @@ uint8_t Ppu::read(uint16_t addr) {
     uint8_t ret;
 
     switch (addr) {
+        case ADDR_OAMDATA:
+            ret = oam.read(registers.OAMADDR);
+        break;
         case ADDR_PPUSTATUS:
             ret = registers.PPUSTATUS;
             registers.PPUSTATUS &= ~FLAG_PPUSTATUS_V;
         break;
         case ADDR_PPUDATA:
-            ret = bus.read(vram_address);
-            vram_address += get_address_increment();;
+            ret = bus.read(registers.PPUADDR);
+            registers.PPUADDR += get_address_increment();;
         break;
     }
 
@@ -67,17 +70,24 @@ void Ppu::write(uint16_t addr, uint8_t value) {
         case ADDR_PPUCTRL:
             registers.PPUCTRL = value;
         break;
+        case ADDR_OAMADDR:
+            registers.OAMADDR = value;
+        break;
+        case ADDR_OAMDATA:
+            oam.write(registers.OAMADDR, value);
+            registers.OAMADDR++;
+        break;
         case ADDR_PPUDATA:
-            bus.write(vram_address, value);
-            vram_address += get_address_increment();;
+            bus.write(registers.PPUADDR, value);
+            registers.PPUADDR += get_address_increment();;
         break;
         case ADDR_PPUADDR:
             if (ppuaddr_state == WAITING_FOR_MSB) {
-                vram_address = (value << 8);
+                registers.PPUADDR = (value << 8);
                 ppuaddr_state = WAITING_FOR_LSB;
             }
             else {
-                vram_address += value;
+                registers.PPUADDR += value;
                 ppuaddr_state = WAITING_FOR_MSB;
             }
         break;

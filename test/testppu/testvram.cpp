@@ -7,7 +7,7 @@ using ::testing::Exactly;
 using ::testing::_;
 
 // ---------------------------------------------------------------------------------------------- //
-PpuVramTest::PpuVramTest() : ppu(bus){
+PpuVramTest::PpuVramTest() : ppu(bus, oam) {
     ppu.reset();
 }
 
@@ -90,4 +90,46 @@ TEST_F(PpuVramTest, ReadAutoIncrementByThirtyTwo) {
 
     EXPECT_EQ(ret_1, 0x02U);
     EXPECT_EQ(ret_2, 0x03U);
+}
+
+// ---------------------------------------------------------------------------------------------- //
+TEST_F(PpuVramTest, OAMWrite) {
+    EXPECT_OAM_WRITE(0x20U, 0x05U);
+
+    ppu.write(Ppu::ADDR_OAMADDR, 0x20U);
+    ppu.write(Ppu::ADDR_OAMDATA, 0x05U);
+}
+
+// ---------------------------------------------------------------------------------------------- //
+TEST_F(PpuVramTest, OAMWriteAutoIncrementByOne) {
+    EXPECT_OAM_WRITE(0xF0U, 0xABU);
+    EXPECT_OAM_WRITE(0xF1U, 0xBAU);
+
+    ppu.write(Ppu::ADDR_OAMADDR, 0xF0U);    // <-- Set address
+    ppu.write(Ppu::ADDR_OAMDATA, 0xABU);    // <-- First data byte
+    ppu.write(Ppu::ADDR_OAMDATA, 0xBAU);    // <-- Second data byte
+}
+
+// ---------------------------------------------------------------------------------------------- //
+TEST_F(PpuVramTest, OAMRead) {
+    EXPECT_OAM_READ(0x01U, 0x33U);
+
+    ppu.write(Ppu::ADDR_OAMADDR, 0x01U);
+
+    uint8_t const ret = ppu.read(Ppu::ADDR_OAMDATA);
+
+    EXPECT_EQ(ret, 0x33U);
+}
+
+// ---------------------------------------------------------------------------------------------- //
+TEST_F(PpuVramTest, OAMReadNoAutoIncrement) {
+    EXPECT_OAM_READ(0x01U, 0x33U);
+    EXPECT_OAM_READ(0x01U, 0x33U);
+
+    ppu.write(Ppu::ADDR_OAMADDR, 0x01U);
+
+    uint8_t ret = ppu.read(Ppu::ADDR_OAMDATA);
+    ret = ppu.read(Ppu::ADDR_OAMDATA);
+
+    EXPECT_EQ(ret, 0x33U);
 }
