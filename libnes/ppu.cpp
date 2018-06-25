@@ -128,8 +128,59 @@ bool Ppu::process_cycle() {
                     }
                 }
             }
-            renderer.flush();
             // --- RENDER NAMETABLE ------------------------------------------------------------- //
+
+            // --- RENDER SPRITES --------------------------------------------------------------- //
+            for (unsigned s = 0; s < 64; s++) {
+                uint8_t const y_pos = oam.read(s*4U);
+
+                if (y_pos < 0xEFU) {
+                    uint8_t const tile_index = oam.read(s*4U + 1U);
+                    uint8_t const attributes = oam.read(s*4U + 2U);
+                    uint8_t const x_pos = oam.read(s*4U + 3U);
+                    uint8_t chr_lsb[8];        // CHR tile, 8x8 pixels, least significant bits
+                    uint8_t chr_msb[8];        // CHR tile, 8x8 pixels, most significant bits
+
+                    for (unsigned b = 0U; b < 8U; b++) {
+                        uint16_t const ptable_addr = ((registers.PPUCTRL & FLAG_PPUCTRL_S) >> 3)*0x1000U;
+                        chr_lsb[b]  = bus.read(ptable_addr + tile_index*16 + b);
+                        chr_msb[b] = bus.read(ptable_addr + tile_index*16 + 8 + b);
+                    }
+
+                    uint8_t const palette_index = (attributes & 0x03U) + 4U;
+
+                    // Render 1 sprite
+                    for (unsigned y = 0U; y < 8U; y++) {
+                        for (unsigned x = 0U; x < 8U; x++) {
+                            bool const flip_horizontal = (attributes & 0x40U) != 0;
+                            // bool const flip_vertical   = (attributes & 0x80U) != 0;
+                            uint8_t const lsb = (chr_lsb[y] & (1 << x)) >> x;
+                            uint8_t const msb = (chr_msb[y] & (1 << x)) >> x;
+                            uint8_t const color_index = lsb | (msb << 1);
+                            assert(palette_index >= 4);
+                            assert(palette_index < 8);
+                            assert(color_index < 4);
+
+                            uint16_t pixel_color_addr = 0x3F00U + palette_index * 4 + color_index;
+
+                            if ((pixel_color_addr == 0x3F04U) or (pixel_color_addr == 0x3F08U) or
+                                (pixel_color_addr == 0x3F0CU)) {
+                                pixel_color_addr = 0x3F00U;
+                            }
+                            if (flip_horizontal) {
+                                renderer.draw_pixel(x_pos + x, y_pos + y, bus.read(pixel_color_addr));
+                            }
+                            else {
+                                renderer.draw_pixel(x_pos + 7 - x, y_pos + y, bus.read(pixel_color_addr));
+                            }
+
+                        }
+                    }
+                }
+
+            }
+            // --- RENDER SPRITES --------------------------------------------------------------- //
+            renderer.flush();
 
         }
     }

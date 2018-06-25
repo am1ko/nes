@@ -43,6 +43,8 @@ struct NES_SDL_Renderer : public Renderer {
 
     void draw_pixel(uint16_t x, uint16_t y, uint8_t color) {
         assert(color < 64);
+        assert(x < 256);
+        assert(y < 240);
         SDL_SetRenderDrawColor(sdl_renderer, rgb_palette[color][0],
                                              rgb_palette[color][1],
                                              rgb_palette[color][2], 255);
