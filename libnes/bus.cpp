@@ -29,8 +29,17 @@ uint8_t Bus::read(uint16_t addr) {
 
 // ---------------------------------------------------------------------------------------------- //
 void Bus::write(uint16_t addr, uint8_t value) {
-    uint16_t offset = 0U;
-    get_bus_device(addr, offset).write(addr - offset, value);
+    if (addr == MemoryMap::OAM_DMA) {
+        for (int i = 0; i < 256; i++) {
+            ppu.write(0x2004U, ram.read((value << 8) + i));
+        }
+        // TODO(amiko): This should take 513 or 514 CPU cycles. Could return the cycle value from
+        //              here?
+    }
+    else {
+        uint16_t offset = 0U;
+        get_bus_device(addr, offset).write(addr - offset, value);
+    }
 #ifdef DEBUG_MEM
     std::cout << "WR[" << boost::format("0x%04X") % addr << "] -> ";
     std::cout << boost::format("0x%02X") % static_cast<int>(value);
