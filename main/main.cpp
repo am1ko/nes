@@ -99,28 +99,6 @@ static std::array<uint8_t, PRG_ROM_SIZE> prg_rom_storage_upper;
 static std::array<uint8_t, OAM_SIZE>     oam_storage;
 
 // ---------------------------------------------------------------------------------------------- //
-static void debug_draw(void) {
-    std::cout << "-----------------------------------------------------------------------------------"
-    "-----------------" << std::endl;
-    for (unsigned row = 0; row < 30; row++) {
-        std::cout << "[ ";
-        for (unsigned col = 0; col < 32; col++) {
-            uint8_t const data = ppu_ram_storage[row*32 + col];
-            if (data != 0x24U) {
-                std::cout << boost::format("%02X ") % static_cast<int>(data);
-            }
-            else {
-                std::cout << "   ";
-            }
-        }
-        std::cout << " ]" << std::endl;
-    }
-    std::cout << "-----------------------------------------------------------------------------------"
-    "-----------------" << std::endl;
-    std::system("clear");
-}
-
-// ---------------------------------------------------------------------------------------------- //
 int main(int argc, char **argv)
 {
     SDL_Init(SDL_INIT_VIDEO);
@@ -195,22 +173,31 @@ int main(int argc, char **argv)
             }
         }
 
-        ret = cpu.tick(); if (ret == 0) {break;}
-        ppu_cycles = (ppu_cycles + ret*3U) % 341U;
+        bool poll_sdl = false;
 
-        for (unsigned i = 0U; i < ret*3U; i++) {
-            bool const irq = ppu.tick();
-            if (irq) {
-                cpu.set_interrupt_pending(CpuInterrupt::InterruptSource::NMI);
-                (void)debug_draw;
-                // debug_draw();
+        while(1) {
+            ret = cpu.tick();
+
+            if (ret == 0) {
+                std::cout << "Unknown instruction" << std::endl;
+                break;
             }
-        }
 
-        instructions++;
+            ppu_cycles = (ppu_cycles + ret*3U) % 341U;
+
+            for (unsigned i = 0U; i < ret*3U; i++) {
+                bool const irq = ppu.tick();
+                if (irq) {
+                    cpu.set_interrupt_pending(CpuInterrupt::InterruptSource::NMI);
+                    poll_sdl = true;
+                }
+            }
+
+            instructions++;
+            if (poll_sdl) break;
+        }
     }
 
-    std::cout << "Unknown instruction" << std::endl;
     std::cout << std::dec << instructions - 1 <<  " instructions executed" << std::endl;
 
     SDL_DestroyRenderer(sdl_renderer);
