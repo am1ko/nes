@@ -10,6 +10,7 @@
 #include "bus.h"
 #include "cpu.h"
 #include "ppu.h"
+#include "emu.h"
 #include "bus_ppu.h"
 #include "renderer.h"
 
@@ -110,8 +111,6 @@ int main(int argc, char **argv)
 
     SDL_RenderClear(sdl_renderer);
 
-
-
     // ------------------------------------------------------------------------------------------ //
     assert(argc == 2);
     std::string file = std::string(argv[1]);
@@ -149,13 +148,10 @@ int main(int argc, char **argv)
     Ppu ppu(ppu_bus, oam, renderer);
     Bus bus(cpu_ram, prg_rom_lower, prg_rom_upper, ppu, io_registers);
     Cpu cpu(bus);
+    Emu emu(cpu, ppu);
     // cpu.set_logger(&logger);
 
-    cpu.reset();
-    ppu.reset();
-
-    unsigned ret = 0U;
-    unsigned instructions = 0U;
+    emu.reset();
 
     // ------------------------------------------------------------------------------------------ //
 
@@ -173,32 +169,21 @@ int main(int argc, char **argv)
             }
         }
 
-        bool poll_sdl = false;
+        unsigned ret;
 
         while(1) {
-            ret = cpu.tick();
+            ret = emu.tick();
 
-            if (ret == 0) {
-                std::cout << "Unknown instruction" << std::endl;
-                break;
-            }
-
+            unsigned ppu_cycles_old = ppu_cycles;
             ppu_cycles = (ppu_cycles + ret*3U) % 341U;
+            if (ppu_cycles < ppu_cycles_old) break;;
+        }
 
-            for (unsigned i = 0U; i < ret*3U; i++) {
-                bool const irq = ppu.tick();
-                if (irq) {
-                    cpu.set_interrupt_pending(CpuInterrupt::InterruptSource::NMI);
-                    poll_sdl = true;
-                }
-            }
-
-            instructions++;
-            if (poll_sdl) break;
+        if (ret == 0) {
+            std::cout << "Unknown instruction" << std::endl;
+            break;
         }
     }
-
-    std::cout << std::dec << instructions - 1 <<  " instructions executed" << std::endl;
 
     SDL_DestroyRenderer(sdl_renderer);
     SDL_DestroyWindow(window);

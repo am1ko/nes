@@ -2,6 +2,7 @@ set(libnes_SRCS
     cpu.cpp
     bus.cpp
     ppu.cpp
+    emu.cpp
     bus_ppu.cpp
     ines_parser_ifstream.cpp
     io_registers.cpp
