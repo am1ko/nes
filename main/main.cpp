@@ -39,21 +39,19 @@ constexpr std::array<std::array<uint8_t, 3>, 64> rgb_palette = {{
 
 // ---------------------------------------------------------------------------------------------- //
 struct NES_SDL_Renderer : public Renderer {
-    SDL_Renderer * sdl_renderer;
-    NES_SDL_Renderer(SDL_Renderer * renderer) : sdl_renderer(renderer) {}
+    SDL_Surface * sdl_surface;
+    SDL_Window * sdl_window;
+    NES_SDL_Renderer(SDL_Window * window) : sdl_window(window) {
+        sdl_surface = SDL_GetWindowSurface(window);
+    }
 
     void draw_pixel(uint16_t x, uint16_t y, uint8_t color) {
-        assert(color < 64);
-        assert(x < 256);
-        assert(y < 240);
-        SDL_SetRenderDrawColor(sdl_renderer, rgb_palette[color][0],
-                                             rgb_palette[color][1],
-                                             rgb_palette[color][2], 255);
-        SDL_RenderDrawPoint(sdl_renderer, x, y);
+        ((uint32_t*)sdl_surface->pixels)[(y*256 + x)] = rgb_palette[color][0] << 16 |
+                                                      rgb_palette[color][1] << 8 | rgb_palette[color][2];
     }
 
     void flush() {
-        SDL_RenderPresent(sdl_renderer);
+        SDL_UpdateWindowSurface(sdl_window);
     }
 };
 
@@ -104,12 +102,8 @@ int main(int argc, char **argv)
 {
     SDL_Init(SDL_INIT_VIDEO);
 
-    SDL_Window * window;
-    SDL_Renderer * sdl_renderer;
-
-    (void)SDL_CreateWindowAndRenderer(256, 240, 0, &window, &sdl_renderer);
-
-    SDL_RenderClear(sdl_renderer);
+    SDL_Window * window =
+            SDL_CreateWindow("YANES", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 256, 240, 0);
 
     // ------------------------------------------------------------------------------------------ //
     assert(argc == 2);
@@ -142,7 +136,7 @@ int main(int argc, char **argv)
         }
     }
 
-    NES_SDL_Renderer renderer(sdl_renderer);
+    NES_SDL_Renderer renderer(window);
     IO_Registers io_registers;
     BusPpu ppu_bus(ppu_ram, pal_ram, chr_rom);
     Ppu ppu(ppu_bus, oam, renderer);
@@ -185,7 +179,6 @@ int main(int argc, char **argv)
         }
     }
 
-    SDL_DestroyRenderer(sdl_renderer);
     SDL_DestroyWindow(window);
     SDL_Quit();
 
