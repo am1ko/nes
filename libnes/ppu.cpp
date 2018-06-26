@@ -98,18 +98,21 @@ void Ppu::draw_tile(uint8_t palette_index, uint8_t x_pos, uint8_t y_pos, bool fl
             uint8_t const lsb = (tile_lsb[y] & (1 << x)) >> x;
             uint8_t const msb = (tile_msb[y] & (1 << x)) >> x;
             uint8_t const color_index = lsb | (msb << 1);
+            bool const is_transparent = ((palette_index > 3U) and (color_index == 0U));
 
-            uint16_t pixel_color_addr = 0x3F00U + palette_index * 4 + color_index;
+            if (!is_transparent) {
+                uint16_t pixel_color_addr = 0x3F00U + palette_index * 4 + color_index;
 
-            if ((pixel_color_addr == 0x3F04U) or (pixel_color_addr == 0x3F08U) or
-                (pixel_color_addr == 0x3F0CU)) {
-                pixel_color_addr = 0x3F00U;
+                if ((pixel_color_addr == 0x3F04U) or (pixel_color_addr == 0x3F08U) or
+                    (pixel_color_addr == 0x3F0CU)) {
+                    pixel_color_addr = 0x3F00U;
+                }
+
+                uint8_t const x_inc = flip_horizontal ? x : (7 - x);
+                uint8_t const y_inc = flip_vertical ? (7 - y) : y;
+
+                renderer.draw_pixel(x_pos + x_inc, y_pos + y_inc, bus.read(pixel_color_addr));
             }
-
-            uint8_t const x_inc = flip_horizontal ? x : (7 - x);
-            uint8_t const y_inc = flip_vertical ? (7 - y) : y;
-
-            renderer.draw_pixel(x_pos + x_inc, y_pos + y_inc, bus.read(pixel_color_addr));
         }
     }
 }
