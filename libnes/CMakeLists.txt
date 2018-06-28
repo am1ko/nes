@@ -5,6 +5,7 @@ set(libnes_SRCS
     emu.cpp
     bus_ppu.cpp
     ines_parser_ifstream.cpp
+    rom_parser_raw.cpp
     io_registers.cpp
 )
 
