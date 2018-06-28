@@ -1,6 +1,7 @@
 #ifndef RAM_H
 #define RAM_H
 
+#include <cassert>
 #include <array>
 #include <cstdint>
 #include "iomemorymapped.h"

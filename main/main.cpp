@@ -45,11 +45,23 @@ struct NES_SDL_Renderer : public Renderer {
         sdl_surface = SDL_GetWindowSurface(window);
     }
 
+    // ------------------------------------------------------------------------------------------ //
+    void prepare() {
+		SDL_Rect rect;
+        rect.x = rect.y = 0;
+        rect.w = 256;
+        rect.h = 240;
+
+        SDL_FillRect(sdl_surface, &rect, 0xFF000000U);
+    }
+
+    // ------------------------------------------------------------------------------------------ //
     void draw_pixel(uint16_t x, uint16_t y, uint8_t color) {
         ((uint32_t*)sdl_surface->pixels)[(y*256 + x)] = rgb_palette[color][0] << 16 |
                                                       rgb_palette[color][1] << 8 | rgb_palette[color][2];
     }
 
+    // ------------------------------------------------------------------------------------------ //
     void flush() {
         SDL_UpdateWindowSurface(sdl_window);
     }

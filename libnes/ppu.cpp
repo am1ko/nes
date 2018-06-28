@@ -98,7 +98,8 @@ void Ppu::draw_tile(uint8_t palette_index, uint8_t x_pos, uint8_t y_pos, bool fl
             uint8_t const lsb = (tile_lsb[y] & (1 << x)) >> x;
             uint8_t const msb = (tile_msb[y] & (1 << x)) >> x;
             uint8_t const color_index = lsb | (msb << 1);
-            bool const is_transparent = ((palette_index > 3U) and (color_index == 0U));
+            bool const is_transparent = ((palette_index > 3U) and (color_index == 0U)) or
+                                        ((palette_index < 4U) and (color_index == 0U));
 
             if (!is_transparent) {
                 uint16_t pixel_color_addr = 0x3F00U + palette_index * 4 + color_index;
@@ -119,6 +120,8 @@ void Ppu::draw_tile(uint8_t palette_index, uint8_t x_pos, uint8_t y_pos, bool fl
 
 // ---------------------------------------------------------------------------------------------- //
 void Ppu::render() {
+    renderer.prepare();
+
     // --- RENDER BACKGROUND -------------------------------------------------------------------- //
     for (unsigned row = 0U; row < 30U; row++) {
         for (unsigned col = 0U; col < 32U; col++) {
@@ -198,7 +201,7 @@ bool Ppu::tick() {
 
 // ---------------------------------------------------------------------------------------------- //
 uint8_t Ppu::read(uint16_t addr) {
-    uint8_t ret;
+    uint8_t ret = 0U;
 
     switch (addr) {
         case ADDR_OAMDATA:
