@@ -215,6 +215,8 @@ uint8_t Ppu::read(uint16_t addr) {
             ret = bus.read(registers.PPUADDR);
             registers.PPUADDR += get_address_increment();;
         break;
+        default:
+        break;
     }
 
     return ret;
@@ -246,6 +248,8 @@ void Ppu::write(uint16_t addr, uint8_t value) {
                 registers.PPUADDR += value;
                 ppuaddr_state = WAITING_FOR_MSB;
             }
+        break;
+        default:
         break;
     }
 }

@@ -12,7 +12,7 @@ set(libnes_SRCS
 if (WIN32)
 set( CMAKE_CXX_FLAGS "/Za" )
 else()
-set( CMAKE_CXX_FLAGS "-Wall -Werror" )
+set( CMAKE_CXX_FLAGS "-Wall -Werror -Wcast-align -Wcast-qual -Wctor-dtor-privacy -Wdisabled-optimization -Wformat=2 -pedantic -Wswitch-default -Winit-self" )
 endif()
 
 # Declare the library
