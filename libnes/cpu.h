@@ -1,7 +1,6 @@
 #ifndef CPU_H
 #define CPU_H
 
-#include <cstdbool>
 #include <cstdint>
 #include "cpu_interrupt.h"
 
@@ -135,6 +134,7 @@ class Cpu : public CpuInterrupt
 public:
     CpuContext context;
     explicit Cpu(IOMemoryMapped& bus);
+    virtual ~Cpu();
     void reset();
     unsigned tick();
     void set_logger(ICpuLogger * logger);

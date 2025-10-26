@@ -38,6 +38,10 @@ Ppu::Ppu(IOMemoryMapped& bus, IOMemoryMapped& oam, Renderer& renderer) :
 }
 
 // ---------------------------------------------------------------------------------------------- //
+Ppu::~Ppu() {
+}
+
+// ---------------------------------------------------------------------------------------------- //
 void Ppu::reset() {
     (void)std::memset(&registers, 0U, sizeof(registers));
     scan_line = 0U;

@@ -121,8 +121,6 @@ int main(int argc, char **argv)
     assert(argc == 2);
     std::string file = std::string(argv[1]);
 
-    StdOutLogger logger;
-
     ROM <PRG_ROM_SIZE> prg_rom_lower(prg_rom_storage_lower);
     ROM <PRG_ROM_SIZE> prg_rom_upper(prg_rom_storage_upper);
     ROM <CHR_ROM_SIZE> chr_rom(chr_rom_storage);
@@ -155,7 +153,6 @@ int main(int argc, char **argv)
     Bus bus(cpu_ram, prg_rom_lower, prg_rom_upper, ppu, io_registers);
     Cpu cpu(bus);
     Emu emu(cpu, ppu);
-    // cpu.set_logger(&logger);
 
     emu.reset();
 

@@ -12,6 +12,7 @@ class BusPpu : public IOMemoryMapped
 public:
 // ---------------------------------------------------------------------------------------------- //
     BusPpu(IOMemoryMapped& vram, IOMemoryMapped& pal_ram, IOMemoryMapped & chr_rom);
+    virtual ~BusPpu();
     uint8_t read(uint16_t addr);
     void write(uint16_t addr, uint8_t value);
 };

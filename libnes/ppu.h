@@ -70,6 +70,7 @@ public:
     Registers registers = {0};
 
     Ppu(IOMemoryMapped& bus, IOMemoryMapped& oam, Renderer& renderer);
+    virtual ~Ppu();
 
     void reset();
     bool tick();

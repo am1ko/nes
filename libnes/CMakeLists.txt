@@ -1,4 +1,14 @@
-set(libnes_SRCS
+cmake_minimum_required(VERSION 3.20.0)
+
+project (libnes LANGUAGES CXX)
+
+# if (WIN32)
+# set( CMAKE_CXX_FLAGS "/Za" )
+# else()
+# set( CMAKE_CXX_FLAGS "-Wall -Werror -Wcast-align -Wcast-qual -Wctor-dtor-privacy -Wdisabled-optimization -Wformat=2 -pedantic -Wswitch-default -Winit-self" )
+# endif()
+
+add_library(libnes STATIC
     cpu.cpp
     bus.cpp
     ppu.cpp
@@ -9,21 +19,7 @@ set(libnes_SRCS
     io_registers.cpp
 )
 
-if (WIN32)
-set( CMAKE_CXX_FLAGS "/Za" )
-else()
-set( CMAKE_CXX_FLAGS "-Wall -Werror -Wcast-align -Wcast-qual -Wctor-dtor-privacy -Wdisabled-optimization -Wformat=2 -pedantic -Wswitch-default -Winit-self" )
-endif()
-
-# Declare the library
-add_library(libnes STATIC
-    ${libnes_SRCS}
-)
-
-INCLUDE_DIRECTORIES( ${Boost_INCLUDE_DIR} )
-
-# Specify here the include directories exported
-# by this library
-target_include_directories(libnes PUBLIC
+target_include_directories(libnes
+    PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}
 )

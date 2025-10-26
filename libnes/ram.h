@@ -11,7 +11,7 @@ class RAM : public IOMemoryMapped {
     std::array<uint8_t, N>& ram;
 public:
     RAM(std::array<uint8_t, N>& ram);
-    ~RAM();
+    virtual ~RAM();
     uint8_t read(uint16_t addr);
     void write(uint16_t addr, uint8_t value);
 };

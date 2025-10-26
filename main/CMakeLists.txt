@@ -1,6 +1,4 @@
-set(Main_SRCS
-    main.cpp
-)
+cmake_minimum_required(VERSION 3.20)
 
 if (WIN32)
 set( CMAKE_CXX_FLAGS "/Za /EHsc" )
@@ -15,7 +13,7 @@ FIND_PACKAGE(SDL2 REQUIRED)
 INCLUDE_DIRECTORIES( ${SDL2_INCLUDE_DIRS} )
 
 add_executable(testApp
-    ${Main_SRCS}
+    main.cpp
 )
 
 target_link_libraries(testApp libnes)

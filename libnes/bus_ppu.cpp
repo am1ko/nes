@@ -23,6 +23,10 @@ BusPpu::BusPpu(IOMemoryMapped& vram, IOMemoryMapped& pal_ram, IOMemoryMapped & c
 }
 
 // ---------------------------------------------------------------------------------------------- //
+BusPpu::~BusPpu() {
+}
+
+// ---------------------------------------------------------------------------------------------- //
 uint8_t BusPpu::read(uint16_t addr) {
     uint8_t ret = 0U;
 #ifdef DEBUG_MEM
